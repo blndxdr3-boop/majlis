@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>مەجلیس AI Pro V5 | پێشبڕکێی زیرەکی دەستکرد</title>
-  <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-  <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
-  <link href="[https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap](https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap)" rel="stylesheet">
-  <script src="[https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js](https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js)"></script>
-  <script src="[https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js](https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js)"></script>
+  <title>مەجلیس AI Pro V6 | پێشبڕکێی زیرەکی دەستکرد</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
     :root {
@@ -84,7 +84,7 @@
 
     .brand-title {
       font-weight: 900;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       background: linear-gradient(90deg, #e9d5ff, #f472b6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -129,7 +129,7 @@
     }
 
     h2 {
-      font-size: 1.28rem;
+      font-size: 1.25rem;
       font-weight: 900;
       margin-bottom: 6px;
       text-align: center;
@@ -269,13 +269,13 @@
     }
 
     .vibe-card .v-ico {
-      font-size: 1.45rem;
+      font-size: 1.4rem;
       display: block;
       margin-bottom: 3px;
     }
 
     .vibe-card strong {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       display: block;
       color: #fff;
     }
@@ -442,7 +442,7 @@
     }
 
     .q-banner {
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: 900;
       text-align: center;
       padding: 20px 14px;
@@ -465,7 +465,7 @@
       border: 2px solid var(--border);
       background: rgba(30, 41, 59, 0.85);
       color: #fff;
-      font-size: 0.96rem;
+      font-size: 0.95rem;
       font-weight: 800;
       cursor: pointer;
       text-align: right;
@@ -523,200 +523,9 @@
       border-radius: 16px;
       position: relative;
       line-height: 1.7;
-      font-size: 0.95rem;
+      font-size: 0.94rem;
       font-weight: 700;
     }
 
     .comedy-card.winner-box {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 182, 212, 0.1));
-      border: 1px solid var(--emerald);
-      color: #d1fae5;
-    }
-
-    .comedy-card.loser-box {
-      background: linear-gradient(135deg, rgba(244, 63, 94, 0.18), rgba(245, 158, 11, 0.1));
-      border: 1px solid var(--danger);
-      color: #ffe4e6;
-    }
-
-    .comedy-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 900;
-      font-size: 1rem;
-      margin-bottom: 6px;
-    }
-
-    .emoji-bar {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .emoji-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      font-size: 1.25rem;
-      cursor: pointer;
-    }
-
-    .floating-emoji {
-      position: fixed;
-      bottom: 40px;
-      font-size: 2.2rem;
-      pointer-events: none;
-      z-index: 300;
-      animation: floatUp 2.4s ease-out forwards;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(0) scale(0.8); opacity: 1; }
-      100% { transform: translateY(-340px) scale(1.4); opacity: 0; }
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.78);
-      backdrop-filter: blur(6px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 250;
-      padding: 14px;
-    }
-    .modal-backdrop.open { display: flex; }
-
-    .modal-box {
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      max-width: 500px;
-      width: 100%;
-      padding: 20px;
-      max-height: 88vh;
-      overflow-y: auto;
-    }
-
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      display: inline-block;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
-</head>
-<body>
-
-  <header>
-    <div class="brand" onclick="resetToHome()">
-      <div class="brand-icon">🎭</div>
-      <div>
-        <div class="brand-title">مەجلیس AI Pro V5</div>
-      </div>
-    </div>
-    <div class="header-controls">
-      <button class="icon-pill" onclick="openApiModal()">🔑 کلیلی AI</button>
-      <button class="icon-pill" onclick="clearAskedHistory()" title="سڕینەوەی مێژووی پرسیارەکان">🔄 پاککردنەوە</button>
-      <button class="icon-pill" id="soundBtn" onclick="toggleSound()">🔊</button>
-    </div>
-  </header>
-
-  <main id="appContainer"></main>
-
-  <div class="modal-backdrop" id="apiModal">
-    <div class="modal-box">
-      <h3 style="margin-bottom:8px;">🔑 ڕێکخستنی کلیلی Google Gemini AI</h3>
-      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">
-        ئەپەکە خۆی بێ کلیل کار دەکات، بەڵام ئەگەر کلیلی فەرمی Google AI Studio ت هەیە (کە بە <strong>AIzaSy...</strong> دەست پێ دەکات) لێرە دایبنێ بۆ خێرایی زیاتر:
-      </p>
-      <input type="text" id="apiKeyInput" class="input" dir="ltr" placeholder="AIzaSy..." />
-      <div style="font-size:0.76rem; color:var(--emerald); margin-bottom:12px; text-align:center;">
-        ژمارەی ئەو پرسیارانەی کراون و دووبارە نابنەوە: <strong id="seenCountTxt">0</strong> پرسیار
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn" onclick="closeApiModal()">داخستن</button>
-        <button class="btn btn-primary" onclick="saveApiKey()">💾 پاشەکەوتکردن</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const STORAGE_API_KEY = 'MAJLIS_GEMINI_KEY_V5';
-    const STORAGE_SEEN_Q = 'MAJLIS_SEEN_QUESTIONS_V5';
-    const USER_NAME_KEY = 'MAJLIS_USER_NAME_V5';
-
-    const QUESTION_VIBES = [
-      {
-        id: 'friends',
-        icon: '☕',
-        title: 'دانیشتنی هاوڕێیان',
-        desc: 'گەنجانە و گەعدە و قسەی خۆش',
-        promptHint: 'بە شێوازی دانیشتنی گەنجانە و هاوڕێیانە، پرسیارەکان با سەرنجڕاکێش و کۆمەڵایەتی بن'
-      },
-      {
-        id: 'camping',
-        icon: '🏕️',
-        title: 'گەشت و کامپینگ',
-        desc: 'سەیران، چادر، ئاگر و سروشت',
-        promptHint: 'تایبەت بە کەشی کامپینگ و شاخەوانی و سەیران و چادر و ئاگرکردنەوە و سروشتی کوردستان'
-      },
-      {
-        id: 'family',
-        icon: '👨‍👩‍👧‍👦',
-        title: 'دانیشتنی خێزانی',
-        desc: 'کەلتووری، پەند و هەموو تەمەنێک',
-        promptHint: 'بە شێوازی دانیشتنی خێزانیی کوردەواری، پرسیار لەسەر کەلتوور و خواردنی کوردی و پەندی پێشینان'
-      },
-      {
-        id: 'funny',
-        icon: '😂',
-        title: 'قەشمەری و کۆمیدی',
-        desc: 'پرسیاری سەیر و پێکەنیناوی',
-        promptHint: 'بە شێوازێکی زۆر کۆمیدی و قەشمەری و تەنزئامێز، کە هەڵبژاردەکانیش پێکەنیناوی بن'
-      },
-      {
-        id: 'academic',
-        icon: '🎓',
-        title: 'زانکۆ و ڕۆشنبیری',
-        desc: 'پرسیاری قووڵ، زانستی و یاسایی',
-        promptHint: 'بە شێوازی ئەکادیمی و خوێندکارانی زانکۆ و ڕۆشنبیریی بەرز و یاسایی'
-      },
-      {
-        id: 'challenge',
-        icon: '🔥',
-        title: 'تەحەدای بلیمەتەکان',
-        desc: 'پرسیاری قورس و فێڵاوی',
-        promptHint: 'بە شێوازی تەحەدای قورس و پرسیاری زیرەکی و مەتەڵی قورس'
-      }
-    ];
-
-    const PRESET_TOPICS = [
-      'یاسا و دادگا و دەستوور',
-      'گەشت و کامپینگ و سروشت',
-      'مێژوو و جوگرافیای کوردستان',
-      'زانیاری گشتی جۆراوجۆر',
-      'تۆپی پێ و وەرزشی جیهانی',
-      'مەتەڵ و زیرەکی',
-      'زانیاری ئایینی و قورئان',
-      'ئەدەب و شاعیرانی کورد'
-    ];
-
-    // بانکی پرسیاری جیاکراوە بەپێی بابەت (بۆ ئەوەی هەرگیز بابەتەکان تێکەڵ نەبن!)
-    const TOPIC_FALLBACK_BANKS = {
-      'یاسا و دادگا و دەستوور': [
-        { q: 'لە یاسادا، بنەمای "المتهم بريء حتى تثبت إدانته" بە واتای چی دێت؟', opts: ['تۆمەتبار بێتاوانە تا تاوانەکەی لە دادگا دەسەلمێنرێت', 'هەموو تۆمەتبارێک دەبێت زیندانی بکرێت', 'پۆلیس بڕیاری کۆتایی دەدات', 'شاهید پێویست نییە'], ans: 0 },
-        { q: 'بەرزترین یاسا لە ناو هەر دەوڵەتێکدا کامەیە کە نابێت هیچ یاسایەکی تر پێچەوانەی بێت؟', opts: ['یاسای هاتوچۆ', 'دەستوور (الدستور)', 'پەیڕەوی ناوخۆ', 'بڕیاری شارەوانی'], ans: 1 },
-        { q: 'کام دەسەڵات لە دەوڵەتدا بەرپرسە لە دەرکردن و هەموارکردنەوەی یاساکان؟', opts: ['دەسەڵاتی جێبەجێکردن (حکومەت)', 'دەسەڵاتی یاسادانان (پەرلەمان)', 'دەسەڵاتی دادوەری', 'بانکی ناوەندی'], ans: 1 },
-        { q: 'لە یاسای شارستانی (مدني) و سزاکاندا، تەمەنی یاسایی کامڵبوون (أهلية) لە عێراق چەند ساڵە؟', opts: ['١٥ ساڵ', '١٨ ساڵی تەواو', '٢١ ساڵ', '٢٥ ساڵ'], ans: 1 },
-        { q: 'لە یاسای بازرگانیدا (القانون التجاري)، کاتێک بازرگانێک ناتوانێت قەرزەکانی بداتەوە، دادگا چ بڕیارێکی بەسەردا دەسەپێنێت؟', opts: ['پاداشتکردن', 'مایەپووچبوون (إفلاس)', 'لێخۆشبوونی گشتی', 'دامەزراندن'], ans: 1 },
-        { q: 'ئەو گرێبەستەی (عقد) کە لە سەرەتاوە یەکێک
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 182, 
