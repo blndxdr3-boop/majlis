@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>مەجلیس AI Pro | پێشبڕکێی هاوڕێیان و خێزان</title>
+  <title>مەجلیس AI Pro V7 | پێشبڕکێی زیرەکی دەستکرد</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -12,14 +12,14 @@
 
   <style>
     :root {
-      --bg-dark: #070a14;
-      --bg-surface: rgba(17, 24, 39, 0.92);
+      --bg-dark: #060913;
+      --bg-surface: rgba(15, 23, 42, 0.92);
       --bg-card: rgba(30, 41, 59, 0.78);
       --border: rgba(148, 163, 184, 0.18);
       --text: #f8fafc;
       --muted: #94a3b8;
       --primary: #8b5cf6;
-      --primary-glow: rgba(139, 92, 246, 0.4);
+      --primary-glow: rgba(139, 92, 246, 0.42);
       --accent: #ec4899;
       --emerald: #10b981;
       --danger: #f43f5e;
@@ -39,7 +39,7 @@
     body {
       background-color: var(--bg-dark);
       background-image: 
-        radial-gradient(at 10% 10%, rgba(139, 92, 246, 0.24) 0px, transparent 45%),
+        radial-gradient(at 10% 10%, rgba(139, 92, 246, 0.25) 0px, transparent 45%),
         radial-gradient(at 90% 85%, rgba(236, 72, 153, 0.2) 0px, transparent 50%),
         radial-gradient(at 50% 50%, rgba(6, 182, 212, 0.12) 0px, transparent 60%);
       background-attachment: fixed;
@@ -53,7 +53,7 @@
     header {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
-      background: rgba(7, 10, 20, 0.88);
+      background: rgba(6, 9, 19, 0.88);
       backdrop-filter: blur(14px);
       display: flex;
       justify-content: space-between;
@@ -102,16 +102,19 @@
       color: var(--text);
       padding: 7px 11px;
       border-radius: 50px;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      transition: 0.2s;
     }
 
+    .icon-pill:hover { border-color: var(--primary); }
+
     main {
-      max-width: 700px;
+      max-width: 720px;
       width: 100%;
       margin: 0 auto;
       padding: 18px 14px 70px;
@@ -126,6 +129,7 @@
       padding: 20px;
       margin-bottom: 16px;
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+      position: relative;
     }
 
     h2 {
@@ -140,7 +144,7 @@
       font-size: 0.85rem;
       text-align: center;
       margin-bottom: 16px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     .welcome-tabs {
@@ -148,7 +152,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
       margin-bottom: 16px;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(9, 13, 24, 0.9);
       padding: 6px;
       border-radius: 14px;
       border: 1px solid var(--border);
@@ -179,7 +183,7 @@
       border: 1px solid var(--border);
       background: rgba(9, 13, 24, 0.92);
       color: #fff;
-      font-size: 0.94rem;
+      font-size: 0.95rem;
       font-weight: 700;
       margin-bottom: 12px;
       outline: none;
@@ -189,7 +193,7 @@
 
     .input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.22);
     }
 
     .btn {
@@ -199,7 +203,7 @@
       border: 1px solid var(--border);
       background: var(--bg-card);
       color: #fff;
-      font-size: 0.96rem;
+      font-size: 0.95rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -210,8 +214,8 @@
       margin-bottom: 10px;
     }
 
-    .btn:hover { transform: translateY(-2px); }
-    .btn:active { transform: scale(0.98); }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--primary); }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
     .btn:disabled { opacity: 0.55; pointer-events: none; }
 
     .btn-primary {
@@ -231,8 +235,14 @@
       border: none;
     }
 
+    .btn-amber {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: var(--amber);
+      color: #fde68a;
+    }
+
     .vibe-section {
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.72);
       border: 1px solid rgba(6, 182, 212, 0.35);
       border-radius: 16px;
       padding: 14px;
@@ -247,14 +257,14 @@
       color: #a5f3fc;
       padding: 4px 12px;
       border-radius: 50px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 800;
       margin-bottom: 10px;
     }
 
     .vibe-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 8px;
     }
 
@@ -271,7 +281,7 @@
     .vibe-card .v-ico {
       font-size: 1.4rem;
       display: block;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
 
     .vibe-card strong {
@@ -308,7 +318,7 @@
       color: #e9d5ff;
       padding: 4px 12px;
       border-radius: 50px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 800;
       margin-bottom: 10px;
     }
@@ -325,7 +335,7 @@
       padding: 7px 12px;
       border-radius: 50px;
       border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.85);
       color: var(--muted);
       font-size: 0.78rem;
       font-weight: 700;
@@ -337,6 +347,7 @@
       background: var(--primary);
       border-color: #c084fc;
       color: #fff;
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
     }
 
     .settings-row {
@@ -347,7 +358,7 @@
     }
 
     .setting-box {
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.75);
       border: 1px solid var(--border);
       padding: 8px;
       border-radius: 12px;
@@ -407,13 +418,27 @@
       background: rgba(16, 185, 129, 0.16);
       border: 1px solid var(--emerald);
       color: #a7f3d0;
-      padding: 7px 14px;
+      padding: 6px 12px;
       border-radius: 50px;
       font-weight: 800;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .kick-btn {
+      background: rgba(244, 63, 94, 0.25);
+      border: none;
+      color: #fda4af;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .quiz-top-meta {
@@ -422,9 +447,18 @@
       align-items: center;
       margin-bottom: 8px;
       font-weight: 800;
-      font-size: 0.86rem;
+      font-size: 0.85rem;
       flex-wrap: wrap;
       gap: 6px;
+    }
+
+    .source-tag {
+      font-size: 0.72rem;
+      padding: 3px 9px;
+      border-radius: 50px;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: #e9d5ff;
     }
 
     .timer-track {
@@ -442,11 +476,11 @@
     }
 
     .q-banner {
-      font-size: 1.12rem;
+      font-size: 1.14rem;
       font-weight: 900;
       text-align: center;
       padding: 20px 14px;
-      background: rgba(9, 13, 24, 0.85);
+      background: rgba(9, 13, 24, 0.88);
       border-radius: 16px;
       border: 1px solid var(--border);
       margin-bottom: 16px;
@@ -463,7 +497,7 @@
       padding: 15px 16px;
       border-radius: 14px;
       border: 2px solid var(--border);
-      background: rgba(30, 41, 59, 0.85);
+      background: rgba(30, 41, 59, 0.88);
       color: #fff;
       font-size: 0.95rem;
       font-weight: 800;
@@ -475,9 +509,11 @@
       transition: 0.15s;
     }
 
+    .opt-card:hover:not(:disabled) { border-color: var(--primary); }
+
     .opt-card.selected {
       border-color: var(--cyan);
-      background: rgba(6, 182, 212, 0.22);
+      background: rgba(6, 182, 212, 0.24);
     }
 
     .opt-card.correct {
@@ -492,13 +528,30 @@
       color: #fecdd3;
     }
 
+    .gain-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.22);
+      color: #6ee7b7;
+      border: 1px solid var(--emerald);
+      padding: 2px 8px;
+      border-radius: 50px;
+      font-size: 0.74rem;
+      margin-right: 6px;
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.6); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
     .leader-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 11px 14px;
       border-radius: 12px;
-      background: rgba(9, 13, 24, 0.75);
+      background: rgba(9, 13, 24, 0.78);
       border: 1px solid var(--border);
       margin-bottom: 8px;
       font-weight: 800;
@@ -506,7 +559,7 @@
     }
 
     .leader-row.first {
-      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(9, 13, 24, 0.85));
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(9, 13, 24, 0.88));
       border-color: var(--amber);
     }
 
@@ -521,7 +574,6 @@
     .comedy-card {
       padding: 16px;
       border-radius: 16px;
-      position: relative;
       line-height: 1.7;
       font-size: 0.94rem;
       font-weight: 700;
@@ -544,7 +596,7 @@
       align-items: center;
       gap: 8px;
       font-weight: 900;
-      font-size: 1rem;
+      font-size: 0.98rem;
       margin-bottom: 6px;
     }
 
@@ -563,7 +615,10 @@
       background: var(--bg-card);
       font-size: 1.25rem;
       cursor: pointer;
+      transition: 0.15s;
     }
+
+    .emoji-btn:active { transform: scale(1.25); }
 
     .floating-emoji {
       position: fixed;
@@ -577,6 +632,53 @@
     @keyframes floatUp {
       0% { transform: translateY(0) scale(0.8); opacity: 1; }
       100% { transform: translateY(-340px) scale(1.4); opacity: 0; }
+    }
+
+    /* ئامادەباشی ٣، ٢، ١ */
+    .countdown-overlay {
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    .countdown-num {
+      font-size: 5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #c084fc, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: popIn 0.4s ease;
+    }
+
+    /* Confetti ئاهەنگێڕان */
+    .confetti-piece {
+      position: fixed;
+      top: -20px;
+      width: 10px;
+      height: 16px;
+      z-index: 280;
+      pointer-events: none;
+      animation: fallDown 3.2s linear forwards;
+    }
+
+    @keyframes fallDown {
+      to { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+    }
+
+    .toast-msg {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--primary);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      z-index: 400;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      animation: popIn 0.25s ease;
     }
 
     .modal-backdrop {
@@ -625,23 +727,25 @@
       </div>
     </div>
     <div class="header-controls">
+      <button class="icon-pill" onclick="openCustomQModal()">✍️ پرسیاری خۆت</button>
       <button class="icon-pill" onclick="openApiModal()">🔑 کلیلی AI</button>
-      <button class="icon-pill" onclick="clearAskedHistory()" title="سڕینەوەی مێژووی پرسیارەکان">🔄 پاککردنەوە</button>
+      <button class="icon-pill" onclick="clearAskedHistory()" title="سڕینەوەی مێژووی پرسیارەکان">🔄 سفرکردنەوە</button>
       <button class="icon-pill" id="soundBtn" onclick="toggleSound()">🔊</button>
     </div>
   </header>
 
   <main id="appContainer"></main>
 
+  <!-- مۆداڵی کلیلی زیرەکی دەستکرد -->
   <div class="modal-backdrop" id="apiModal">
     <div class="modal-box">
       <h3 style="margin-bottom:8px;">🔑 ڕێکخستنی کلیلی Google Gemini AI</h3>
       <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">
-        ئەپەکە خۆی بێ کلیل کار دەکات، بەڵام ئەگەر کلیلی فەرمی Google AI Studio ت هەیە (کە بە <strong>AIzaSy...</strong> دەست پێ دەکات) لێرە دایبنێ:
+        ئەپەکە خۆکارانە بە زیرەکی دەستکردی کراوە کار دەکات، بەڵام ئەگەر کلیلی فەرمی Google AI Studio ت هەیە (کە بە <strong>AIzaSy...</strong> دەست پێ دەکات) لێرە دایبنێ بۆ خێرایی و وردیی ١٠٠٪:
       </p>
       <input type="text" id="apiKeyInput" class="input" dir="ltr" placeholder="AIzaSy..." />
       <div style="font-size:0.76rem; color:var(--emerald); margin-bottom:12px; text-align:center;">
-        ژمارەی ئەو پرسیارانەی کراون و دووبارە نابنەوە: <strong id="seenCountTxt">0</strong> پرسیار
+        ژمارەی ئەو پرسیارانەی تا ئێستا کراون و دووبارە نابنەوە: <strong id="seenCountTxt">0</strong> پرسیار
       </div>
       <div style="display:flex; gap:8px;">
         <button class="btn" onclick="closeApiModal()">داخستن</button>
@@ -650,19 +754,59 @@
     </div>
   </div>
 
-  <script>
-    const STORAGE_API_KEY = 'MAJLIS_GEMINI_KEY_FINAL';
-    const STORAGE_SEEN_Q = 'MAJLIS_SEEN_QUESTIONS_FINAL';
-    const USER_NAME_KEY = 'MAJLIS_USER_NAME_FINAL';
+  <!-- مۆداڵی زیادکردنی پرسیاری تایبەت -->
+  <div class="modal-backdrop" id="customQModal">
+    <div class="modal-box">
+      <h3 style="margin-bottom:8px;">✍️ زیادکردنی پرسیاری تایبەتی خۆت</h3>
+      <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">
+        پرسیار لەسەر هاوڕێکانت یان هەر بابەتێک بنووسە بۆ ئەوەی لە بەشی (پرسیارەکانی خۆم) یاری پێ بکەن:
+      </p>
+      <input type="text" id="cqText" class="input" placeholder="دەقی پرسیارەکە بنووسە..." style="text-align:right;" />
+      <input type="text" id="cqOpt0" class="input" placeholder="وەڵامی ڕاست لێرە بنووسە ✅" style="text-align:right; border-color:var(--emerald);" />
+      <input type="text" id="cqOpt1" class="input" placeholder="هەڵبژاردەی هەڵەی ١" style="text-align:right;" />
+      <input type="text" id="cqOpt2" class="input" placeholder="هەڵبژاردەی هەڵەی ٢" style="text-align:right;" />
+      <input type="text" id="cqOpt3" class="input" placeholder="هەڵبژاردەی هەڵەی ٣" style="text-align:right;" />
+      <div id="customQStatus" style="font-size:0.78rem; color:var(--emerald); text-align:center; margin-bottom:8px;"></div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" onclick="closeCustomQModal()">داخستن</button>
+        <button class="btn btn-primary" onclick="saveCustomQuestion()">➕ زیادکردن</button>
+      </div>
+    </div>
+  </div>
 
-    // پێوەرەکانی کەش و شێوازی دانیشتن
+  <script>
+    const STORAGE_API_KEY = 'MAJLIS_GEMINI_KEY_V7';
+    const STORAGE_SEEN_Q = 'MAJLIS_SEEN_QUESTIONS_V7';
+    const STORAGE_CUSTOM_Q = 'MAJLIS_CUSTOM_Q_V7';
+    const USER_NAME_KEY = 'MAJLIS_USER_NAME_V7';
+    const USER_ID_KEY = 'MAJLIS_USER_ID_V7';
+
+    // پاراستنی ناسنامەی یاریزان بۆ ئەوەی ئەگەر پەڕەکەی نوێ کردەوە خاڵەکانی نەفەوتێت
+    let persistentId = localStorage.getItem(USER_ID_KEY);
+    if (!persistentId) {
+      persistentId = 'U_' + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem(USER_ID_KEY, persistentId);
+    }
+
+    let customQuestions = [];
+    try {
+      const cq = localStorage.getItem(STORAGE_CUSTOM_Q);
+      if (cq) customQuestions = JSON.parse(cq);
+    } catch (e) {}
+
+    let seenQuestions = [];
+    try {
+      const sq = localStorage.getItem(STORAGE_SEEN_Q);
+      if (sq) seenQuestions = JSON.parse(sq);
+    } catch (e) {}
+
+    // ١. پێوەرەکانی کەشی دانیشتن (تەنها شێوازی داڕشتنی پرسیار و قسە کۆمیدییەکان دەگۆڕێت بێ ئەوەی دەستکاری بابەتەکەت بکات!)
     const QUESTION_VIBES = [
       {
         id: 'friends',
         icon: '☕',
         title: 'دانیشتنی هاوڕێیان',
         desc: 'گەنجانە و گەعدە و قسەی خۆش',
-        defaultTopic: 'زانیاری گشتی جۆراوجۆر',
         promptHint: 'بە شێوازی دانیشتنی گەنجانە و هاوڕێیانە، پرسیارەکان با سەرنجڕاکێش و کۆمەڵایەتی بن'
       },
       {
@@ -670,40 +814,35 @@
         icon: '🏕️',
         title: 'گەشت و کامپینگ',
         desc: 'سەیران، چادر، ئاگر و سروشت',
-        defaultTopic: 'گەشت و کامپینگ و سروشت',
-        promptHint: 'تایبەت بە کەشی کامپینگ و شاخەوانی و سەیران و چادر و ئاگرکردنەوە و سروشتی کوردستان'
+        promptHint: 'بە هەناسەی گەشت و کامپینگ و سەیران و چای سەر خەڵووز و شاخەوانی'
       },
       {
         id: 'family',
         icon: '👨‍👩‍👧‍👦',
         title: 'دانیشتنی خێزانی',
-        desc: 'کەلتووری، پەند و هەموو تەمەنێک',
-        defaultTopic: 'مێژوو و جوگرافیای کوردستان',
-        promptHint: 'بە شێوازی دانیشتنی خێزانیی کوردەواری، پرسیار لەسەر کەلتوور و خواردنی کوردی و پەندی پێشینان'
+        desc: 'کەلتووری و هەموو تەمەنێک',
+        promptHint: 'بە شێوازی دانیشتنی خێزانیی کوردەواری و ڕێز و خۆشەویستی بۆ هەموو تەمەنەکان'
       },
       {
         id: 'academic',
         icon: '🎓',
-        title: 'زانکۆ و یاسایی',
-        desc: 'پرسیاری قووڵ، زانستی و یاسا',
-        defaultTopic: 'یاسا و دادگا و دەستوور',
-        promptHint: 'بە شێوازی ئەکادیمی و خوێندکارانی زانکۆ و یاسایی و دەستووری'
+        title: 'زانکۆ و ڕۆشنبیری',
+        desc: 'ورد و زانستی و ئەکادیمی',
+        promptHint: 'بە شێوازی ئەکادیمی و زانکۆیی و زاراوەی ورد و ڕۆشنبیریی بەرز'
       },
       {
         id: 'funny',
         icon: '😂',
         title: 'قەشمەری و کۆمیدی',
-        desc: 'پرسیاری سەیر و پێکەنیناوی',
-        defaultTopic: 'مەتەڵ و زیرەکی',
-        promptHint: 'بە شێوازێکی زۆر کۆمیدی و قەشمەری و تەنزئامێز'
+        desc: 'تەنزئامێز و پێکەنیناوی',
+        promptHint: 'بە شێوازێکی زۆر کۆمیدی و قەشمەری کە هەڵبژاردە هەڵەکانیش زۆر پێکەنیناوی بن'
       },
       {
         id: 'challenge',
         icon: '🔥',
         title: 'تەحەدای بلیمەتەکان',
         desc: 'پرسیاری قورس و فێڵاوی',
-        defaultTopic: 'مەتەڵ و زیرەکی',
-        promptHint: 'بە شێوازی تەحەدای قورس و پرسیاری زیرەکی و مەتەڵی قورس'
+        promptHint: 'بە شێوازی تەحەدای قورس و پرسیاری زیرەکی کە تەنها کەسە زۆر زیرەکەکان بیزانن'
       }
     ];
 
@@ -714,10 +853,11 @@
       'زانیاری گشتی جۆراوجۆر',
       'تۆپی پێ و وەرزشی جیهانی',
       'مەتەڵ و زیرەکی',
-      'زانیاری ئایینی و قورئان'
+      'زانیاری ئایینی و قورئان',
+      'پرسیارەکانی خۆم (تایبەت)'
     ];
 
-    // بانکی پرسیاری جیاکراوە بەپێی بابەت (بۆ ئەوەی هەرگیز بابەتەکان تێکەڵ نەبن!)
+    // بانکی فراوانی ناوخۆیی بۆ هەر بابەتێک بە جیا (تا ئەگەر بێ ئینتەرنێتیش بوو یان AI خاو بوو، تەنها پرسیاری هەمان بابەت بهێنێت!)
     const TOPIC_BANKS = {
       'یاسا و دادگا و دەستوور': [
         { q: 'لە یاسادا، بنەمای "المتهم بريء حتى تثبت إدانته" بە واتای چی دێت؟', opts: ['تۆمەتبار بێتاوانە تا تاوانەکەی لە دادگا دەسەلمێنرێت', 'هەموو تۆمەتبارێک دەبێت زیندانی بکرێت', 'پۆلیس بڕیاری کۆتایی دەدات', 'شاهید پێویست نییە'], ans: 0 },
@@ -726,34 +866,40 @@
         { q: 'لە یاسای شارستانی (مدني)ی عێراقیدا، تەمەنی یاسایی کامڵبوون (سن الرشد) چەند ساڵە؟', opts: ['١٥ ساڵ', '١٨ ساڵی تەواو', '٢١ ساڵ', '٢٢ ساڵ'], ans: 1 },
         { q: 'لە یاسای بازرگانیدا (القانون التجاري)، کاتێک بازرگانێک لە دانەوەی قەرزە بازرگانییەکانی دەوەستێت، دادگا چ بڕیارێک دەردەکات؟', opts: ['پاداشتکردن', 'مایەپووچبوون (إفلاس)', 'لێخۆشبوونی گشتی', 'بەخشینی باج'], ans: 1 },
         { q: 'ئەو گرێبەستەی (عقد) کە یەکێک لە کۆڵەکە سەرەکییەکانی (ڕەزامەندی، بابەت، هۆکار)ی تێدا نەبێت، حوکمەکەی چییە؟', opts: ['گرێبەستێکی تەواوە', 'گرێبەستی پووچەڵ (عقد باطل)', 'گرێبەستی خێرخوازی', 'گرێبەستی کاتی'], ans: 1 },
-        { q: 'لە یاسای سزاکاندا (قانون العقوبات)، سزای تاوانە گەورەکان بە چی دەناسرێت؟', opts: ['جینایەت (جناية)', 'سەرپێچی (مخالفة)', 'کەتن (جنحة)', 'ئاگادارکردنەوە'], ans: 0 },
-        { q: 'کام دادگا تایبەتمەندە بە یەکلاکردنەوەی کێشەکانی هاوسەرگیری و جیابوونەوە و میرات؟', opts: ['دادگای کەتنی', 'دادگای باری کەسی (الأحوال الشخصية)', 'دادگای بازرگانی', 'دادگای کارگێڕی'], ans: 1 },
+        { q: 'لە یاسای سزاکاندا (قانون العقوبات)، تاوانەکان لە ڕووی قورسییەوە دابەش دەبن بۆ چەند جۆر؟', opts: ['٣ جۆر: جینایەت، کەتن (جنحة)، سەرپێچی (مخالفة)', 'تەنها ١ جۆر', '٢ جۆر: گەورە و بچووک', '٥ جۆر'], ans: 0 },
+        { q: 'کام دادگا تایبەتمەندە بە یەکلاکردنەوەی کێشەکانی هاوسەرگیری و مارەیی و جیابوونەوە و میرات؟', opts: ['دادگای کەتنی', 'دادگای باری کەسی (الأحوال الشخصية)', 'دادگای بازرگانی', 'دادگای کارگێڕی'], ans: 1 },
         { q: 'لە یاسای نێودەوڵەتیدا، بارەگای سەرەکی دادگای دادی نێودەوڵەتی (ICJ) لە کام شارە؟', opts: ['جنێڤ', 'لاهای (هۆڵەندا)', 'نیویۆرک', 'پاریس'], ans: 1 },
-        { q: 'تاعون لێدان لە بڕیاری دادگای بەرایی لە پێش کام دادگا دەکرێت؟', opts: ['دادگای هاتوچۆ', 'دادگای تێهەڵچوونەوە و تەمیز', 'بنکەی پۆلیس', 'فەرمانگەی دادنووسی'], ans: 1 },
-        { q: 'لە یاسادا، "بەرگریی شەرعی" (الدفاع الشرعي) کەی دروست دەبێت؟', opts: ['کاتێک مەترسییەکی ڕاستەقینە و دەستبەجێ لەسەر گیان یان ماڵ هەبێت', 'دوای تێپەڕبوونی مانگێک بەسەر شەڕدا', 'کاتێک کەسێک قسەیەکی ناخۆش دەکات', 'لە کاتی کڕین و فرۆشتندا'], ans: 0 },
-        { q: 'لە یاسای بازرگانیدا، کام لەمانە بە وەرەقەی بازرگانی (الأوراق التجارية) دادەنرێت؟', opts: ['پسوولەی کارەبا', 'چەک و کۆمپیالە (سفتجة)', 'گرێبەستی کرێی خانوو', 'تاپۆی زەوی'], ans: 1 },
-        { q: 'دامەزرێنەری یەکەم کۆمەڵە یاسای نووسراو لە مێژووی میزۆپۆتامیادا (عیراقی کۆن) کێ بوو؟', opts: ['ئەسکەندەری مەقدۆنی', 'حامورابی و ئورنەمۆ', 'فیڕعەون', 'قەیسەری ڕۆم'], ans: 1 },
-        { q: 'لە یاسای کارگێڕیدا، فەرمانبەری گشتی کاتێک دەسەڵاتەکەی بۆ بەرژەوەندی تایبەت بەکاردەهێنێت پێی دەوترێت چی؟', opts: ['لێهاتوویی کارگێڕی', 'خراپ بەکارهێنانی دەسەڵات (إساءة استعمال السلطة)', 'پاداشت', 'بەرزکردنەوەی پلە'], ans: 1 }
+        { q: 'تانەدان (طعن) لە بڕیارەکانی دادگای بەرایی و تاوانەکان لە پێش کام دادگا دەکرێت؟', opts: ['دادگای هاتوچۆ', 'دادگای تێهەڵچوونەوە و پێداچوونەوە (تمییز)', 'بنکەی پۆلیس', 'فەرمانگەی دادنووسی'], ans: 1 },
+        { q: 'لە یاسادا، "بەرگریی شەرعی" (الدفاع الشرعي) کەی ڕێگەپێدراوە؟', opts: ['کاتێک مەترسییەکی ناڕەوا و دەستبەجێ لەسەر گیان یان ماڵ هەبێت بە ئەندازەی پێویست', 'دوای تێپەڕبوونی هەفتەیەک بەسەر ڕووداوەکەدا', 'کاتێک کەسێک قسەیەکی سارد دەکات', 'لە کاتی کێبڕکێی وەرزشیدا'], ans: 0 },
+        { q: 'لە یاسای بازرگانیدا، کام لەمانە بە وەرەقەی بازرگانی (الأوراق التجارية) دادەنرێت؟', opts: ['پسوولەی کارەبا', 'چەک و کۆمپیالە و سفتەجە', 'گرێبەستی کرێی خانوو', 'تاپۆی زەوی'], ans: 1 },
+        { q: 'کۆنترین یاسای نووسراو لە مێژووی مرۆڤایەتیدا لە میزۆپۆتامیا (عیراقی کۆن) کامەیە؟', opts: ['یاسای ناپلیۆن', 'یاسای ئورنەمۆ و حامورابی', 'یاسای ڕۆمانی', 'یاسای یۆنانی'], ans: 1 },
+        { q: 'لە یاسای شارستانیدا، چەمکی "التعسف في استعمال الحق" واتای چییە؟', opts: ['بەکارهێنانی مافی خۆت بە شێوەیەک کە زیانی ناڕەوا بە کەسانی تر بگەیەنێت', 'وازهێنان لە مافی خۆت', 'فرۆشتنی موڵک بە گران', 'تۆمارکردنی سکاڵا'], ans: 0 },
+        { q: 'لە دەستووری عێراقی ساڵی ٢٠٠٥دا، سیستەمی حوکمڕانی چۆن پێناسە کراوە؟', opts: ['پاشایەتی دەستووری', 'کۆماری، فیدراڵی، دیموکراتی، پەرلەمانی', 'سەرۆکایەتی ڕەها', 'کۆنفیدراڵی'], ans: 1 },
+        { q: 'لە دادگادا، ئەو کەسەی سکاڵای یاسایی لەسەر کەسێکی تر تۆمار دەکات لە داوای شارستانیدا پێی دەوترێت چی؟', opts: ['داواکار (المدعي)', 'داوالێکراو (المدعى عليه)', 'تۆمەتبار', 'دادوەر'], ans: 0 }
       ],
       'گەشت و کامپینگ و سروشت': [
-        { q: 'لە کاتی کامپینگ و هەڵدانی چادر لە شەودا، باشترین شوێن بۆ چادر هەڵدان کامەیە؟', opts: ['لە ناو ڕێڕەوی وشکەشیو و دۆڵەکان', 'لەسەر زەوییەکی تەخت و کەمێک بەرز لە ئاستی ڕووبار', 'ڕێک لە ژێر درەختی وشکبوو و کۆن', 'لە سەر لێواری هەڵدێر'], ans: 1 },
+        { q: 'لە کاتی کامپینگ و هەڵدانی چادر لە شەودا، سەلامەتترین شوێن بۆ چادر هەڵدان کامەیە؟', opts: ['لە ناو ڕێڕەوی وشکەشیو و دۆڵەکان', 'لەسەر زەوییەکی تەخت و کەمێک بەرز لە ئاستی ئاوی ڕووبار', 'ڕێک لە ژێر درەختی وشکبوو و کۆن', 'لە سەر لێواری هەڵدێر'], ans: 1 },
         { q: 'لە کاتی شاخەوانی و گەشتی پێڕەویدا (Hiking)، گرنگترین یاسای ژینگەپارێزی چییە؟', opts: ['جێهێشتنی پاشماوەکان لە ژێر بەرد', 'هیچ شوێنەوار و زبڵێک لە دوای خۆت جێمەهێڵە (Leave No Trace)', 'بڕینەوەی لقی دارە تەڕەکان', 'نووسینی یادگاری لەسەر تاشەبەرد'], ans: 1 },
         { q: 'زێی بچووک بە کام لەم شارۆچکە و ناوچە گەشتیارییانەی هەرێمی کوردستاندا تێدەپەڕێت؟', opts: ['تەقتەق و چۆم حەیدەر و دوکان', 'زاخۆ و دێرەلووک', 'هەڵەبجە و سیروان', 'ئامێدی و سۆلاڤ'], ans: 0 },
-        { q: 'ئەگەر لە گەشتێکی شاخەوانیدا لە شەودا ڕێگەت لێ تێکچوو و قوتبنەما (قیبلەنما)ت پێ نەبوو، بە چ ئەستێرەیەک ئاراستەی باکوور دەدۆزیتەوە؟', opts: ['ئەستێرەی سیریوس', 'ئەستێرەی جەمسەری (Polaris)', 'هەسارەی زوهرە', 'کلكدارەکان'], ans: 1 },
-        { q: 'لە کاتی کامپینگدا بۆچی نابێت خەڵووز و پۆلووی گەرم بهێنرێتە ناو چادری داخراو؟', opts: ['بۆ ئەوەی چادرەکە ڕەش نەبێت', 'بەهۆی مەترسیی خنکان بە گازی بێبۆنی یەکەئۆکسیدی کاربۆن (CO)', 'لەبەر ئەوەی چایەکە سارد دەبێتەوە', 'لەبەر مێروولە'], ans: 1 },
-        { q: 'بەرزترین تاڤگەی گەشتیاری لە پارێزگای هەولێر کامەیە؟', opts: ['تاڤگەی گەلی عەلی بەگ و بێخاڵ', 'تاڤگەی ئەحمەدئاوا', 'سۆلاڤ', 'شەقڵاوە'], ans: 0 },
-        { q: 'لە گەشتی کوردەواریدا، خۆشترین تامی چای دار و خەڵووز بە چی دەناسرێت؟', opts: ['چای سەوز', 'چای ڕەشکەی سەر پۆلوو', 'چای کیسی خێرا', 'قاوەی سارد'], ans: 1 },
-        { q: 'لە کاتی ڕۆیشتنی درێژخایەن بە پێ (Walking & Hiking)، کام جۆرە گۆرەوی و پێڵاوە باشترینە بۆ ڕێگری لە بلۆقکردنی قاچ؟', opts: ['پێڵاوی تەسک و نوێ', 'پێڵاوی تایبەتی شاخەوانی لەگەڵ گۆرەوی خوری یان ئەستوور', 'نەعل و سەندەڵ', 'پێڵاوی فەرمی'], ans: 1 }
+        { q: 'ئەگەر لە گەشتێکی شاخەوانیدا لە شەودا ڕێگەت لێ تێکچوو، بە کام ئەستێرە ئاراستەی باکوور دەدۆزیتەوە؟', opts: ['ئەستێرەی سیریوس', 'ئەستێرەی جەمسەری (Polaris)', 'هەسارەی زوهرە', 'مەریخ'], ans: 1 },
+        { q: 'لە کاتی کامپینگدا بۆچی زۆر مەترسیدارە خەڵووز و پۆلووی گەرم بهێنرێتە ناو چادری داخراو؟', opts: ['بۆ ئەوەی چادرەکە بۆنی دووکەڵ نەگرێت', 'بەهۆی مەترسیی خنکان بە گازی بێبۆنی یەکەئۆکسیدی کاربۆن (CO)', 'لەبەر ئەوەی چایەکە سارد دەبێتەوە', 'لەبەر مێروولە'], ans: 1 },
+        { q: 'لە گەشتی کوردەواریدا، خۆشترین چای دار و خەڵووز بە چی دەناسرێت؟', opts: ['چای سەوز', 'چای ڕەشکەی سەر پۆلوو', 'چای کیسی خێرا', 'قاوەی سارد'], ans: 1 },
+        { q: 'پێش خۆرئاوابوون لە کامپینگدا، کام کارە پێویستە یەکەم جار ئەنجام بدرێت؟', opts: ['خەوتن', 'تەواوکردنی هەڵدانی چادر و کۆکردنەوەی داری وشک بۆ ئاگر', 'مەلەکردن لە ئاوی سارد', 'شۆردنی ئۆتۆمبێل'], ans: 1 },
+        { q: 'لە کاتی ڕۆیشتنی درێژخایەن بە پێ (Walking & Hiking)، گرنگترین شت بۆ ڕێگری لە وشکبوونەوەی لەش چییە؟', opts: ['خواردنەوەی ئاو بە بڕی کەم و بەردەوام لە ڕێگەدا', 'خواردنی خوێی زۆر', 'نەخواردنەوەی ئاو تا کۆتایی شاخەکە', 'ڕاکردنی خێرا'], ans: 0 },
+        { q: 'کام لەم چیایانە دەکەوێتە سنووری پارێزگای هەولێر؟', opts: ['چیای سەفین و کۆڕەک و هەڵگورد', 'چیای پیرەمەگروون', 'چیای مەتین', 'چیای شنروێ'], ans: 0 },
+        { q: 'لە ناو جانتای فریاگوزاریی سەرەتایی کامپینگدا، کام لەمانە زۆر پێویستە؟', opts: ['باندج و ماددەی پاکژکەرەوە (تعقیم) و حەبی ئازارشکێن', 'بۆن و عەتر', 'کێبڵی تەلەڤزیۆن', 'ئوتووی جل'], ans: 0 }
       ],
       'مێژوو و جوگرافیای کوردستان': [
         { q: 'شاعیری گەورەی کورد "نالی" ناوی تەواوی چییە؟', opts: ['مەلا خدری ئەحمەدی شاوەیسی مکایەڵی', 'عەبدولڕەحمان بەگی ساحێبقڕان', 'تاهیر بەگی جاف', 'مەلا محەمەدی کۆیی'], ans: 0 },
-        { q: 'یەکەم ڕۆژنامەی کوردی لە ساڵی ١٨٩٨ لە قاهیرە لەسەر دەستی بنەماڵەی بەدرخانییەکان دەرچوو ناوی چی بوو؟', opts: ['ژیان', 'کوردستان', 'هاوار', 'ڕۆژی کورد'], ans: 1 },
+        { q: 'یەکەم ڕۆژنامەی کوردی لە ساڵی ١٨٩٨ لە قاهیرە دەرچوو ناوی چی بوو؟', opts: ['ژیان', 'کوردستان', 'هاوار', 'ڕۆژی کورد'], ans: 1 },
         { q: 'داستانی بەناوبانگی "مەم و زین" شاکاری کام شاعیری ناوداری کوردە؟', opts: ['ئەحمەدی خانی', 'مەلای جزیری', 'فەقێ تەیران', 'وەفایی'], ans: 0 },
-        { q: 'بەرزترین لووتکە چیا لە هەرێمی کوردستان و عێراق کامەیە؟', opts: ['پیرەمەگروون', 'هەڵگورد (لە زنجیرە چیای حەسارۆست)', 'کۆڕەک', 'گارە'], ans: 1 },
+        { q: 'بەرزترین لووتکە چیا لە هەرێمی کوردستان و عێراق کامەیە؟', opts: ['پیرەمەگروون', 'هەڵگورد (٣٦٠٧ مەتر)', 'کۆڕەک', 'گارە'], ans: 1 },
         { q: 'پردی مێژوویی "دەلال" دەکەوێتە کام شاری کوردستان؟', opts: ['ئامێدی', 'زاخۆ', 'ئاکرێ', 'ڕواندز'], ans: 1 },
-        { q: 'ئەشکەوتی مێژوویی شانەدەر کە ئێسکەپەیکەری مرۆڤی نیاندەرتاڵی تێدا دۆزرایەوە لە کام پارێزگایە؟', opts: ['سلێمانی', 'هەولێر', 'دهۆک', 'کەرکووک'], ans: 1 },
+        { q: 'ئەشکەوتی مێژوویی شانەدەر دەکەوێتە کام پارێزگای کوردستان؟', opts: ['سلێمانی', 'هەولێر', 'دهۆک', 'کەرکووک'], ans: 1 },
         { q: 'زێی گەورە دەکەوێتە نێوان کام دوو پارێزگای هەرێمی کوردستان؟', opts: ['سلێمانی و هەڵەبجە', 'هەولێر و دهۆک', 'هەولێر و کەرکووک', 'دهۆک و مووسڵ'], ans: 1 },
-        { q: 'پایتەختی میرنشینی سۆران کام شار بوو لە سەردەمی میر محەمەد (پاشای کۆرە)؟', opts: ['ڕەواندز', 'ئامێدی', 'کۆیە', 'قەڵاچۆلان'], ans: 0 }
+        { q: 'پایتەختی میرنشینی سۆران کام شار بوو لە سەردەمی میر محەمەد (پاشای کۆرە)؟', opts: ['ڕەواندز', 'ئامێدی', 'کۆیە', 'قەڵاچۆلان'], ans: 0 },
+        { q: 'کتێبی مێژوویی "شەرەفنامە" لەلایەن کام میر و مێژوونووسی کوردەوە نووسراوە؟', opts: ['شەرەفخانی بدلیسی', 'ئەمین زەکی بەگ', 'حوسێن حوزنی موکریانی', 'مەسعوود محەمەد'], ans: 0 },
+        { q: 'کام شاعیری کورد خاوەنی دیوانی "ناڵەی جودایی" و "تاریک و ڕوون"ـە؟', opts: ['هێمن موکریانی', 'هەژار موکریانی', 'گۆران', 'پیرەمێرد'], ans: 0 }
       ],
       'زانیاری گشتی جۆراوجۆر': [
         { q: 'درێژترین ڕووباری جیهان کامەیە؟', opts: ['ئەمازۆن', 'نیل', 'فورات', 'میسیسیپی'], ans: 1 },
@@ -763,7 +909,9 @@
         { q: 'کام هەسارە لە کۆمەڵەی خۆردا بە "هەسارەی سوور" دەناسرێت؟', opts: ['مەریخ', 'زوهرە', 'موشتەری', 'عوتارد'], ans: 0 },
         { q: 'کام ئەندامی لەشی مرۆڤ بەرپرسە لە پاڵاوتنی خوێن لە ژەهرەکان؟', opts: ['گەدە', 'گورچیلە و جگەر', 'سییەکان', 'پەنکریاس'], ans: 1 },
         { q: 'کام گاز زۆرترین ڕێژەی هەوای بەرگەهەوای زەوی پێکدەهێنێت (٧٨٪)؟', opts: ['ئۆکسجین', 'نایترۆجین', 'دووانەئۆکسیدی کاربۆن', 'هایدرۆجین'], ans: 1 },
-        { q: 'یەکەم مرۆڤ کە پێی نایە سەر ڕووی مانگ لە ساڵی ١٩٦٩ کێ بوو؟', opts: ['یوری گاگارین', 'نیڵ ئارمسترۆنگ', 'باز ئۆڵدرین', 'جۆن گلێن'], ans: 1 }
+        { q: 'یەکەم مرۆڤ کە پێی نایە سەر ڕووی مانگ لە ساڵی ١٩٦٩ کێ بوو؟', opts: ['یوری گاگارین', 'نیڵ ئارمسترۆنگ', 'باز ئۆڵدرین', 'جۆن گلێن'], ans: 1 },
+        { q: 'خێرایی ڕووناکی لە بۆشاییدا نزیکەی چەندە لە چرکەیەکدا؟', opts: ['٣٠٠ هەزار کیلۆمەتر', '١٠٠ هەزار کیلۆمەتر', '١٠ هەزار کیلۆمەتر', '١ ملیۆن کیلۆمەتر'], ans: 0 },
+        { q: 'گەورەترین وڵاتی جیهان لە ڕووی ڕووبەری جوگرافییەوە کامەیە؟', opts: ['کەنەدا', 'چین', 'ڕووسیا', 'ئەمریکا'], ans: 2 }
       ],
       'تۆپی پێ و وەرزشی جیهانی': [
         { q: 'کام وڵات زۆرترین جار جامی جیهانی (مۆندیال)ی بردووەتەوە (٥ جار)؟', opts: ['ئەڵمانیا', 'بەڕازیل', 'ئەرجەنتین', 'ئیتاڵیا'], ans: 1 },
@@ -771,15 +919,19 @@
         { q: 'کێ بوو پاڵەوانی مۆندیالی ٢٠٢٢ی قەتەر؟', opts: ['فەڕەنسا', 'ئەرجەنتین', 'کرواتیا', 'مەغریب'], ans: 1 },
         { q: 'ماوەی یاسایی یارییەکی تۆپی پێ لەگەڵ دوو گێمی زیادکراو چەند خولەکە؟', opts: ['٩٠ خولەک', '١٠٥ خولەک', '١٢٠ خولەک', '١٣٠ خولەک'], ans: 2 },
         { q: 'ئەلقەکانی ئاڵای ئۆڵۆمپیاد لە چەند ئەلقەی ڕەنگاوڕەنگ پێکهاتوون؟', opts: ['٤ ئەلقە', '٥ ئەلقە (ئاماژە بۆ ٥ کیشوەر)', '٦ ئەلقە', '٧ ئەلقە'], ans: 1 },
-        { q: 'یەکەم مۆندیالی تۆپی پێ لە ساڵی ١٩٣٠ لە کام وڵات ئەنجام درا؟', opts: ['ئینگلتەرا', 'ئۆرۆگوای', 'بەڕازیل', 'ئیتاڵیا'], ans: 1 }
+        { q: 'یەکەم مۆندیالی تۆپی پێ لە ساڵی ١٩٣٠ لە کام وڵات ئەنجام درا؟', opts: ['ئینگلتەرا', 'ئۆرۆگوای', 'بەڕازیل', 'ئیتاڵیا'], ans: 1 },
+        { q: 'کام هەڵبژاردە جامی نەتەوەکانی ئەوروپا (یۆرۆی ٢٠٢٤)ی بردەوە؟', opts: ['ئینگلتەرا', 'ئیسپانیا', 'فەڕەنسا', 'ئەڵمانیا'], ans: 1 },
+        { q: 'لە یاریی تۆپی پێدا، ئەگەر یاریزانێک لە یەک یاریدا ٣ گۆڵ تۆمار بکات پێی دەوترێت چی؟', opts: ['دەبڵ', 'هاتریک (Hat-trick)', 'پۆکەر', 'ئۆفساید'], ans: 1 }
       ],
       'مەتەڵ و زیرەکی': [
         { q: 'ئەو شتە چییە کە تا زیاتری لێ ببەیت، گەورەتر دەبێت؟', opts: ['ئاگر', 'چاڵ', 'شاخ', 'بەفر'], ans: 1 },
         { q: 'ئەگەر لە پێشبڕکێیەکی ڕاکردندا پێش کەسی دووەم بکەویت، تۆ لە پلەی چەندەمیت؟', opts: ['یەکەم', 'دووەم', 'سێیەم', 'چوارەم'], ans: 1 },
         { q: 'ملی هەیە و سەری نییە، دوو قۆڵی هەیە و پەنجەی نییە؛ چییە؟', opts: ['کراس', 'کاتژمێر', 'کورسی', 'گۆزە'], ans: 0 },
         { q: 'باوکی مەریەم ٥ کچی هەیە: (نانا، نێنێ، نینی، نۆنۆ)؛ ناوی کچی پێنجەم چییە؟', opts: ['نونو', 'مەریەم', 'نەرمین', 'نازە'], ans: 1 },
-        { q: 'ئەو شتە چییە کە ددانی زۆری هەیە بەڵام گاز لە هیچ کەسێک ناگرێت؟', opts: ['شەپۆل', 'شانە (تەوقە)', 'مشار', 'کلیل'], ans: 1 },
-        { q: 'کام مانگ لە ساڵدا ٢٨ ڕۆژی تێدایە؟', opts: ['تەنها مانگی شوبات', 'هەموو ١٢ مانگەکە ٢٨ ڕۆژیان تێدایە!', 'مانگی ئازار', 'مانگی نیسان'], ans: 1 }
+        { q: 'ئەو شتە چییە کە ددانی زۆری هەیە بەڵام گاز لە هیچ کەسێک ناگرێت؟', opts: ['شەپۆل', 'شانە', 'مشار', 'کلیل'], ans: 1 },
+        { q: 'کام مانگ لە ساڵدا ٢٨ ڕۆژی تێدایە؟', opts: ['تەنها مانگی شوبات', 'هەموو ١٢ مانگەکە ٢٨ ڕۆژیان تێدایە!', 'مانگی ئازار', 'مانگی نیسان'], ans: 1 },
+        { q: 'ئەو شتە چییە کە بەبێ قاچ دەڕوات و بەبێ چاو دەگری؟', opts: ['هەور', 'دار', 'با', 'شاخ'], ans: 0 },
+        { q: 'هەموو شتێک دەخوات و ئەگەر ئاوی پێ بدەیت دەمرێت؛ چییە؟', opts: ['ئاگر', 'ماسی', 'ڕووەک', 'ئاسن'], ans: 0 }
       ],
       'زانیاری ئایینی و قورئان': [
         { q: 'قورئانی پیرۆز لە چەند سورەت پێکهاتووە؟', opts: ['١١٠ سورەت', '١١٤ سورەت', '١٢٠ سورەت', '٩٩ سورەت'], ans: 1 },
@@ -788,33 +940,28 @@
         { q: 'تاکە سورەت لە قورئانی پیرۆزدا کە بە بسم اللە دەست پێ ناکات کامەیە؟', opts: ['سورەتی تەوبە', 'سورەتی ئەنفال', 'سورەتی فاتیحە', 'سورەتی نەمل'], ans: 0 },
         { q: 'کام سورەتی قورئانی پیرۆز بە "دڵی قورئان" ناسراوە؟', opts: ['سورەتی کەهف', 'سورەتی یس (یاسین)', 'سورەتی مولک', 'سورەتی ڕەحمان'], ans: 1 },
         { q: 'یەکەم جەنگ لە مێژووی ئیسلامدا ناوی چی بوو؟', opts: ['جەنگی ئوحود', 'جەنگی بەدر', 'جەنگی خەندەق', 'فەتحی مەککە'], ans: 1 },
-        { q: 'کام پێغەمبەر (د.خ) لە سکی نەهەنگدا مایەوە و دوعای کرد؟', opts: ['موسا (د.خ)', 'یونس (د.خ)', 'عیسا (د.خ)', 'نوح (د.خ)'], ans: 1 }
+        { q: 'کام پێغەمبەر (د.خ) لە سکی نەهەنگدا مایەوە و دوعای کرد؟', opts: ['موسا (د.خ)', 'یونس (د.خ)', 'عیسا (د.خ)', 'نوح (د.خ)'], ans: 1 },
+        { q: 'یەکەم بانگبێژ (مؤذن) لە ئیسلامدا کێ بوو؟', opts: ['عومەری کوڕی خەتاب', 'بیلالی حەبەشی', 'ئەبوبەکری سدیق', 'عەلی کوڕی ئەبو تاڵیب'], ans: 1 }
       ]
     };
 
     const FALLBACK_WINNER_JOKES = [
-      'ماشەڵڵا لە مێشکت {winner}! دەڵێی دادوەر و پرۆفیسۆری ئەم مەجلیسەیت، ئەوانی تر هەر فریای سەیرکردنی پەنجەکانت نەکەوتن!',
+      'ماشەڵڵا لە مێشکت {winner}! دەڵێی ڕاوێژکاری باڵای ئەم مەجلیسەیت، ئەوانی تر هەر فریای سەیرکردنی پەنجەکانت نەکەوتن!',
       'بژی {winner}! بەم زیرەکییەت دەبێت بکرێیتە سەرۆکی مەجلیس، ئەمشەو چای تایبەت و میوە بێننە بەردەمی!',
-      'ئافەرین {winner}! سەلماندت کە تەنها بۆ دانیشتن نەهاتوویت و کۆمپیوتەرێکی زیرەک لە مێشکتدا کار دەکات!'
+      'ئافەرین {winner}! سەلماندت کە تەنها بۆ دانیشتن نەهاتوویت و سوپەرکۆمپیوتەرێک لە مێشکتدا کار دەکات!'
     ];
 
     const FALLBACK_LOSER_JOKES = [
       'بەداخەوە بۆ ({losers})! دیارە شەبەکەی مێشکتان خەتی 2G بووە، ئەمشەو تێچووی مەجلیسەکە و چا لێنان لەسەر ئێوەیە!',
       'کاکە ({losers})، ئێوە هاتوون بۆ پێشبڕکێ یان هاتوون سەیری ڕەنگی دوگمەکان بکەن؟ دەستێک چەپڵە بۆ خۆتان لێبدەن لە خوارەوەی لیستەکە!',
-      'پرسیارەکان زۆر ڕوون بوون، بەڵام دیارە ({losers}) خەیاڵیان لای خواردن و سینی چایەکە بووە نەک شاشەی مۆبایلەکە!'
+      'پرسیارەکان زۆر ڕوون بوون، بەڵام دیارە ({losers}) خەیاڵیان لای سینی چایەکە بووە نەک شاشەی مۆبایلەکە!'
     ];
-
-    let seenQuestions = [];
-    try {
-      const rawSeen = localStorage.getItem(STORAGE_SEEN_Q);
-      if (rawSeen) seenQuestions = JSON.parse(rawSeen);
-    } catch (e) {}
 
     let state = {
       welcomeTab: 'host',
       role: null,
-      screen: 'welcome',
-      myId: 'U_' + Math.random().toString(36).substring(2, 9),
+      screen: 'welcome', // 'welcome' | 'lobby' | 'countdown' | 'playing' | 'finished'
+      myId: persistentId,
       myName: localStorage.getItem(USER_NAME_KEY) || '',
       apiKey: localStorage.getItem(STORAGE_API_KEY) || '',
       roomCode: '',
@@ -828,10 +975,12 @@
       generatingAI: false,
       generatingComedy: false,
       connecting: false,
+      questionSourceLabel: '✨ زیرەکی دەستکرد',
+      countdownVal: 3,
       peer: null,
       hostConn: null,
       connections: {},
-      players: [],
+      players: [], // { id, name, score, lastGain, streak, hasAnswered, currentAnswer, answerTime }
       questions: [],
       qIndex: 0,
       timeLeft: 15,
@@ -848,6 +997,29 @@
     if (urlRoom) {
       state.roomCode = urlRoom.toUpperCase();
       state.welcomeTab = 'join';
+    }
+
+    function showToast(msg) {
+      const old = document.querySelector('.toast-msg');
+      if (old) old.remove();
+      const t = document.createElement('div');
+      t.className = 'toast-msg';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    function launchConfetti() {
+      const colors = ['#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4'];
+      for (let i = 0; i < 40; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti-piece';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.backgroundColor = colors[i % colors.length];
+        c.style.animationDuration = (2 + Math.random() * 2) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 4000);
+      }
     }
 
     let audioCtx = null;
@@ -898,76 +1070,91 @@
     function clearAskedHistory() {
       seenQuestions = [];
       localStorage.removeItem(STORAGE_SEEN_Q);
-      alert('✅ مێژووی پرسیارە کراوەکان پاککرایەوە!');
+      showToast('✅ مێژووی پرسیارە کراوەکان سفر کرایەوە!');
     }
 
-    // هەڵبژاردنی شێوازی دانیشتن (Vibe)
+    // چارەسەری کێشەی ١: هەڵبژاردنی کەشی دانیشتن بە هیچ شێوەیەک بابەتی پرسیارەکە ناگۆڕێت و نایسڕێتەوە!
     function selectVibe(vibeId) {
       state.selectedVibeId = vibeId;
-      const vObj = QUESTION_VIBES.find(v => v.id === vibeId);
-      if (vObj && vObj.defaultTopic && !state.customTopicText) {
-        state.selectedTopic = vObj.defaultTopic;
-      }
       render();
     }
 
-    // دروستکردنی پرسیاری تایبەت بە بابەتەکە بە زیرەکی دەستکرد + بانکی تایبەتمەند
+    function fetchWithTimeout(url, options, timeoutMs = 9500) {
+      return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs))
+      ]);
+    }
+
+    // دروستکردنی پرسیار بە زیرەکی دەستکرد + دیاریکردنی سەرچاوەی پرسیار
     async function generateAIQuestions(vibeObj, topic, count, difficulty) {
-      const avoidSample = seenQuestions.slice(-20).join(' | ');
+      if (topic === 'پرسیارەکانی خۆم (تایبەت)' && customQuestions.length > 0) {
+        state.questionSourceLabel = '✍️ پرسیاری تایبەتی خۆت';
+        return [...customQuestions].sort(() => Math.random() - 0.5).slice(0, count);
+      }
+
+      const avoidSample = seenQuestions.slice(-18).join(' | ');
       const randomSeed = Math.floor(Math.random() * 999999);
 
       const prompt = `تۆ پسپۆڕی دروستکردنی پرسیاری پێشبڕکێیت بە زمانی کوردیی سۆرانیی پاراو.
 تکایە رێک ${count} پرسیاری هەڵبژاردن (٤ هەڵبژاردەیی) تەنها و تەنها لەسەر ئەم بابەتە دروست بکە: "${topic}".
-زۆر گرنگ: دەبێت ١٠٠٪ی پرسیارەکان راستەوخۆ لەسەر "${topic}" بن و هیچ پرسیارێکی دەرەوەی ئەم بابەتە نەهێنیت!
+مەرجی توند: دەبێت ١٠٠٪ی پرسیارەکان راستەوخۆ لەسەر "${topic}" بن!
 شێوازی داڕشتن: "${vibeObj.title}" (${vibeObj.promptHint}) - ئاستی قورسی: "${difficulty}".
 ژمارەی هەڕەمەکی: ${randomSeed}.
 ئەم پرسیارانە دووبارە مەکەرەوە: [${avoidSample}].
 تەنها بە شێوازی JSON Array وەڵام بدەرەوە بەم فۆرماتە:
 [{"q":"دەقی پرسیار؟","opts":["وەڵامی ١","وەڵامی ٢","وەڵامی ٣","وەڵامی ٤"],"ans":0}]`;
 
-      // ١. ئەگەر کلیلی فەرمی Gemini Studio هەبێت (AIzaSy...)
+      // ١. هەوڵی یەکەم: کلیلی فەرمی Gemini Studio
       if (state.apiKey && state.apiKey.trim().startsWith('AIza')) {
         try {
-          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(state.apiKey.trim())}`, {
+          const resp = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(state.apiKey.trim())}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
               generationConfig: { temperature: 0.9 }
             })
-          });
+          }, 9000);
           if (resp.ok) {
             const data = await resp.json();
             const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
             const parsed = extractValidQuestions(rawText);
-            if (parsed.length >= 3) return parsed.slice(0, count);
+            if (parsed.length >= 3) {
+              state.questionSourceLabel = '✨ Gemini AI';
+              return parsed.slice(0, count);
+            }
           }
         } catch (e) {}
       }
 
-      // ٢. زیرەکی دەستکردی کراوەی Pollinations AI (بێ کلیل)
+      // ٢. هەوڵی دووەم: زیرەکی دەستکردی کراوەی بێ کلیل
       try {
-        const resp2 = await fetch('https://text.pollinations.ai/openai', {
+        const resp2 = await fetchWithTimeout('https://text.pollinations.ai/openai', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             model: 'openai',
             messages: [
-              { role: 'system', content: 'You are an expert Kurdish Sorani quiz generator. You MUST generate questions strictly about the requested topic. Return ONLY a raw JSON array.' },
+              { role: 'system', content: 'You are an expert Kurdish Sorani quiz generator. Generate questions strictly about the requested topic. Return ONLY a raw JSON array.' },
               { role: 'user', content: prompt }
             ],
             seed: randomSeed
           })
-        });
+        }, 9500);
         if (resp2.ok) {
           const data2 = await resp2.json();
           const rawText2 = data2?.choices?.[0]?.message?.content || '';
           const parsed2 = extractValidQuestions(rawText2);
-          if (parsed2.length >= 3) return parsed2.slice(0, count);
+          if (parsed2.length >= 3) {
+            state.questionSourceLabel = '🤖 زیرەکی دەستکردی ڕاستەوخۆ';
+            return parsed2.slice(0, count);
+          }
         }
       } catch (e) {}
 
-      // ٣. بانکی یەدەگی تایبەت بە هەمان بابەت (تا هەرگیز پرسیاری بابەتی تر تێکەڵ نەبێت!)
+      // ٣. بانکی تایبەتمەندی هەمان بابەت (ئاگادارکردنەوەی ڕوون + بێ تێکەڵبوونی بابەتەکان)
+      state.questionSourceLabel = `📚 بانکی ناوخۆیی (${topic})`;
       const specificBank = TOPIC_BANKS[topic] || TOPIC_BANKS['زانیاری گشتی جۆراوجۆر'];
       let unseenSpecific = specificBank.filter(item => !seenQuestions.includes(item.q));
       if (unseenSpecific.length < count) {
@@ -986,35 +1173,32 @@
       });
     }
 
-    // دروستکردنی ڕستە کۆمیدییەکەی کۆتایی یاری بە زیرەکی دەستکرد
+    // چارەسەری کێشەی ٦: جیاکردنەوەی قسەی کۆمیدیی یاریی تاکەکەسی (Solo) لە یاریی کۆمەڵەیی
     async function generateAIComedyCommentary() {
       const sorted = [...state.players].sort((a, b) => b.score - a.score);
-      const winner = sorted[0] || { name: 'براوە', score: 0 };
+      const winner = sorted[0] || { name: 'پاڵەوان', score: 0 };
       const losers = sorted.slice(1);
-      const loserNames = losers.length > 0 ? losers.map(p => p.name).join(' و ') : 'ڕکابەرەکان';
+      const isSolo = state.players.length <= 1;
+      const loserNames = !isSolo ? losers.map(p => p.name).join(' و ') : '';
       const vibeObj = QUESTION_VIBES.find(v => v.id === state.selectedVibeId) || QUESTION_VIBES[0];
       const randomSeed = Math.floor(Math.random() * 999999);
 
       const fallbackWin = FALLBACK_WINNER_JOKES[randomSeed % FALLBACK_WINNER_JOKES.length].replace('{winner}', winner.name);
-      const fallbackLose = FALLBACK_LOSER_JOKES[randomSeed % FALLBACK_LOSER_JOKES.length].replace('{losers}', loserNames);
+      const fallbackLose = isSolo
+        ? `چونکە بە تەنها یاریت کرد (${winner.name})، هەم براوەیت و هەم دۆڕاو! دەبێت خۆت چایەک بۆ خۆت تێبکەیت و دەستخۆشی لە خۆت بکەیت!`
+        : FALLBACK_LOSER_JOKES[randomSeed % FALLBACK_LOSER_JOKES.length].replace('{losers}', loserNames);
 
-      const prompt = `تۆ پێشکەشکارێکی زۆر قسەخۆش و کۆمیدیی کوردیت لە یاریی "مەجلیس".
-یارییەکە تەواو بوو لە کەشی "${vibeObj.title}".
-- براوەی یەکەم: "${winner.name}" بە (${winner.score} خاڵ).
-- دۆڕاوەکان: "${loserNames}".
-دوو ڕستەی زۆر کۆمیدی و نوێ بە کوردیی سۆرانی بنووسە (ژمارە: ${randomSeed}):
-١. winnerJoke: پیاهەڵدانێکی زۆر کۆمیدی بۆ براوەکە (${winner.name}).
-٢. loserJoke: تەعلیقێکی هاوڕێیانەی کۆمیدی و سزایەکی خۆش بۆ دۆڕاوەکان (${loserNames}).
-تەنها بە شێوازی JSON Object وەڵام بدەرەوە:
-{"winnerJoke":"...","loserJoke":"..."}`;
+      const prompt = isSolo
+        ? `یاریزان "${winner.name}" بە تەنها خۆی تاقیکردەوە و (${winner.score} خاڵ)ی هێنا لە کەشی "${vibeObj.title}". دوو ڕستەی کۆمیدیی کوردی بنووسە: winnerJoke بۆ دەستخۆشیلێکردنی، و loserJoke قسەیەکی خۆش لەسەر ئەوەی کە بە تەنها یاری دەکات. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`
+        : `تۆ پێشکەشکارێکی کۆمیدیی کوردیت لە یاریی "مەجلیس" لە کەشی "${vibeObj.title}". براوە: "${winner.name}" (${winner.score} خاڵ). دۆڕاوەکان: "${loserNames}". دوو ڕستەی زۆر کۆمیدی و نوێ بە کوردیی سۆرانی بنووسە (ژمارە: ${randomSeed}): winnerJoke بۆ پیاهەڵدانی براوە، و loserJoke تەعلیق و سزایەکی کۆمیدی بۆ دۆڕاوەکان. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`;
 
       if (state.apiKey && state.apiKey.trim().startsWith('AIza')) {
         try {
-          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(state.apiKey.trim())}`, {
+          const resp = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(state.apiKey.trim())}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-          });
+          }, 7500);
           if (resp.ok) {
             const data = await resp.json();
             const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -1025,7 +1209,7 @@
       }
 
       try {
-        const resp2 = await fetch('https://text.pollinations.ai/openai', {
+        const resp2 = await fetchWithTimeout('https://text.pollinations.ai/openai', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1033,7 +1217,7 @@
             messages: [{ role: 'user', content: prompt }],
             seed: randomSeed
           })
-        });
+        }, 8000);
         if (resp2.ok) {
           const data2 = await resp2.json();
           const raw2 = data2?.choices?.[0]?.message?.content || '';
@@ -1099,7 +1283,7 @@
       const el = document.createElement('div');
       el.className = 'floating-emoji';
       el.style.left = (15 + Math.random() * 70) + '%';
-      el.innerHTML = `${emoji} <small style="font-size:0.75rem; background:rgba(0,0,0,0.75); padding:2px 8px; border-radius:20px; color:#fff;">${senderName}</small>`;
+      el.innerHTML = `${emoji} <small style="font-size:0.75rem; background:rgba(0,0,0,0.78); padding:2px 8px; border-radius:20px; color:#fff;">${senderName}</small>`;
       document.body.appendChild(el);
       setTimeout(() => el.remove(), 2400);
     }
@@ -1127,6 +1311,7 @@
       const box = document.getElementById('appContainer');
       if (state.screen === 'welcome') box.innerHTML = renderWelcomeScreen();
       else if (state.screen === 'lobby') box.innerHTML = renderLobbyScreen();
+      else if (state.screen === 'countdown') box.innerHTML = renderCountdownScreen();
       else if (state.screen === 'playing') box.innerHTML = renderPlayingScreen();
       else if (state.screen === 'finished') box.innerHTML = renderFinishedScreen();
 
@@ -1165,14 +1350,14 @@
       const topicChipsHtml = PRESET_TOPICS.map(t => `
         <button class="topic-chip ${state.selectedTopic === t && !state.customTopicText ? 'active' : ''}"
                 onclick="state.selectedTopic='${t}'; state.customTopicText=''; render();">
-          ${t}
+          ${t === 'پرسیارەکانی خۆم (تایبەت)' ? `✍️ پرسیارەکانی خۆم (${customQuestions.length})` : t}
         </button>
       `).join('');
 
       const aiTopicBox = `
         <div class="ai-config-box">
           <div style="text-align:center;">
-            <span class="ai-badge">✨ ٢. بابەتی پرسیارەکان دیاری بکە (بێ دووبارەبوونەوە)</span>
+            <span class="ai-badge">✨ ٢. بابەتی پرسیارەکان دیاری بکە (جیاکراوە و بێ تێکەڵبوون)</span>
           </div>
           <div class="topic-chips">${topicChipsHtml}</div>
           <input type="text" class="input" style="margin-bottom:0; font-size:0.85rem;"
@@ -1218,7 +1403,7 @@
             ${tabsHtml}
             <h2>👑 دروستکردنی مەجلیس لەگەڵ هاوڕێیان</h2>
             <p class="sub">کەشی دانیشتنەکە و بابەتەکە دیاری بکە، بارکۆدەکە پیشان بدە و با پێشبڕکێ دەست پێ بکات!</p>
-            <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" />
+            <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value; localStorage.setItem(USER_NAME_KEY, this.value);" />
             ${vibeSelectorBox}
             ${aiTopicBox}
             ${settingsHtml}
@@ -1232,9 +1417,9 @@
           <div class="card">
             ${tabsHtml}
             <h2>📲 پەیوەستبوون بە مەجلیسی هاوڕێکەت</h2>
-            <p class="sub">ناوی خۆت و کۆدی ٤ پیتیی ژوورەکە بنووسە بۆ چوونە ناو پێشبڕکێکە:</p>
-            <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" />
-            <input type="text" id="codeInp" class="input" placeholder="کۆدی ژوور (بۆ نموونە: A7K9)" value="${state.roomCode}" style="text-transform:uppercase; letter-spacing:2px;" />
+            <p class="sub">ناوی خۆت و کۆدی ٤ پیتیی ژوورەکە بنووسە (ئەگەر پچڕاشیت هەمان کۆد بنووسەرەوە دەگەڕێیتەوە سەر خاڵەکانت!):</p>
+            <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value; localStorage.setItem(USER_NAME_KEY, this.value);" />
+            <input type="text" id="codeInp" class="input" placeholder="کۆدی ژوور (بۆ نموونە: A7K9)" value="${state.roomCode}" oninput="state.roomCode=this.value.toUpperCase();" style="text-transform:uppercase; letter-spacing:2px;" />
             <button class="btn btn-emerald" ${state.connecting ? 'disabled' : ''} onclick="joinHostRoom()">
               ${state.connecting ? '<span class="spinner"></span> خەریکی پەیوەستبوونە...' : '🔗 چوونە ناو یارییەکە'}
             </button>
@@ -1246,7 +1431,7 @@
             ${tabsHtml}
             <h2>🎮 تاقیکردنەوەی تاکەکەسی بە AI</h2>
             <p class="sub">بابەتەکە هەڵبژێرە (وەک یاسا، کامپینگ، مێژوو) و ڕاستەوخۆ خۆت تاقی بکەرەوە!</p>
-            <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName || 'بڵند'}" />
+            <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName || 'بڵند'}" oninput="state.myName=this.value; localStorage.setItem(USER_NAME_KEY, this.value);" />
             ${vibeSelectorBox}
             ${aiTopicBox}
             ${settingsHtml}
@@ -1260,9 +1445,15 @@
 
     function renderLobbyScreen() {
       const joinUrl = `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`;
-      const playersChips = state.players.map(p => `<div class="p-badge">👤 ${p.name}</div>`).join('');
       const vibeObj = QUESTION_VIBES.find(v => v.id === state.selectedVibeId) || QUESTION_VIBES[0];
       const activeTopic = state.customTopicText.trim() || state.selectedTopic;
+
+      const playersChips = state.players.map(p => `
+        <div class="p-badge">
+          <span>👤 ${p.name}</span>
+          ${state.role === 'host' && p.id !== state.myId ? `<button class="kick-btn" onclick="kickPlayer('${p.id}')" title="لادانی یاریزان">✕</button>` : ''}
+        </div>
+      `).join('');
 
       const emojiStrip = `
         <div class="emoji-bar">
@@ -1296,7 +1487,7 @@
             ${emojiStrip}
 
             <button class="btn btn-primary" style="margin-top:16px; font-size:1.02rem;" ${state.generatingAI ? 'disabled' : ''} onclick="hostStartCompetition()">
-              ${state.generatingAI ? '<span class="spinner"></span> زیرەکی دەستکرد خەریکی ئامادەکردنی پرسیارەکانە...' : '✨ دروستکردنی پرسیار و دەستپێکردن!'}
+              ${state.generatingAI ? '<span class="spinner"></span> خەریکی ئامادەکردنی پرسیارەکانە...' : '✨ دروستکردنی پرسیار و دەستپێکردن!'}
             </button>
           </div>
         `;
@@ -1314,13 +1505,24 @@
       }
     }
 
+    // چارەسەری کێشەی ٧: شاشەی ئامادەباشی (٣، ٢، ١) پێش دەستپێکردنی پرسیاری یەکەم
+    function renderCountdownScreen() {
+      const activeTopic = state.customTopicText.trim() || state.selectedTopic;
+      return `
+        <div class="card countdown-overlay">
+          <h2>🚀 ئامادەبن! پێشبڕکێ دەست پێ دەکات</h2>
+          <p class="sub">بابەت: <strong style="color:#c084fc;">${activeTopic}</strong> (${state.questionSourceLabel})</p>
+          <div class="countdown-num">${state.countdownVal}</div>
+        </div>
+      `;
+    }
+
     function renderPlayingScreen() {
       const qObj = state.questions[state.qIndex];
       const me = state.players.find(p => p.id === state.myId);
       const myAns = me ? me.currentAnswer : null;
       const pct = Math.max(0, (state.timeLeft / state.questionDuration) * 100);
-      const answeredCount = state.players.filter(p => p.currentAnswer !== null).length;
-      const activeTopic = state.customTopicText.trim() || state.selectedTopic;
+      const answeredCount = state.players.filter(p => p.hasAnswered).length;
 
       const optsHtml = qObj.opts.map((opt, idx) => {
         let cls = 'opt-card';
@@ -1334,7 +1536,7 @@
         return `
           <button class="${cls}" ${myAns !== null || state.revealAnswer ? 'disabled' : ''} onclick="submitPlayerAnswer(${idx})">
             <span>${idx + 1}. ${opt}</span>
-            <span>${state.revealAnswer && idx === qObj.ans ? '✅' : (state.revealAnswer && myAns === idx ? '❌' : (myAns === idx ? '👈' : ''))}</span>
+            <span>${state.revealAnswer && idx === qObj.ans ? '✅' : (state.revealAnswer && myAns === idx ? '❌' : (myAns === idx ? '👈 نێردرا' : ''))}</span>
           </button>
         `;
       }).join('');
@@ -1345,7 +1547,8 @@
           <span>
             ${i === 0 ? '👑' : `${i + 1}.`} ${p.name}
             ${p.streak >= 2 ? `<small style="color:var(--amber);">🔥x${p.streak}</small>` : ''}
-            ${p.currentAnswer !== null && !state.revealAnswer ? ' ✅' : ''}
+            ${p.hasAnswered && !state.revealAnswer ? ' ✅' : ''}
+            ${state.revealAnswer && p.lastGain > 0 ? `<span class="gain-badge">+${p.lastGain}</span>` : ''}
           </span>
           <span style="color:var(--amber);">${p.score} خاڵ</span>
         </div>
@@ -1355,7 +1558,7 @@
         <div class="card">
           <div class="quiz-top-meta">
             <span>پرسیاری ${state.qIndex + 1} لە ${state.questions.length}</span>
-            <span style="color:#c084fc; font-size:0.78rem;">📌 ${activeTopic}</span>
+            <span class="source-tag">${state.questionSourceLabel}</span>
             <span id="liveTimeLabel" style="color:var(--amber);">⏱️ ${state.timeLeft} چرکە</span>
           </div>
           <div class="timer-track">
@@ -1364,6 +1567,13 @@
 
           <div class="q-banner">${qObj.q}</div>
           <div class="opts-list">${optsHtml}</div>
+
+          <!-- چارەسەری کێشەی ٣: دوگمەی تێپەڕاندنی خێرا بۆ Host ئەگەر کەسێک خەتەکەی خاو بوو -->
+          ${state.role === 'host' && !state.revealAnswer ? `
+            <button class="btn btn-amber" style="margin-top:14px; padding:10px;" onclick="revealQuestionResult()">
+              ⏭️ پیشاندانی وەڵام و تێپەڕاندنی کات (${answeredCount}/${state.players.length} وەڵامیان داوەتەوە)
+            </button>
+          ` : ''}
 
           ${(state.role === 'host' || state.role === 'solo') && state.revealAnswer ? `
             <button class="btn btn-primary" style="margin-top:16px;" ${state.generatingComedy ? 'disabled' : ''} onclick="advanceToNextQuestion()">
@@ -1389,6 +1599,7 @@
     function renderFinishedScreen() {
       const sorted = [...state.players].sort((a, b) => b.score - a.score);
       const winner = sorted[0];
+      const isSolo = state.players.length <= 1;
 
       const ranksHtml = sorted.map((p, i) => `
         <div class="leader-row ${i === 0 ? 'first' : ''}">
@@ -1400,8 +1611,8 @@
       return `
         <div class="card" style="text-align:center;">
           <div style="font-size:3.5rem; margin-bottom:2px;">🏆</div>
-          <h2>پاڵەوانی مەجلیس: ${winner ? winner.name : ''}!</h2>
-          <p class="sub">کۆی خاڵ: <strong>${winner ? winner.score : 0} خاڵ</strong></p>
+          <h2>${isSolo ? `ئەنجامی تاقیکردنەوەی ${winner ? winner.name : ''}` : `پاڵەوانی مەجلیس: ${winner ? winner.name : ''}!`}</h2>
+          <p class="sub">کۆی خاڵی بەدەستهاتوو: <strong>${winner ? winner.score : 0} خاڵ</strong></p>
 
           <div class="comedy-grid">
             <div class="comedy-card winner-box">
@@ -1409,7 +1620,7 @@
               <div>"${state.comedyResult.winnerJoke || 'بژی پاڵەوان!'}"</div>
             </div>
             <div class="comedy-card loser-box">
-              <div class="comedy-head">😂 تەعلیقی AI بۆ دۆڕاوەکان:</div>
+              <div class="comedy-head">${isSolo ? '😄 پەیامی کۆمیدیی تاکەکەسی:' : '😂 تەعلیقی AI بۆ دۆڕاوەکان:'}</div>
               <div>"${state.comedyResult.loserJoke || 'جاری داهاتوو هەوڵ بدەنەوە!'}"</div>
             </div>
           </div>
@@ -1449,14 +1660,14 @@
         text: joinUrl,
         width: 185,
         height: 185,
-        colorDark: "#070a14",
+        colorDark: "#060913",
         colorLight: "#ffffff"
       });
     }
 
     function copyInvite(url) {
       navigator.clipboard.writeText(url);
-      alert('لینکی مەجلیس کۆپی کرا!');
+      showToast('📋 لینکی مەجلیس کۆپی کرا!');
     }
 
     function shareInviteWA(url) {
@@ -1464,9 +1675,15 @@
       window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
+    function kickPlayer(playerId) {
+      state.players = state.players.filter(p => p.id !== playerId);
+      delete state.connections[playerId];
+      syncAllPlayers();
+      render();
+    }
+
     async function startSoloGame() {
-      const nameEl = document.getElementById('nameInp');
-      const name = nameEl ? nameEl.value.trim() || 'بڵند' : state.myName || 'بڵند';
+      const name = (state.myName || '').trim() || 'بڵند';
       state.myName = name;
       localStorage.setItem(USER_NAME_KEY, name);
       state.role = 'solo';
@@ -1478,35 +1695,33 @@
       state.questions = await generateAIQuestions(vibeObj, topic, state.questionLimit, state.difficulty);
       state.generatingAI = false;
 
-      state.players = [{ id: state.myId, name: state.myName, score: 0, streak: 0, currentAnswer: null, answerTime: 0 }];
+      state.players = [{ id: state.myId, name: state.myName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 }];
       state.qIndex = 0;
-      state.screen = 'playing';
-      beginQuestionCountdown();
+      runPreGameCountdown();
     }
 
     function startHostRoom() {
-      const name = document.getElementById('nameInp').value.trim();
-      if (!name) return alert('تکایە سەرەتا ناوی خۆت بنووسە!');
-      state.myName = name;
+      const name = (state.myName || '').trim();
+      if (!name) return showToast('⚠️ تکایە سەرەتا ناوی خۆت بنووسە!');
       localStorage.setItem(USER_NAME_KEY, name);
       state.role = 'host';
       state.connecting = true;
       render();
 
       state.roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-      const peerId = 'MAJLIS_FINAL_' + state.roomCode;
+      const peerId = 'MAJLIS_V7_' + state.roomCode;
       state.peer = new Peer(peerId);
 
       state.peer.on('open', () => {
         state.connecting = false;
-        state.players = [{ id: state.myId, name: state.myName, score: 0, streak: 0, currentAnswer: null, answerTime: 0 }];
+        state.players = [{ id: state.myId, name: state.myName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 }];
         state.screen = 'lobby';
         render();
       });
 
       state.peer.on('error', () => {
         state.connecting = false;
-        alert('کێشەیەک لە هێڵی ئینتەرنێتدا هەیە، تکایە دووبارە هەوڵ بدەرەوە.');
+        showToast('⚠️ کێشە لە هێڵی ئینتەرنێتدا هەیە، دووبارە هەوڵ بدەرەوە.');
         render();
       });
 
@@ -1516,26 +1731,27 @@
     }
 
     function joinHostRoom() {
-      const name = document.getElementById('nameInp').value.trim();
-      const code = document.getElementById('codeInp').value.trim().toUpperCase();
-      if (!name || !code) return alert('تکایە ناوی خۆت و کۆدی ژوورەکە بنووسە!');
+      const name = (state.myName || '').trim();
+      const code = (state.roomCode || '').trim().toUpperCase();
+      if (!name || !code) return showToast('⚠️ تکایە ناوی خۆت و کۆدی ژوورەکە بنووسە!');
 
-      state.myName = name;
-      state.roomCode = code;
       localStorage.setItem(USER_NAME_KEY, name);
       state.role = 'player';
       state.connecting = true;
       render();
 
+      if (state.peer) {
+        try { state.peer.destroy(); } catch (e) {}
+      }
       state.peer = new Peer();
       state.peer.on('open', () => {
-        const conn = state.peer.connect('MAJLIS_FINAL_' + code, { reliable: true });
+        const conn = state.peer.connect('MAJLIS_V7_' + code, { reliable: true });
         state.hostConn = conn;
 
         const timeout = setTimeout(() => {
           if (state.connecting) {
             state.connecting = false;
-            alert('ئەم کۆدی ژوورە نەدۆزرایەوە! دڵنیابە لە کۆدەکە.');
+            showToast('⚠️ ئەم کۆدی ژوورە نەدۆزرایەوە! دڵنیابە لە کۆدەکە.');
             render();
           }
         }, 8000);
@@ -1550,26 +1766,36 @@
       });
     }
 
+    // چارەسەری کێشەی ٢: ئەگەر مۆبایلی یاریزانێک شاشەکەی کوژایەوە و هەڵبووەوە، خۆکارانە پەیوەندی نوێ دەکاتەوە
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && state.role === 'player' && state.roomCode) {
+        if (!state.hostConn || !state.hostConn.open) {
+          joinHostRoom();
+        }
+      }
+    });
+
     function onHostReceiveData(conn, data) {
       if (data.type === 'JOIN') {
         state.connections[data.id] = conn;
-        const exists = state.players.find(p => p.id === data.id);
-        if (!exists) {
-          let cleanName = data.name;
-          if (state.players.some(p => p.name === cleanName)) {
-            cleanName = `${data.name} (${state.players.length + 1})`;
-          }
-          state.players.push({ id: data.id, name: cleanName, score: 0, streak: 0, currentAnswer: null, answerTime: 0 });
+        // ئەگەر یاریزانەکە پێشتر لە یارییەکەدا بووە (بەهۆی پچڕان گەڕاوەتەوە)، خاڵەکانی خۆی بۆ دەپارێزرێت!
+        let existing = state.players.find(p => p.id === data.id || p.name === data.name);
+        if (existing) {
+          existing.id = data.id;
+          existing.name = data.name;
+        } else {
+          state.players.push({ id: data.id, name: data.name, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 });
         }
-        syncAllPlayers(true);
+        syncAllPlayers();
         render();
       } else if (data.type === 'ANSWER') {
         const p = state.players.find(x => x.id === data.id);
-        if (p && p.currentAnswer === null && !state.revealAnswer) {
+        if (p && !p.hasAnswered && !state.revealAnswer) {
           p.currentAnswer = data.ansIdx;
+          p.hasAnswered = true;
           p.answerTime = state.timeLeft;
           checkAllPlayersAnswered();
-          syncAllPlayers(false);
+          syncAllPlayers();
           render();
         }
       } else if (data.type === 'EMOJI') {
@@ -1590,20 +1816,39 @@
       }
       if (data.type === 'SYNC') {
         const prevReveal = state.revealAnswer;
+        const prevScreen = state.screen;
         state.screen = data.screen;
-        state.players = data.players;
-        if (data.questions) state.questions = data.questions;
+        state.countdownVal = data.countdownVal;
+        state.questionSourceLabel = data.questionSourceLabel;
         state.qIndex = data.qIndex;
         state.timeLeft = data.timeLeft;
         state.questionDuration = data.questionDuration;
         state.revealAnswer = data.revealAnswer;
         if (data.comedyResult) state.comedyResult = data.comedyResult;
 
+        // پاراستنی هەڵبژاردەی یاریزان لەسەر شاشەکەی خۆی
+        const myOld = state.players.find(p => p.id === state.myId);
+        state.players = data.players.map(p => {
+          if (p.id === state.myId && !data.revealAnswer && myOld && myOld.hasAnswered) {
+            return { ...p, currentAnswer: myOld.currentAnswer };
+          }
+          return p;
+        });
+
+        if (data.currentQuestion) {
+          state.questions = new Array(data.totalQuestions).fill(null);
+          state.questions[state.qIndex] = data.currentQuestion;
+        }
+
         if (!prevReveal && state.revealAnswer && state.screen === 'playing') {
           const me = state.players.find(p => p.id === state.myId);
           const qObj = state.questions[state.qIndex];
-          if (me && me.currentAnswer === qObj.ans) playTone('correct');
+          if (me && qObj && me.currentAnswer === qObj.ans) playTone('correct');
           else playTone('wrong');
+        }
+
+        if (prevScreen !== 'finished' && state.screen === 'finished') {
+          launchConfetti();
         }
         render();
       }
@@ -1615,13 +1860,34 @@
       });
     }
 
-    function syncAllPlayers(includeQuestions = false) {
+    // چارەسەری کێشەی ٤: پاراستنی نهێنیی وەڵامی ڕاست تا کاتی پرسیارەکە تەواو دەبێت!
+    function syncAllPlayers() {
       if (state.role !== 'host') return;
+      const qObj = state.questions[state.qIndex];
+      const safeQuestion = qObj ? {
+        q: qObj.q,
+        opts: qObj.opts,
+        ans: state.revealAnswer ? qObj.ans : null
+      } : null;
+
+      const safePlayers = state.players.map(p => ({
+        id: p.id,
+        name: p.name,
+        score: p.score,
+        lastGain: p.lastGain,
+        streak: p.streak,
+        hasAnswered: p.hasAnswered,
+        currentAnswer: state.revealAnswer ? p.currentAnswer : null
+      }));
+
       broadcastPayload({
         type: 'SYNC',
         screen: state.screen,
-        players: state.players,
-        questions: includeQuestions ? state.questions : null,
+        countdownVal: state.countdownVal,
+        questionSourceLabel: state.questionSourceLabel,
+        players: safePlayers,
+        currentQuestion: safeQuestion,
+        totalQuestions: state.questions.length,
         qIndex: state.qIndex,
         timeLeft: state.timeLeft,
         questionDuration: state.questionDuration,
@@ -1640,18 +1906,38 @@
       state.generatingAI = false;
 
       state.qIndex = 0;
-      state.players.forEach(p => { p.score = 0; p.streak = 0; p.currentAnswer = null; });
-      state.screen = 'playing';
-      syncAllPlayers(true);
-      beginQuestionCountdown();
+      state.players.forEach(p => { p.score = 0; p.lastGain = 0; p.streak = 0; p.hasAnswered = false; p.currentAnswer = null; });
+      runPreGameCountdown();
+    }
+
+    function runPreGameCountdown() {
+      clearInterval(state.timerInterval);
+      state.screen = 'countdown';
+      state.countdownVal = 3;
+      syncAllPlayers();
+      render();
+      playTone('tick');
+
+      state.timerInterval = setInterval(() => {
+        state.countdownVal--;
+        if (state.countdownVal <= 0) {
+          clearInterval(state.timerInterval);
+          state.screen = 'playing';
+          beginQuestionCountdown();
+        } else {
+          playTone('tick');
+          syncAllPlayers();
+          render();
+        }
+      }, 1000);
     }
 
     function beginQuestionCountdown() {
       clearInterval(state.timerInterval);
       state.timeLeft = state.questionDuration;
       state.revealAnswer = false;
-      state.players.forEach(p => { p.currentAnswer = null; p.answerTime = 0; });
-      syncAllPlayers(false);
+      state.players.forEach(p => { p.hasAnswered = false; p.currentAnswer = null; p.answerTime = 0; p.lastGain = 0; });
+      syncAllPlayers();
       render();
 
       state.timerInterval = setInterval(() => {
@@ -1671,22 +1957,23 @@
 
     function submitPlayerAnswer(optIdx) {
       const me = state.players.find(p => p.id === state.myId);
-      if (!me || me.currentAnswer !== null || state.revealAnswer) return;
+      if (!me || me.hasAnswered || state.revealAnswer) return;
 
       me.currentAnswer = optIdx;
+      me.hasAnswered = true;
       me.answerTime = state.timeLeft;
       render();
 
       if (state.role === 'host' || state.role === 'solo') {
         checkAllPlayersAnswered();
-        syncAllPlayers(false);
+        syncAllPlayers();
       } else if (state.hostConn && state.hostConn.open) {
         state.hostConn.send({ type: 'ANSWER', id: state.myId, ansIdx: optIdx });
       }
     }
 
     function checkAllPlayersAnswered() {
-      if (state.players.every(p => p.currentAnswer !== null)) {
+      if (state.players.every(p => p.hasAnswered)) {
         revealQuestionResult();
       }
     }
@@ -1701,9 +1988,12 @@
           p.streak = (p.streak || 0) + 1;
           const speedBonus = Math.round((p.answerTime / state.questionDuration) * 60);
           const streakBonus = p.streak >= 2 ? 25 : 0;
-          p.score += 100 + speedBonus + streakBonus;
+          const totalGain = 100 + speedBonus + streakBonus;
+          p.lastGain = totalGain;
+          p.score += totalGain;
         } else {
           p.streak = 0;
+          p.lastGain = 0;
         }
       });
 
@@ -1711,7 +2001,7 @@
       if (me && me.currentAnswer === qObj.ans) playTone('correct');
       else playTone('wrong');
 
-      syncAllPlayers(false);
+      syncAllPlayers();
       render();
     }
 
@@ -1725,7 +2015,8 @@
         state.comedyResult = await generateAIComedyCommentary();
         state.generatingComedy = false;
         state.screen = 'finished';
-        syncAllPlayers(false);
+        launchConfetti();
+        syncAllPlayers();
         render();
       }
     }
@@ -1735,7 +2026,7 @@
       render();
       state.comedyResult = await generateAIComedyCommentary();
       state.generatingComedy = false;
-      syncAllPlayers(false);
+      syncAllPlayers();
       render();
     }
 
@@ -1754,7 +2045,44 @@
       state.apiKey = val;
       localStorage.setItem(STORAGE_API_KEY, val);
       closeApiModal();
-      alert('✅ کلیلی زیرەکی دەستکرد پاشەکەوت کرا!');
+      showToast('✅ کلیلی زیرەکی دەستکرد پاشەکەوت کرا!');
+    }
+
+    function openCustomQModal() {
+      document.getElementById('customQStatus').textContent = `کۆی پرسیارە تایبەتەکانت: ${customQuestions.length} پرسیار`;
+      document.getElementById('customQModal').classList.add('open');
+    }
+
+    function closeCustomQModal() {
+      document.getElementById('customQModal').classList.remove('open');
+      render();
+    }
+
+    function saveCustomQuestion() {
+      const q = document.getElementById('cqText').value.trim();
+      const o0 = document.getElementById('cqOpt0').value.trim();
+      const o1 = document.getElementById('cqOpt1').value.trim();
+      const o2 = document.getElementById('cqOpt2').value.trim();
+      const o3 = document.getElementById('cqOpt3').value.trim();
+
+      if (!q || !o0 || !o1 || !o2 || !o3) {
+        return showToast('⚠️ تکایە پرسیارەکە و هەر ٤ هەڵبژاردەکە پڕ بکەرەوە!');
+      }
+
+      const opts = [o0, o1, o2, o3].sort(() => Math.random() - 0.5);
+      customQuestions.push({
+        q,
+        opts,
+        ans: opts.indexOf(o0)
+      });
+      localStorage.setItem(STORAGE_CUSTOM_Q, JSON.stringify(customQuestions));
+      document.getElementById('cqText').value = '';
+      document.getElementById('cqOpt0').value = '';
+      document.getElementById('cqOpt1').value = '';
+      document.getElementById('cqOpt2').value = '';
+      document.getElementById('cqOpt3').value = '';
+      document.getElementById('customQStatus').textContent = `✅ زیادکرا! کۆی پرسیارە تایبەتەکانت: ${customQuestions.length}`;
+      state.selectedTopic = 'پرسیارەکانی خۆم (تایبەت)';
     }
 
     render();
