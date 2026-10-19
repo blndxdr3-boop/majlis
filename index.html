@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>مەجلیس AI Pro V7 | پێشبڕکێی زیرەکی دەستکرد</title>
+  <title>مەجلیس AI Pro V8 | پێشبڕکێی زیرەکی دەستکرد</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -196,6 +196,11 @@
       box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.22);
     }
 
+    .input.custom-active {
+      border-color: var(--emerald);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    }
+
     .btn {
       width: 100%;
       padding: 13px 18px;
@@ -233,12 +238,6 @@
     .btn-cyan {
       background: linear-gradient(135deg, #0284c7, #06b6d4);
       border: none;
-    }
-
-    .btn-amber {
-      background: rgba(245, 158, 11, 0.2);
-      border-color: var(--amber);
-      color: #fde68a;
     }
 
     .vibe-section {
@@ -513,7 +512,8 @@
 
     .opt-card.selected {
       border-color: var(--cyan);
-      background: rgba(6, 182, 212, 0.24);
+      background: rgba(6, 182, 212, 0.26);
+      box-shadow: 0 0 14px rgba(6, 182, 212, 0.22);
     }
 
     .opt-card.correct {
@@ -538,6 +538,18 @@
       font-size: 0.74rem;
       margin-right: 6px;
       animation: popIn 0.3s ease;
+    }
+
+    .next-auto-banner {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(139, 92, 246, 0.16);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: #e9d5ff;
+      text-align: center;
+      font-weight: 800;
+      font-size: 0.86rem;
     }
 
     @keyframes popIn {
@@ -634,7 +646,6 @@
       100% { transform: translateY(-340px) scale(1.4); opacity: 0; }
     }
 
-    /* ئامادەباشی ٣، ٢، ١ */
     .countdown-overlay {
       text-align: center;
       padding: 50px 20px;
@@ -649,7 +660,6 @@
       animation: popIn 0.4s ease;
     }
 
-    /* Confetti ئاهەنگێڕان */
     .confetti-piece {
       position: fixed;
       top: -20px;
@@ -781,7 +791,6 @@
     const USER_NAME_KEY = 'MAJLIS_USER_NAME_V7';
     const USER_ID_KEY = 'MAJLIS_USER_ID_V7';
 
-    // پاراستنی ناسنامەی یاریزان بۆ ئەوەی ئەگەر پەڕەکەی نوێ کردەوە خاڵەکانی نەفەوتێت
     let persistentId = localStorage.getItem(USER_ID_KEY);
     if (!persistentId) {
       persistentId = 'U_' + Math.random().toString(36).substring(2, 10);
@@ -800,49 +809,49 @@
       if (sq) seenQuestions = JSON.parse(sq);
     } catch (e) {}
 
-    // ١. پێوەرەکانی کەشی دانیشتن (تەنها شێوازی داڕشتنی پرسیار و قسە کۆمیدییەکان دەگۆڕێت بێ ئەوەی دەستکاری بابەتەکەت بکات!)
+    // شێوازەکانی دانیشتن (تەنها بۆ پیرۆزبایی و قسە کۆمیدییەکەی کۆتایی یاری بەکاردێت)
     const QUESTION_VIBES = [
       {
         id: 'friends',
         icon: '☕',
         title: 'دانیشتنی هاوڕێیان',
         desc: 'گەنجانە و گەعدە و قسەی خۆش',
-        promptHint: 'بە شێوازی دانیشتنی گەنجانە و هاوڕێیانە، پرسیارەکان با سەرنجڕاکێش و کۆمەڵایەتی بن'
+        comedyHint: 'بە شێوازی دانیشتنی گەنجانە و هاوڕێیانە و کافتریا و دەعوەتکردن'
       },
       {
         id: 'camping',
         icon: '🏕️',
         title: 'گەشت و کامپینگ',
         desc: 'سەیران، چادر، ئاگر و سروشت',
-        promptHint: 'بە هەناسەی گەشت و کامپینگ و سەیران و چای سەر خەڵووز و شاخەوانی'
+        comedyHint: 'بە شێوازی کەشی کامپینگ و سەیران و چادر هەڵدان و چای سەر خەڵووز و قاپ شۆردن لە دەشت'
       },
       {
         id: 'family',
         icon: '👨‍👩‍👧‍👦',
         title: 'دانیشتنی خێزانی',
         desc: 'کەلتووری و هەموو تەمەنێک',
-        promptHint: 'بە شێوازی دانیشتنی خێزانیی کوردەواری و ڕێز و خۆشەویستی بۆ هەموو تەمەنەکان'
+        comedyHint: 'بە شێوازی دانیشتنی خێزانیی کوردەواری و شیرینی خواردن و میوانداری'
       },
       {
         id: 'academic',
         icon: '🎓',
         title: 'زانکۆ و ڕۆشنبیری',
-        desc: 'ورد و زانستی و ئەکادیمی',
-        promptHint: 'بە شێوازی ئەکادیمی و زانکۆیی و زاراوەی ورد و ڕۆشنبیریی بەرز'
+        desc: 'ئەکادیمی و خوێندکاری',
+        comedyHint: 'بە شێوازی خوێندکارانی زانکۆ و تاقیکردنەوە و دەرچوون و کەوتن (عبور)'
       },
       {
         id: 'funny',
         icon: '😂',
-        title: 'قەشمەری و کۆمیدی',
+        title: 'کۆمیدی',
         desc: 'تەنزئامێز و پێکەنیناوی',
-        promptHint: 'بە شێوازێکی زۆر کۆمیدی و قەشمەری کە هەڵبژاردە هەڵەکانیش زۆر پێکەنیناوی بن'
+        comedyHint: 'بە شێوازێکی زۆر کۆمیدی و پێکەنیناوی و نوکتەئامێز'
       },
       {
         id: 'challenge',
         icon: '🔥',
         title: 'تەحەدای بلیمەتەکان',
-        desc: 'پرسیاری قورس و فێڵاوی',
-        promptHint: 'بە شێوازی تەحەدای قورس و پرسیاری زیرەکی کە تەنها کەسە زۆر زیرەکەکان بیزانن'
+        desc: 'کێبڕکێی توند و زیرەکانە',
+        comedyHint: 'بە شێوازی تەحەدای پاڵەوانان و بلیمەتەکان'
       }
     ];
 
@@ -857,7 +866,6 @@
       'پرسیارەکانی خۆم (تایبەت)'
     ];
 
-    // بانکی فراوانی ناوخۆیی بۆ هەر بابەتێک بە جیا (تا ئەگەر بێ ئینتەرنێتیش بوو یان AI خاو بوو، تەنها پرسیاری هەمان بابەت بهێنێت!)
     const TOPIC_BANKS = {
       'یاسا و دادگا و دەستوور': [
         { q: 'لە یاسادا، بنەمای "المتهم بريء حتى تثبت إدانته" بە واتای چی دێت؟', opts: ['تۆمەتبار بێتاوانە تا تاوانەکەی لە دادگا دەسەلمێنرێت', 'هەموو تۆمەتبارێک دەبێت زیندانی بکرێت', 'پۆلیس بڕیاری کۆتایی دەدات', 'شاهید پێویست نییە'], ans: 0 },
@@ -960,7 +968,7 @@
     let state = {
       welcomeTab: 'host',
       role: null,
-      screen: 'welcome', // 'welcome' | 'lobby' | 'countdown' | 'playing' | 'finished'
+      screen: 'welcome',
       myId: persistentId,
       myName: localStorage.getItem(USER_NAME_KEY) || '',
       apiKey: localStorage.getItem(STORAGE_API_KEY) || '',
@@ -977,10 +985,12 @@
       connecting: false,
       questionSourceLabel: '✨ زیرەکی دەستکرد',
       countdownVal: 3,
+      revealCountdown: 3,
+      revealInterval: null,
       peer: null,
       hostConn: null,
       connections: {},
-      players: [], // { id, name, score, lastGain, streak, hasAnswered, currentAnswer, answerTime }
+      players: [],
       questions: [],
       qIndex: 0,
       timeLeft: 15,
@@ -1073,10 +1083,32 @@
       showToast('✅ مێژووی پرسیارە کراوەکان سفر کرایەوە!');
     }
 
-    // چارەسەری کێشەی ١: هەڵبژاردنی کەشی دانیشتن بە هیچ شێوەیەک بابەتی پرسیارەکە ناگۆڕێت و نایسڕێتەوە!
     function selectVibe(vibeId) {
       state.selectedVibeId = vibeId;
       render();
+    }
+
+    // هەڵبژاردنی دوگمەی بابەت: خانەی بابەتی دڵخواز بەتاڵ دەکاتەوە
+    function handleTopicChipClick(topic) {
+      state.selectedTopic = topic;
+      state.customTopicText = '';
+      render();
+    }
+
+    // نووسین لە خانەی بابەتی دڵخواز: ڕاستەوخۆ هەڵبژاردنی دوگمەکانی تر لادەبات بەبێ لەدەستدانی فۆکەسی کیبۆرد
+    function handleCustomTopicInput(val) {
+      state.customTopicText = val;
+      const inp = document.getElementById('customTopicInp');
+      const chips = document.querySelectorAll('.topic-chip');
+      if (val.trim().length > 0) {
+        state.selectedTopic = '';
+        chips.forEach(c => c.classList.remove('active'));
+        if (inp) inp.classList.add('custom-active');
+      } else {
+        state.selectedTopic = PRESET_TOPICS[0];
+        if (chips[0]) chips[0].classList.add('active');
+        if (inp) inp.classList.remove('custom-active');
+      }
     }
 
     function fetchWithTimeout(url, options, timeoutMs = 9500) {
@@ -1086,8 +1118,8 @@
       ]);
     }
 
-    // دروستکردنی پرسیار بە زیرەکی دەستکرد + دیاریکردنی سەرچاوەی پرسیار
-    async function generateAIQuestions(vibeObj, topic, count, difficulty) {
+    // دروستکردنی پرسیار تەنها لەسەر بابەتەکە (بێ تێکەڵکردنی شێوازی دانیشتنەکە لەگەڵ پرسیارەکان)
+    async function generateAIQuestions(topic, count, difficulty) {
       if (topic === 'پرسیارەکانی خۆم (تایبەت)' && customQuestions.length > 0) {
         state.questionSourceLabel = '✍️ پرسیاری تایبەتی خۆت';
         return [...customQuestions].sort(() => Math.random() - 0.5).slice(0, count);
@@ -1098,14 +1130,12 @@
 
       const prompt = `تۆ پسپۆڕی دروستکردنی پرسیاری پێشبڕکێیت بە زمانی کوردیی سۆرانیی پاراو.
 تکایە رێک ${count} پرسیاری هەڵبژاردن (٤ هەڵبژاردەیی) تەنها و تەنها لەسەر ئەم بابەتە دروست بکە: "${topic}".
-مەرجی توند: دەبێت ١٠٠٪ی پرسیارەکان راستەوخۆ لەسەر "${topic}" بن!
-شێوازی داڕشتن: "${vibeObj.title}" (${vibeObj.promptHint}) - ئاستی قورسی: "${difficulty}".
+مەرجی توند: دەبێت ١٠٠٪ی پرسیارەکان راستەوخۆ و بە پاکی لەسەر "${topic}" بن بە ئاستی قورسی "${difficulty}".
 ژمارەی هەڕەمەکی: ${randomSeed}.
 ئەم پرسیارانە دووبارە مەکەرەوە: [${avoidSample}].
 تەنها بە شێوازی JSON Array وەڵام بدەرەوە بەم فۆرماتە:
 [{"q":"دەقی پرسیار؟","opts":["وەڵامی ١","وەڵامی ٢","وەڵامی ٣","وەڵامی ٤"],"ans":0}]`;
 
-      // ١. هەوڵی یەکەم: کلیلی فەرمی Gemini Studio
       if (state.apiKey && state.apiKey.trim().startsWith('AIza')) {
         try {
           const resp = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(state.apiKey.trim())}`, {
@@ -1128,7 +1158,6 @@
         } catch (e) {}
       }
 
-      // ٢. هەوڵی دووەم: زیرەکی دەستکردی کراوەی بێ کلیل
       try {
         const resp2 = await fetchWithTimeout('https://text.pollinations.ai/openai', {
           method: 'POST',
@@ -1153,7 +1182,6 @@
         }
       } catch (e) {}
 
-      // ٣. بانکی تایبەتمەندی هەمان بابەت (ئاگادارکردنەوەی ڕوون + بێ تێکەڵبوونی بابەتەکان)
       state.questionSourceLabel = `📚 بانکی ناوخۆیی (${topic})`;
       const specificBank = TOPIC_BANKS[topic] || TOPIC_BANKS['زانیاری گشتی جۆراوجۆر'];
       let unseenSpecific = specificBank.filter(item => !seenQuestions.includes(item.q));
@@ -1173,7 +1201,7 @@
       });
     }
 
-    // چارەسەری کێشەی ٦: جیاکردنەوەی قسەی کۆمیدیی یاریی تاکەکەسی (Solo) لە یاریی کۆمەڵەیی
+    // بەکارهێنانی شێوازی دانیشتنەکە (Vibe) تەنها بۆ پیرۆزبایی و قسە کۆمیدییەکەی کۆتایی یاری
     async function generateAIComedyCommentary() {
       const sorted = [...state.players].sort((a, b) => b.score - a.score);
       const winner = sorted[0] || { name: 'پاڵەوان', score: 0 };
@@ -1189,8 +1217,8 @@
         : FALLBACK_LOSER_JOKES[randomSeed % FALLBACK_LOSER_JOKES.length].replace('{losers}', loserNames);
 
       const prompt = isSolo
-        ? `یاریزان "${winner.name}" بە تەنها خۆی تاقیکردەوە و (${winner.score} خاڵ)ی هێنا لە کەشی "${vibeObj.title}". دوو ڕستەی کۆمیدیی کوردی بنووسە: winnerJoke بۆ دەستخۆشیلێکردنی، و loserJoke قسەیەکی خۆش لەسەر ئەوەی کە بە تەنها یاری دەکات. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`
-        : `تۆ پێشکەشکارێکی کۆمیدیی کوردیت لە یاریی "مەجلیس" لە کەشی "${vibeObj.title}". براوە: "${winner.name}" (${winner.score} خاڵ). دۆڕاوەکان: "${loserNames}". دوو ڕستەی زۆر کۆمیدی و نوێ بە کوردیی سۆرانی بنووسە (ژمارە: ${randomSeed}): winnerJoke بۆ پیاهەڵدانی براوە، و loserJoke تەعلیق و سزایەکی کۆمیدی بۆ دۆڕاوەکان. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`;
+        ? `یاریزان "${winner.name}" بە تەنها خۆی تاقیکردەوە و (${winner.score} خاڵ)ی هێنا لە کەشی "${vibeObj.title}" (${vibeObj.comedyHint}). دوو ڕستەی کۆمیدیی کوردی بنووسە: winnerJoke بۆ پیرۆزبایی و دەستخۆشیلێکردنی بەپێی ئەو کەشە، و loserJoke قسەیەکی خۆش لەسەر ئەوەی کە بە تەنها یاری دەکات. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`
+        : `تۆ پێشکەشکارێکی کۆمیدیی کوردیت لە یاریی "مەجلیس". بارودۆخ و شێوازی دانیشتنەکە بریتییە لە: "${vibeObj.title}" (${vibeObj.comedyHint}). براوە: "${winner.name}" (${winner.score} خاڵ). دۆڕاوەکان: "${loserNames}". دوو ڕستەی زۆر کۆمیدی و نوێ بە کوردیی سۆرانی ڕێک بەپێی کەشی "${vibeObj.title}" بنووسە (ژمارە: ${randomSeed}): winnerJoke بۆ پیرۆزبایی و پیاهەڵدانی براوە، و loserJoke تەعلیق و سزایەکی کۆمیدی بۆ دۆڕاوەکان گونجاو لەگەڵ بارودۆخی دانیشتنەکە. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`;
 
       if (state.apiKey && state.apiKey.trim().startsWith('AIza')) {
         try {
@@ -1268,6 +1296,7 @@
 
     function resetToHome() {
       clearInterval(state.timerInterval);
+      clearInterval(state.revealInterval);
       if (state.peer) {
         try { state.peer.destroy(); } catch (e) {}
       }
@@ -1307,6 +1336,15 @@
       }
     }
 
+    function updateRevealCountdownUIOnly() {
+      const el = document.getElementById('autoNextBanner');
+      if (el) {
+        el.textContent = state.qIndex + 1 < state.questions.length
+          ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکەی تر دەست پێ دەکات...`
+          : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکەی تر پیشان دەدرێت...`;
+      }
+    }
+
     function render() {
       const box = document.getElementById('appContainer');
       if (state.screen === 'welcome') box.innerHTML = renderWelcomeScreen();
@@ -1341,15 +1379,17 @@
       const vibeSelectorBox = `
         <div class="vibe-section">
           <div style="text-align:center;">
-            <span class="section-tag">🎭 ١. شێواز و کەشی دانیشتنەکە هەڵبژێرە</span>
+            <span class="section-tag">🎭 ١. شێوازی دانیشتنەکە هەڵبژێرە (بۆ پیرۆزبایی و قسەی کۆتایی)</span>
           </div>
           <div class="vibe-grid">${vibesCardsHtml}</div>
         </div>
       `;
 
+      const hasCustomTopic = state.customTopicText.trim().length > 0;
+
       const topicChipsHtml = PRESET_TOPICS.map(t => `
-        <button class="topic-chip ${state.selectedTopic === t && !state.customTopicText ? 'active' : ''}"
-                onclick="state.selectedTopic='${t}'; state.customTopicText=''; render();">
+        <button class="topic-chip ${!hasCustomTopic && state.selectedTopic === t ? 'active' : ''}"
+                onclick="handleTopicChipClick('${t}')">
           ${t === 'پرسیارەکانی خۆم (تایبەت)' ? `✍️ پرسیارەکانی خۆم (${customQuestions.length})` : t}
         </button>
       `).join('');
@@ -1357,13 +1397,13 @@
       const aiTopicBox = `
         <div class="ai-config-box">
           <div style="text-align:center;">
-            <span class="ai-badge">✨ ٢. بابەتی پرسیارەکان دیاری بکە (جیاکراوە و بێ تێکەڵبوون)</span>
+            <span class="ai-badge">✨ ٢. بابەتی پرسیارەکان دیاری بکە</span>
           </div>
           <div class="topic-chips">${topicChipsHtml}</div>
-          <input type="text" class="input" style="margin-bottom:0; font-size:0.85rem;"
+          <input type="text" id="customTopicInp" class="input ${hasCustomTopic ? 'custom-active' : ''}" style="margin-bottom:0; font-size:0.85rem;"
                  placeholder="✍️ یان هەر بابەتێکی دڵخواز دەتەوێت لێرە بینووسە..."
                  value="${state.customTopicText}"
-                 oninput="state.customTopicText = this.value;" />
+                 oninput="handleCustomTopicInput(this.value)" />
         </div>
       `;
 
@@ -1417,7 +1457,7 @@
           <div class="card">
             ${tabsHtml}
             <h2>📲 پەیوەستبوون بە مەجلیسی هاوڕێکەت</h2>
-            <p class="sub">ناوی خۆت و کۆدی ٤ پیتیی ژوورەکە بنووسە (ئەگەر پچڕاشیت هەمان کۆد بنووسەرەوە دەگەڕێیتەوە سەر خاڵەکانت!):</p>
+            <p class="sub">ناوی خۆت و کۆدی ٤ پیتیی ژوورەکە بنووسە:</p>
             <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value; localStorage.setItem(USER_NAME_KEY, this.value);" />
             <input type="text" id="codeInp" class="input" placeholder="کۆدی ژوور (بۆ نموونە: A7K9)" value="${state.roomCode}" oninput="state.roomCode=this.value.toUpperCase();" style="text-transform:uppercase; letter-spacing:2px;" />
             <button class="btn btn-emerald" ${state.connecting ? 'disabled' : ''} onclick="joinHostRoom()">
@@ -1430,7 +1470,7 @@
           <div class="card">
             ${tabsHtml}
             <h2>🎮 تاقیکردنەوەی تاکەکەسی بە AI</h2>
-            <p class="sub">بابەتەکە هەڵبژێرە (وەک یاسا، کامپینگ، مێژوو) و ڕاستەوخۆ خۆت تاقی بکەرەوە!</p>
+            <p class="sub">بابەتەکە هەڵبژێرە یان بینووسە و ڕاستەوخۆ خۆت تاقی بکەرەوە!</p>
             <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName || 'بڵند'}" oninput="state.myName=this.value; localStorage.setItem(USER_NAME_KEY, this.value);" />
             ${vibeSelectorBox}
             ${aiTopicBox}
@@ -1446,7 +1486,7 @@
     function renderLobbyScreen() {
       const joinUrl = `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`;
       const vibeObj = QUESTION_VIBES.find(v => v.id === state.selectedVibeId) || QUESTION_VIBES[0];
-      const activeTopic = state.customTopicText.trim() || state.selectedTopic;
+      const activeTopic = state.customTopicText.trim() || state.selectedTopic || PRESET_TOPICS[0];
 
       const playersChips = state.players.map(p => `
         <div class="p-badge">
@@ -1505,9 +1545,8 @@
       }
     }
 
-    // چارەسەری کێشەی ٧: شاشەی ئامادەباشی (٣، ٢، ١) پێش دەستپێکردنی پرسیاری یەکەم
     function renderCountdownScreen() {
-      const activeTopic = state.customTopicText.trim() || state.selectedTopic;
+      const activeTopic = state.customTopicText.trim() || state.selectedTopic || PRESET_TOPICS[0];
       return `
         <div class="card countdown-overlay">
           <h2>🚀 ئامادەبن! پێشبڕکێ دەست پێ دەکات</h2>
@@ -1522,8 +1561,9 @@
       const me = state.players.find(p => p.id === state.myId);
       const myAns = me ? me.currentAnswer : null;
       const pct = Math.max(0, (state.timeLeft / state.questionDuration) * 100);
-      const answeredCount = state.players.filter(p => p.hasAnswered).length;
 
+      // وەڵامەکان قوفڵ نابن تا کاتەکە تەواو دەبێت (تەنها لە کاتی revealAnswer قوفڵ دەبن)
+      // هەروەها هیچ نیشانەیەکی "نێردرا" یان نیشاندانی کێ وەڵامی داوەتەوە دەرناکەوێت تا کاتەکە سفر دەبێتەوە
       const optsHtml = qObj.opts.map((opt, idx) => {
         let cls = 'opt-card';
         if (state.revealAnswer) {
@@ -1534,9 +1574,9 @@
         }
 
         return `
-          <button class="${cls}" ${myAns !== null || state.revealAnswer ? 'disabled' : ''} onclick="submitPlayerAnswer(${idx})">
+          <button class="${cls}" ${state.revealAnswer ? 'disabled' : ''} onclick="submitPlayerAnswer(${idx})">
             <span>${idx + 1}. ${opt}</span>
-            <span>${state.revealAnswer && idx === qObj.ans ? '✅' : (state.revealAnswer && myAns === idx ? '❌' : (myAns === idx ? '👈 نێردرا' : ''))}</span>
+            <span>${state.revealAnswer && idx === qObj.ans ? '✅' : (state.revealAnswer && myAns === idx ? '❌' : '')}</span>
           </button>
         `;
       }).join('');
@@ -1547,7 +1587,6 @@
           <span>
             ${i === 0 ? '👑' : `${i + 1}.`} ${p.name}
             ${p.streak >= 2 ? `<small style="color:var(--amber);">🔥x${p.streak}</small>` : ''}
-            ${p.hasAnswered && !state.revealAnswer ? ' ✅' : ''}
             ${state.revealAnswer && p.lastGain > 0 ? `<span class="gain-badge">+${p.lastGain}</span>` : ''}
           </span>
           <span style="color:var(--amber);">${p.score} خاڵ</span>
@@ -1568,17 +1607,14 @@
           <div class="q-banner">${qObj.q}</div>
           <div class="opts-list">${optsHtml}</div>
 
-          <!-- چارەسەری کێشەی ٣: دوگمەی تێپەڕاندنی خێرا بۆ Host ئەگەر کەسێک خەتەکەی خاو بوو -->
-          ${state.role === 'host' && !state.revealAnswer ? `
-            <button class="btn btn-amber" style="margin-top:14px; padding:10px;" onclick="revealQuestionResult()">
-              ⏭️ پیشاندانی وەڵام و تێپەڕاندنی کات (${answeredCount}/${state.players.length} وەڵامیان داوەتەوە)
-            </button>
-          ` : ''}
-
-          ${(state.role === 'host' || state.role === 'solo') && state.revealAnswer ? `
-            <button class="btn btn-primary" style="margin-top:16px;" ${state.generatingComedy ? 'disabled' : ''} onclick="advanceToNextQuestion()">
-              ${state.generatingComedy ? '<span class="spinner"></span> خەریکی ئامادەکردنی قسە کۆمیدییەکەیە...' : (state.qIndex + 1 < state.questions.length ? '⬅️ پرسیاری دواتر' : '🏆 بینینی ئەنجام و قسە کۆمیدییەکەی AI')}
-            </button>
+          ${state.revealAnswer ? `
+            <div class="next-auto-banner" id="autoNextBanner">
+              ${state.generatingComedy
+                ? '<span class="spinner"></span> خەریکی ئامادەکردنی قسە کۆمیدییەکەی کۆتاییە...'
+                : (state.qIndex + 1 < state.questions.length
+                    ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکەی تر دەست پێ دەکات...`
+                    : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکەی تر پیشان دەدرێت...`)}
+            </div>
           ` : ''}
 
           <div class="emoji-bar">
@@ -1590,7 +1626,7 @@
         </div>
 
         <div class="card">
-          <h3 style="margin-bottom:10px; font-size:0.95rem;">📊 ڕیزبەندی ڕاستەوخۆی خاڵەکان (${answeredCount}/${state.players.length}):</h3>
+          <h3 style="margin-bottom:10px; font-size:0.95rem;">📊 ڕیزبەندی خاڵەکان:</h3>
           ${leaderboardHtml}
         </div>
       `;
@@ -1690,9 +1726,8 @@
       state.generatingAI = true;
       render();
 
-      const vibeObj = QUESTION_VIBES.find(v => v.id === state.selectedVibeId) || QUESTION_VIBES[0];
-      const topic = state.customTopicText.trim() || state.selectedTopic;
-      state.questions = await generateAIQuestions(vibeObj, topic, state.questionLimit, state.difficulty);
+      const topic = state.customTopicText.trim() || state.selectedTopic || PRESET_TOPICS[0];
+      state.questions = await generateAIQuestions(topic, state.questionLimit, state.difficulty);
       state.generatingAI = false;
 
       state.players = [{ id: state.myId, name: state.myName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 }];
@@ -1709,7 +1744,7 @@
       render();
 
       state.roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-      const peerId = 'MAJLIS_V7_' + state.roomCode;
+      const peerId = 'MAJLIS_V8_' + state.roomCode;
       state.peer = new Peer(peerId);
 
       state.peer.on('open', () => {
@@ -1745,7 +1780,7 @@
       }
       state.peer = new Peer();
       state.peer.on('open', () => {
-        const conn = state.peer.connect('MAJLIS_V7_' + code, { reliable: true });
+        const conn = state.peer.connect('MAJLIS_V8_' + code, { reliable: true });
         state.hostConn = conn;
 
         const timeout = setTimeout(() => {
@@ -1766,7 +1801,6 @@
       });
     }
 
-    // چارەسەری کێشەی ٢: ئەگەر مۆبایلی یاریزانێک شاشەکەی کوژایەوە و هەڵبووەوە، خۆکارانە پەیوەندی نوێ دەکاتەوە
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && state.role === 'player' && state.roomCode) {
         if (!state.hostConn || !state.hostConn.open) {
@@ -1778,7 +1812,6 @@
     function onHostReceiveData(conn, data) {
       if (data.type === 'JOIN') {
         state.connections[data.id] = conn;
-        // ئەگەر یاریزانەکە پێشتر لە یارییەکەدا بووە (بەهۆی پچڕان گەڕاوەتەوە)، خاڵەکانی خۆی بۆ دەپارێزرێت!
         let existing = state.players.find(p => p.id === data.id || p.name === data.name);
         if (existing) {
           existing.id = data.id;
@@ -1789,14 +1822,12 @@
         syncAllPlayers();
         render();
       } else if (data.type === 'ANSWER') {
+        // ڕێگەدان بە یاریزان کە وەڵامەکەی خۆی بگۆڕێت هەتا کاتەکە تەواو نەبووبێت، بەبێ ئەوەی لای کەسی تر پیشان بدرێت
         const p = state.players.find(x => x.id === data.id);
-        if (p && !p.hasAnswered && !state.revealAnswer) {
+        if (p && !state.revealAnswer) {
           p.currentAnswer = data.ansIdx;
           p.hasAnswered = true;
           p.answerTime = state.timeLeft;
-          checkAllPlayersAnswered();
-          syncAllPlayers();
-          render();
         }
       } else if (data.type === 'EMOJI') {
         showFloatingEmoji(data.emoji, data.sender);
@@ -1814,9 +1845,16 @@
         updateTimerUIOnly();
         return;
       }
+      if (data.type === 'REVEAL_TICK') {
+        state.revealCountdown = data.revealCountdown;
+        updateRevealCountdownUIOnly();
+        return;
+      }
       if (data.type === 'SYNC') {
         const prevReveal = state.revealAnswer;
         const prevScreen = state.screen;
+        const prevQIndex = state.qIndex;
+
         state.screen = data.screen;
         state.countdownVal = data.countdownVal;
         state.questionSourceLabel = data.questionSourceLabel;
@@ -1824,13 +1862,14 @@
         state.timeLeft = data.timeLeft;
         state.questionDuration = data.questionDuration;
         state.revealAnswer = data.revealAnswer;
+        state.revealCountdown = data.revealCountdown || 3;
         if (data.comedyResult) state.comedyResult = data.comedyResult;
 
-        // پاراستنی هەڵبژاردەی یاریزان لەسەر شاشەکەی خۆی
         const myOld = state.players.find(p => p.id === state.myId);
+        const keepMyChoice = !data.revealAnswer && prevQIndex === data.qIndex && myOld;
         state.players = data.players.map(p => {
-          if (p.id === state.myId && !data.revealAnswer && myOld && myOld.hasAnswered) {
-            return { ...p, currentAnswer: myOld.currentAnswer };
+          if (p.id === state.myId && keepMyChoice) {
+            return { ...p, currentAnswer: myOld.currentAnswer, hasAnswered: myOld.hasAnswered };
           }
           return p;
         });
@@ -1860,7 +1899,7 @@
       });
     }
 
-    // چارەسەری کێشەی ٤: پاراستنی نهێنیی وەڵامی ڕاست تا کاتی پرسیارەکە تەواو دەبێت!
+    // شاردنەوەی تەواوەتی وەڵام و باری وەڵامدانەوەی یاریزانەکان تا چرکەی سفر
     function syncAllPlayers() {
       if (state.role !== 'host') return;
       const qObj = state.questions[state.qIndex];
@@ -1874,9 +1913,9 @@
         id: p.id,
         name: p.name,
         score: p.score,
-        lastGain: p.lastGain,
+        lastGain: state.revealAnswer ? p.lastGain : 0,
         streak: p.streak,
-        hasAnswered: p.hasAnswered,
+        hasAnswered: false,
         currentAnswer: state.revealAnswer ? p.currentAnswer : null
       }));
 
@@ -1892,6 +1931,7 @@
         timeLeft: state.timeLeft,
         questionDuration: state.questionDuration,
         revealAnswer: state.revealAnswer,
+        revealCountdown: state.revealCountdown,
         comedyResult: state.comedyResult
       });
     }
@@ -1900,9 +1940,8 @@
       state.generatingAI = true;
       render();
 
-      const vibeObj = QUESTION_VIBES.find(v => v.id === state.selectedVibeId) || QUESTION_VIBES[0];
-      const topic = state.customTopicText.trim() || state.selectedTopic;
-      state.questions = await generateAIQuestions(vibeObj, topic, state.questionLimit, state.difficulty);
+      const topic = state.customTopicText.trim() || state.selectedTopic || PRESET_TOPICS[0];
+      state.questions = await generateAIQuestions(topic, state.questionLimit, state.difficulty);
       state.generatingAI = false;
 
       state.qIndex = 0;
@@ -1912,6 +1951,7 @@
 
     function runPreGameCountdown() {
       clearInterval(state.timerInterval);
+      clearInterval(state.revealInterval);
       state.screen = 'countdown';
       state.countdownVal = 3;
       syncAllPlayers();
@@ -1934,6 +1974,7 @@
 
     function beginQuestionCountdown() {
       clearInterval(state.timerInterval);
+      clearInterval(state.revealInterval);
       state.timeLeft = state.questionDuration;
       state.revealAnswer = false;
       state.players.forEach(p => { p.hasAnswered = false; p.currentAnswer = null; p.answerTime = 0; p.lastGain = 0; });
@@ -1955,32 +1996,27 @@
       }, 1000);
     }
 
+    // ڕێگەدان بە گۆڕینی وەڵام تا کاتەکە تەواو دەبێت و چاوەڕێکردنی تەواوبوونی کاتەکە بۆ هەمووان پێکەوە
     function submitPlayerAnswer(optIdx) {
       const me = state.players.find(p => p.id === state.myId);
-      if (!me || me.hasAnswered || state.revealAnswer) return;
+      if (!me || state.revealAnswer) return;
 
       me.currentAnswer = optIdx;
       me.hasAnswered = true;
       me.answerTime = state.timeLeft;
       render();
 
-      if (state.role === 'host' || state.role === 'solo') {
-        checkAllPlayersAnswered();
-        syncAllPlayers();
-      } else if (state.hostConn && state.hostConn.open) {
+      if (state.role === 'player' && state.hostConn && state.hostConn.open) {
         state.hostConn.send({ type: 'ANSWER', id: state.myId, ansIdx: optIdx });
       }
     }
 
-    function checkAllPlayersAnswered() {
-      if (state.players.every(p => p.hasAnswered)) {
-        revealQuestionResult();
-      }
-    }
-
+    // کاتێک کاتەکە دەگاتە سفر، ئەنجامی هەمووان پێکەوە پیشان دەدرێت و دوای ٣ چرکە خۆکارانە دەچێتە پرسیاری دواتر
     function revealQuestionResult() {
       clearInterval(state.timerInterval);
+      clearInterval(state.revealInterval);
       state.revealAnswer = true;
+      state.revealCountdown = 3;
       const qObj = state.questions[state.qIndex];
 
       state.players.forEach(p => {
@@ -2003,9 +2039,25 @@
 
       syncAllPlayers();
       render();
+
+      if (state.role === 'host' || state.role === 'solo') {
+        state.revealInterval = setInterval(() => {
+          state.revealCountdown--;
+          if (state.revealCountdown <= 0) {
+            clearInterval(state.revealInterval);
+            advanceToNextQuestion();
+          } else {
+            updateRevealCountdownUIOnly();
+            if (state.role === 'host') {
+              broadcastPayload({ type: 'REVEAL_TICK', revealCountdown: state.revealCountdown });
+            }
+          }
+        }, 1000);
+      }
     }
 
     async function advanceToNextQuestion() {
+      clearInterval(state.revealInterval);
       if (state.qIndex + 1 < state.questions.length) {
         state.qIndex++;
         beginQuestionCountdown();
@@ -2083,6 +2135,7 @@
       document.getElementById('cqOpt3').value = '';
       document.getElementById('customQStatus').textContent = `✅ زیادکرا! کۆی پرسیارە تایبەتەکانت: ${customQuestions.length}`;
       state.selectedTopic = 'پرسیارەکانی خۆم (تایبەت)';
+      state.customTopicText = '';
     }
 
     render();
