@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>مەجلیس AI Pro V8 | پێشبڕکێی زیرەکی دەستکرد</title>
+  <title>مەجلیس | پێشبڕکێی هاوڕێیان</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -28,6 +28,15 @@
       --radius: 20px;
     }
 
+    body.light-mode {
+      --bg-dark: #f1f5f9;
+      --bg-surface: rgba(255, 255, 255, 0.92);
+      --bg-card: rgba(226, 232, 240, 0.85);
+      --border: rgba(15, 23, 42, 0.12);
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -48,12 +57,54 @@
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* شاشەی دەستپێک (Splash Screen) */
+    #splashScreen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-dark);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      transition: opacity 0.5s ease;
+    }
+
+    .splash-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      box-shadow: 0 10px 30px var(--primary-glow);
+      animation: pulseSplash 1.2s infinite alternate;
+    }
+
+    @keyframes pulseSplash {
+      from { transform: scale(0.92); }
+      to { transform: scale(1.08); }
+    }
+
+    .splash-title {
+      font-weight: 900;
+      font-size: 2rem;
+      background: linear-gradient(90deg, #c084fc, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
     }
 
     header {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
-      background: rgba(6, 9, 19, 0.88);
+      background: var(--bg-surface);
       backdrop-filter: blur(14px);
       display: flex;
       justify-content: space-between;
@@ -71,21 +122,21 @@
     }
 
     .brand-icon {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 12px;
       background: linear-gradient(135deg, var(--primary), var(--accent));
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.35rem;
-      box-shadow: 0 6px 18px var(--primary-glow);
+      font-size: 1.25rem;
+      box-shadow: 0 4px 15px var(--primary-glow);
     }
 
     .brand-title {
       font-weight: 900;
-      font-size: 1.15rem;
-      background: linear-gradient(90deg, #e9d5ff, #f472b6);
+      font-size: 1.2rem;
+      background: linear-gradient(90deg, #c084fc, #f472b6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -100,9 +151,9 @@
       background: var(--bg-card);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 7px 11px;
+      padding: 7px 12px;
       border-radius: 50px;
-      font-size: 0.76rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
@@ -128,7 +179,7 @@
       border-radius: var(--radius);
       padding: 20px;
       margin-bottom: 16px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
       position: relative;
     }
 
@@ -152,7 +203,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
       margin-bottom: 16px;
-      background: rgba(9, 13, 24, 0.9);
+      background: var(--bg-card);
       padding: 6px;
       border-radius: 14px;
       border: 1px solid var(--border);
@@ -181,8 +232,8 @@
       padding: 13px 15px;
       border-radius: 14px;
       border: 1px solid var(--border);
-      background: rgba(9, 13, 24, 0.92);
-      color: #fff;
+      background: var(--bg-card);
+      color: var(--text);
       font-size: 0.95rem;
       font-weight: 700;
       margin-bottom: 12px;
@@ -207,7 +258,7 @@
       border-radius: 14px;
       border: 1px solid var(--border);
       background: var(--bg-card);
-      color: #fff;
+      color: var(--text);
       font-size: 0.95rem;
       font-weight: 800;
       cursor: pointer;
@@ -226,22 +277,31 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--primary), var(--accent));
       border: none;
+      color: #fff;
       box-shadow: 0 8px 24px var(--primary-glow);
     }
 
     .btn-emerald {
       background: linear-gradient(135deg, #059669, #10b981);
       border: none;
+      color: #fff;
       box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
     }
 
     .btn-cyan {
       background: linear-gradient(135deg, #0284c7, #06b6d4);
       border: none;
+      color: #fff;
+    }
+
+    .btn-amber {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: var(--amber);
+      color: #fde68a;
     }
 
     .vibe-section {
-      background: rgba(15, 23, 42, 0.72);
+      background: var(--bg-card);
       border: 1px solid rgba(6, 182, 212, 0.35);
       border-radius: 16px;
       padding: 14px;
@@ -268,7 +328,7 @@
     }
 
     .vibe-card {
-      background: rgba(9, 13, 24, 0.85);
+      background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 10px 8px;
@@ -277,16 +337,10 @@
       transition: 0.2s;
     }
 
-    .vibe-card .v-ico {
-      font-size: 1.4rem;
-      display: block;
-      margin-bottom: 2px;
-    }
-
     .vibe-card strong {
       font-size: 0.8rem;
       display: block;
-      color: #fff;
+      color: var(--text);
     }
 
     .vibe-card small {
@@ -334,7 +388,7 @@
       padding: 7px 12px;
       border-radius: 50px;
       border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.85);
+      background: var(--bg-card);
       color: var(--muted);
       font-size: 0.78rem;
       font-weight: 700;
@@ -357,7 +411,7 @@
     }
 
     .setting-box {
-      background: rgba(15, 23, 42, 0.75);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       padding: 8px;
       border-radius: 12px;
@@ -372,8 +426,8 @@
     }
 
     .setting-box select {
-      background: var(--bg-card);
-      color: #fff;
+      background: var(--bg-surface);
+      color: var(--text);
       border: 1px solid var(--border);
       padding: 5px 6px;
       border-radius: 8px;
@@ -389,13 +443,13 @@
       border-radius: 18px;
       width: fit-content;
       margin: 10px auto 14px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .room-pin {
       background: rgba(139, 92, 246, 0.16);
       border: 2px dashed var(--primary);
-      color: #f3e8ff;
+      color: #9333ea;
       font-size: 1.7rem;
       font-weight: 900;
       letter-spacing: 4px;
@@ -416,7 +470,7 @@
     .p-badge {
       background: rgba(16, 185, 129, 0.16);
       border: 1px solid var(--emerald);
-      color: #a7f3d0;
+      color: var(--emerald);
       padding: 6px 12px;
       border-radius: 50px;
       font-weight: 800;
@@ -429,7 +483,7 @@
     .kick-btn {
       background: rgba(244, 63, 94, 0.25);
       border: none;
-      color: #fda4af;
+      color: var(--danger);
       width: 20px;
       height: 20px;
       border-radius: 50%;
@@ -457,12 +511,12 @@
       border-radius: 50px;
       background: rgba(139, 92, 246, 0.2);
       border: 1px solid rgba(139, 92, 246, 0.4);
-      color: #e9d5ff;
+      color: #a855f7;
     }
 
     .timer-track {
       height: 10px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(148, 163, 184, 0.2);
       border-radius: 50px;
       overflow: hidden;
       margin-bottom: 14px;
@@ -479,11 +533,12 @@
       font-weight: 900;
       text-align: center;
       padding: 20px 14px;
-      background: rgba(9, 13, 24, 0.88);
+      background: var(--bg-card);
       border-radius: 16px;
       border: 1px solid var(--border);
       margin-bottom: 16px;
       line-height: 1.65;
+      color: var(--text);
     }
 
     .opts-list {
@@ -496,8 +551,8 @@
       padding: 15px 16px;
       border-radius: 14px;
       border: 2px solid var(--border);
-      background: rgba(30, 41, 59, 0.88);
-      color: #fff;
+      background: var(--bg-card);
+      color: var(--text);
       font-size: 0.95rem;
       font-weight: 800;
       cursor: pointer;
@@ -512,26 +567,29 @@
 
     .opt-card.selected {
       border-color: var(--cyan);
-      background: rgba(6, 182, 212, 0.26);
-      box-shadow: 0 0 14px rgba(6, 182, 212, 0.22);
+      background: rgba(6, 182, 212, 0.22);
+      box-shadow: 0 0 14px rgba(6, 182, 212, 0.2);
     }
 
     .opt-card.correct {
       border-color: var(--emerald);
       background: rgba(16, 185, 129, 0.32);
-      color: #a7f3d0;
+      color: #065f46;
     }
 
     .opt-card.wrong {
       border-color: var(--danger);
       background: rgba(244, 63, 94, 0.28);
-      color: #fecdd3;
+      color: #9f1239;
     }
+
+    body.light-mode .opt-card.correct { color: #065f46; }
+    body.light-mode .opt-card.wrong { color: #9f1239; }
 
     .gain-badge {
       display: inline-block;
       background: rgba(16, 185, 129, 0.22);
-      color: #6ee7b7;
+      color: var(--emerald);
       border: 1px solid var(--emerald);
       padding: 2px 8px;
       border-radius: 50px;
@@ -546,7 +604,7 @@
       border-radius: 12px;
       background: rgba(139, 92, 246, 0.16);
       border: 1px solid rgba(139, 92, 246, 0.4);
-      color: #e9d5ff;
+      color: var(--primary);
       text-align: center;
       font-weight: 800;
       font-size: 0.86rem;
@@ -563,15 +621,16 @@
       align-items: center;
       padding: 11px 14px;
       border-radius: 12px;
-      background: rgba(9, 13, 24, 0.78);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       margin-bottom: 8px;
       font-weight: 800;
       font-size: 0.9rem;
+      color: var(--text);
     }
 
     .leader-row.first {
-      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(9, 13, 24, 0.88));
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), var(--bg-card));
       border-color: var(--amber);
     }
 
@@ -594,13 +653,13 @@
     .comedy-card.winner-box {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 182, 212, 0.1));
       border: 1px solid var(--emerald);
-      color: #d1fae5;
+      color: var(--emerald);
     }
 
     .comedy-card.loser-box {
       background: linear-gradient(135deg, rgba(244, 63, 94, 0.18), rgba(245, 158, 11, 0.1));
       border: 1px solid var(--danger);
-      color: #ffe4e6;
+      color: var(--danger);
     }
 
     .comedy-head {
@@ -679,15 +738,15 @@
       top: 70px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.95);
+      background: var(--bg-surface);
       border: 1px solid var(--primary);
-      color: #fff;
+      color: var(--text);
       padding: 10px 18px;
       border-radius: 50px;
       font-size: 0.82rem;
       font-weight: 800;
       z-index: 400;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       animation: popIn 0.25s ease;
     }
 
@@ -705,7 +764,7 @@
     .modal-backdrop.open { display: flex; }
 
     .modal-box {
-      background: #0f172a;
+      background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       max-width: 500px;
@@ -713,6 +772,7 @@
       padding: 20px;
       max-height: 88vh;
       overflow-y: auto;
+      color: var(--text);
     }
 
     .spinner {
@@ -729,50 +789,69 @@
 </head>
 <body>
 
+  <!-- شاشەی دەستپێک (Splash Screen) -->
+  <div id="splashScreen">
+    <div class="splash-logo">🎲</div>
+    <div class="splash-title">مەجلیس</div>
+  </div>
+
   <header>
     <div class="brand" onclick="resetToHome()">
-      <div class="brand-icon">🎭</div>
-      <div>
-        <div class="brand-title">مەجلیس AI Pro</div>
-      </div>
+      <div class="brand-icon">🎲</div>
+      <div class="brand-title">مەجلیس</div>
     </div>
     <div class="header-controls">
-      <button class="icon-pill" onclick="openCustomQModal()">✍️ پرسیاری خۆت</button>
-      <button class="icon-pill" onclick="openApiModal()">🔑 کلیلی AI</button>
-      <button class="icon-pill" onclick="clearAskedHistory()" title="سڕینەوەی مێژووی پرسیارەکان">🔄 سفرکردنەوە</button>
-      <button class="icon-pill" id="soundBtn" onclick="toggleSound()">🔊</button>
+      <button class="icon-pill" onclick="openSettingsModal()">⚙️ دەستکاری</button>
     </div>
   </header>
 
   <main id="appContainer"></main>
 
-  <!-- مۆداڵی کلیلی زیرەکی دەستکرد -->
+  <!-- مۆداڵی ڕێکخستنەکان و دەستکاری (Settings & Tools Modal) -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-box">
+      <h3 style="margin-bottom:14px;">⚙️ ڕێکخستن و دەستکاری</h3>
+      
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn" onclick="closeSettingsModal(); openCustomQModal();">✍️ زیادکردنی پرسیاری تایبەت</button>
+        <button class="btn" onclick="toggleThemeMode()" id="themeModalBtn">🌓 گۆڕینی دۆخی شەو و ڕۆژ</button>
+        <button class="btn" onclick="closeSettingsModal(); openApiModal();">🔑 کلیلی زیرەکی دەستکرد (AI)</button>
+        <button class="btn" onclick="clearAskedHistory(); closeSettingsModal();">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; margin-top:16px;">
+        <button class="btn btn-primary" style="width:auto;" onclick="closeSettingsModal()">داخستن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مۆداڵی کلیلی AI -->
   <div class="modal-backdrop" id="apiModal">
     <div class="modal-box">
-      <h3 style="margin-bottom:8px;">🔑 ڕێکخستنی کلیلی Google Gemini AI</h3>
+      <h3 style="margin-bottom:8px;">🔑 کلیلی زیرەکی دەستکرد</h3>
       <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">
-        ئەپەکە خۆکارانە بە زیرەکی دەستکردی کراوە کار دەکات، بەڵام ئەگەر کلیلی فەرمی Google AI Studio ت هەیە (کە بە <strong>AIzaSy...</strong> دەست پێ دەکات) لێرە دایبنێ بۆ خێرایی و وردیی ١٠٠٪:
+        ئەپەکە خۆکارانە کار دەکات، بەڵام ئەگەر کلیلی تایبەتی خۆتت هەیە لێرە دایبنێ:
       </p>
       <input type="text" id="apiKeyInput" class="input" dir="ltr" placeholder="AIzaSy..." />
       <div style="font-size:0.76rem; color:var(--emerald); margin-bottom:12px; text-align:center;">
-        ژمارەی ئەو پرسیارانەی تا ئێستا کراون و دووبارە نابنەوە: <strong id="seenCountTxt">0</strong> پرسیار
+        ژمارەی پرسیارە بینراوەکان: <strong id="seenCountTxt">0</strong>
       </div>
       <div style="display:flex; gap:8px;">
-        <button class="btn" onclick="closeApiModal()">داخستن</button>
+        <button class="btn" onclick="closeApiModal()">پاشگەزبوونەوە</button>
         <button class="btn btn-primary" onclick="saveApiKey()">💾 پاشەکەوتکردن</button>
       </div>
     </div>
   </div>
 
-  <!-- مۆداڵی زیادکردنی پرسیاری تایبەت -->
+  <!-- مۆداڵی پرسیاری تایبەت -->
   <div class="modal-backdrop" id="customQModal">
     <div class="modal-box">
-      <h3 style="margin-bottom:8px;">✍️ زیادکردنی پرسیاری تایبەتی خۆت</h3>
+      <h3 style="margin-bottom:8px;">✍️ پرسیاری تایبەتی خۆت</h3>
       <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">
-        پرسیار لەسەر هاوڕێکانت یان هەر بابەتێک بنووسە بۆ ئەوەی لە بەشی (پرسیارەکانی خۆم) یاری پێ بکەن:
+        پرسیار لەسەر هاوڕێکانت بنووسە بۆ ئەوەی لە بەشی (پرسیارەکانی خۆم) یاری پێ بکەن:
       </p>
-      <input type="text" id="cqText" class="input" placeholder="دەقی پرسیارەکە بنووسە..." style="text-align:right;" />
-      <input type="text" id="cqOpt0" class="input" placeholder="وەڵامی ڕاست لێرە بنووسە ✅" style="text-align:right; border-color:var(--emerald);" />
+      <input type="text" id="cqText" class="input" placeholder="دەقی پرسیارەکە..." style="text-align:right;" />
+      <input type="text" id="cqOpt0" class="input" placeholder="وەڵامی ڕاست ✅" style="text-align:right; border-color:var(--emerald);" />
       <input type="text" id="cqOpt1" class="input" placeholder="هەڵبژاردەی هەڵەی ١" style="text-align:right;" />
       <input type="text" id="cqOpt2" class="input" placeholder="هەڵبژاردەی هەڵەی ٢" style="text-align:right;" />
       <input type="text" id="cqOpt3" class="input" placeholder="هەڵبژاردەی هەڵەی ٣" style="text-align:right;" />
@@ -785,11 +864,35 @@
   </div>
 
   <script>
-    const STORAGE_API_KEY = 'MAJLIS_GEMINI_KEY_V7';
-    const STORAGE_SEEN_Q = 'MAJLIS_SEEN_QUESTIONS_V7';
-    const STORAGE_CUSTOM_Q = 'MAJLIS_CUSTOM_Q_V7';
-    const USER_NAME_KEY = 'MAJLIS_USER_NAME_V7';
-    const USER_ID_KEY = 'MAJLIS_USER_ID_V7';
+    // شاشەی دەستپێک (Splash Screen) بۆ ماوەی ٢ چرکە
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => splash.remove(), 500);
+        }
+      }, 2000);
+    });
+
+    const STORAGE_API_KEY = 'MAJLIS_GEMINI_KEY_V8';
+    const STORAGE_SEEN_Q = 'MAJLIS_SEEN_QUESTIONS_V8';
+    const STORAGE_CUSTOM_Q = 'MAJLIS_CUSTOM_Q_V8';
+    const USER_NAME_KEY = 'MAJLIS_USER_NAME_V8';
+    const USER_ID_KEY = 'MAJLIS_USER_ID_V8';
+    const THEME_MODE_KEY = 'MAJLIS_THEME_MODE_V8';
+
+    // ڕێکخستنی دۆخی شەو و ڕۆژ لە کاتی کردنەوەی ئەپدا
+    if (localStorage.getItem(THEME_MODE_KEY) === 'light') {
+      document.body.classList.add('light-mode');
+    }
+
+    function toggleThemeMode() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      localStorage.setItem(THEME_MODE_KEY, isLight ? 'light' : 'dark');
+      showToast(isLight ? '☀️ دۆخی ڕۆژ چالاک کرا' : '🌙 دۆخی شەو چالاک کرا');
+    }
 
     let persistentId = localStorage.getItem(USER_ID_KEY);
     if (!persistentId) {
@@ -809,7 +912,7 @@
       if (sq) seenQuestions = JSON.parse(sq);
     } catch (e) {}
 
-    // شێوازەکانی دانیشتن (تەنها بۆ پیرۆزبایی و قسە کۆمیدییەکەی کۆتایی یاری بەکاردێت)
+    // پێوەرەکانی کەشی دانیشتن (تەنها بۆ پیرۆزبایی و قسەی کۆمیدیی کۆتایی)
     const QUESTION_VIBES = [
       {
         id: 'friends',
@@ -869,7 +972,7 @@
     const TOPIC_BANKS = {
       'یاسا و دادگا و دەستوور': [
         { q: 'لە یاسادا، بنەمای "المتهم بريء حتى تثبت إدانته" بە واتای چی دێت؟', opts: ['تۆمەتبار بێتاوانە تا تاوانەکەی لە دادگا دەسەلمێنرێت', 'هەموو تۆمەتبارێک دەبێت زیندانی بکرێت', 'پۆلیس بڕیاری کۆتایی دەدات', 'شاهید پێویست نییە'], ans: 0 },
-        { q: 'بەرزترین یاسا لە ناو هەر دەوڵەتێکدا کامەیە کە نابێت هیچ یاسایەکی تر پێچەوانەی بێت؟', opts: ['یاسای هاتوچۆ', 'دەستوور (الدستور)', 'پەیڕەوی ناوخۆ', 'بڕیاری شارەوانی'], ans: 1 },
+        { q: 'بەرزترین ياسا لە ناو هەر دەوڵەتێکدا کامەیە کە نابێت هیچ یاسایەکی تر پێچەوانەی بێت؟', opts: ['یاسای هاتوچۆ', 'دەستوور (الدستور)', 'پەیڕەوی ناوخۆ', 'بڕیاری شارەوانی'], ans: 1 },
         { q: 'کام دەسەڵات لە دەوڵەتدا بەرپرسە لە دەرکردن و هەموارکردنەوەی یاساکان؟', opts: ['دەسەڵاتی جێبەجێکردن (حکومەت)', 'دەسەڵاتی یاسادانان (پەرلەمان)', 'دەسەڵاتی دادوەری', 'بانکی ناوەندی'], ans: 1 },
         { q: 'لە یاسای شارستانی (مدني)ی عێراقیدا، تەمەنی یاسایی کامڵبوون (سن الرشد) چەند ساڵە؟', opts: ['١٥ ساڵ', '١٨ ساڵی تەواو', '٢١ ساڵ', '٢٢ ساڵ'], ans: 1 },
         { q: 'لە یاسای بازرگانیدا (القانون التجاري)، کاتێک بازرگانێک لە دانەوەی قەرزە بازرگانییەکانی دەوەستێت، دادگا چ بڕیارێک دەردەکات؟', opts: ['پاداشتکردن', 'مایەپووچبوون (إفلاس)', 'لێخۆشبوونی گشتی', 'بەخشینی باج'], ans: 1 },
@@ -877,13 +980,7 @@
         { q: 'لە یاسای سزاکاندا (قانون العقوبات)، تاوانەکان لە ڕووی قورسییەوە دابەش دەبن بۆ چەند جۆر؟', opts: ['٣ جۆر: جینایەت، کەتن (جنحة)، سەرپێچی (مخالفة)', 'تەنها ١ جۆر', '٢ جۆر: گەورە و بچووک', '٥ جۆر'], ans: 0 },
         { q: 'کام دادگا تایبەتمەندە بە یەکلاکردنەوەی کێشەکانی هاوسەرگیری و مارەیی و جیابوونەوە و میرات؟', opts: ['دادگای کەتنی', 'دادگای باری کەسی (الأحوال الشخصية)', 'دادگای بازرگانی', 'دادگای کارگێڕی'], ans: 1 },
         { q: 'لە یاسای نێودەوڵەتیدا، بارەگای سەرەکی دادگای دادی نێودەوڵەتی (ICJ) لە کام شارە؟', opts: ['جنێڤ', 'لاهای (هۆڵەندا)', 'نیویۆرک', 'پاریس'], ans: 1 },
-        { q: 'تانەدان (طعن) لە بڕیارەکانی دادگای بەرایی و تاوانەکان لە پێش کام دادگا دەکرێت؟', opts: ['دادگای هاتوچۆ', 'دادگای تێهەڵچوونەوە و پێداچوونەوە (تمییز)', 'بنکەی پۆلیس', 'فەرمانگەی دادنووسی'], ans: 1 },
-        { q: 'لە یاسادا، "بەرگریی شەرعی" (الدفاع الشرعي) کەی ڕێگەپێدراوە؟', opts: ['کاتێک مەترسییەکی ناڕەوا و دەستبەجێ لەسەر گیان یان ماڵ هەبێت بە ئەندازەی پێویست', 'دوای تێپەڕبوونی هەفتەیەک بەسەر ڕووداوەکەدا', 'کاتێک کەسێک قسەیەکی سارد دەکات', 'لە کاتی کێبڕکێی وەرزشیدا'], ans: 0 },
-        { q: 'لە یاسای بازرگانیدا، کام لەمانە بە وەرەقەی بازرگانی (الأوراق التجارية) دادەنرێت؟', opts: ['پسوولەی کارەبا', 'چەک و کۆمپیالە و سفتەجە', 'گرێبەستی کرێی خانوو', 'تاپۆی زەوی'], ans: 1 },
-        { q: 'کۆنترین یاسای نووسراو لە مێژووی مرۆڤایەتیدا لە میزۆپۆتامیا (عیراقی کۆن) کامەیە؟', opts: ['یاسای ناپلیۆن', 'یاسای ئورنەمۆ و حامورابی', 'یاسای ڕۆمانی', 'یاسای یۆنانی'], ans: 1 },
-        { q: 'لە یاسای شارستانیدا، چەمکی "التعسف في استعمال الحق" واتای چییە؟', opts: ['بەکارهێنانی مافی خۆت بە شێوەیەک کە زیانی ناڕەوا بە کەسانی تر بگەیەنێت', 'وازهێنان لە مافی خۆت', 'فرۆشتنی موڵک بە گران', 'تۆمارکردنی سکاڵا'], ans: 0 },
-        { q: 'لە دەستووری عێراقی ساڵی ٢٠٠٥دا، سیستەمی حوکمڕانی چۆن پێناسە کراوە؟', opts: ['پاشایەتی دەستووری', 'کۆماری، فیدراڵی، دیموکراتی، پەرلەمانی', 'سەرۆکایەتی ڕەها', 'کۆنفیدراڵی'], ans: 1 },
-        { q: 'لە دادگادا، ئەو کەسەی سکاڵای یاسایی لەسەر کەسێکی تر تۆمار دەکات لە داوای شارستانیدا پێی دەوترێت چی؟', opts: ['داواکار (المدعي)', 'داوالێکراو (المدعى عليه)', 'تۆمەتبار', 'دادوەر'], ans: 0 }
+        { q: 'تانەدان (طعن) لە بڕیارەکانی دادگای بەرایی و تاوانەکان لە پێش کام دادگا دەکرێت؟', opts: ['دادگای هاتوچۆ', 'دادگای تێهەڵچوونەوە و پێداچوونەوە (تمییز)', 'بنکەی پۆلیس', 'فەرمانگەی دادنووسی'], ans: 1 }
       ],
       'گەشت و کامپینگ و سروشت': [
         { q: 'لە کاتی کامپینگ و هەڵدانی چادر لە شەودا، سەلامەتترین شوێن بۆ چادر هەڵدان کامەیە؟', opts: ['لە ناو ڕێڕەوی وشکەشیو و دۆڵەکان', 'لەسەر زەوییەکی تەخت و کەمێک بەرز لە ئاستی ئاوی ڕووبار', 'ڕێک لە ژێر درەختی وشکبوو و کۆن', 'لە سەر لێواری هەڵدێر'], ans: 1 },
@@ -891,65 +988,35 @@
         { q: 'زێی بچووک بە کام لەم شارۆچکە و ناوچە گەشتیارییانەی هەرێمی کوردستاندا تێدەپەڕێت؟', opts: ['تەقتەق و چۆم حەیدەر و دوکان', 'زاخۆ و دێرەلووک', 'هەڵەبجە و سیروان', 'ئامێدی و سۆلاڤ'], ans: 0 },
         { q: 'ئەگەر لە گەشتێکی شاخەوانیدا لە شەودا ڕێگەت لێ تێکچوو، بە کام ئەستێرە ئاراستەی باکوور دەدۆزیتەوە؟', opts: ['ئەستێرەی سیریوس', 'ئەستێرەی جەمسەری (Polaris)', 'هەسارەی زوهرە', 'مەریخ'], ans: 1 },
         { q: 'لە کاتی کامپینگدا بۆچی زۆر مەترسیدارە خەڵووز و پۆلووی گەرم بهێنرێتە ناو چادری داخراو؟', opts: ['بۆ ئەوەی چادرەکە بۆنی دووکەڵ نەگرێت', 'بەهۆی مەترسیی خنکان بە گازی بێبۆنی یەکەئۆکسیدی کاربۆن (CO)', 'لەبەر ئەوەی چایەکە سارد دەبێتەوە', 'لەبەر مێروولە'], ans: 1 },
-        { q: 'لە گەشتی کوردەواریدا، خۆشترین چای دار و خەڵووز بە چی دەناسرێت؟', opts: ['چای سەوز', 'چای ڕەشکەی سەر پۆلوو', 'چای کیسی خێرا', 'قاوەی سارد'], ans: 1 },
-        { q: 'پێش خۆرئاوابوون لە کامپینگدا، کام کارە پێویستە یەکەم جار ئەنجام بدرێت؟', opts: ['خەوتن', 'تەواوکردنی هەڵدانی چادر و کۆکردنەوەی داری وشک بۆ ئاگر', 'مەلەکردن لە ئاوی سارد', 'شۆردنی ئۆتۆمبێل'], ans: 1 },
-        { q: 'لە کاتی ڕۆیشتنی درێژخایەن بە پێ (Walking & Hiking)، گرنگترین شت بۆ ڕێگری لە وشکبوونەوەی لەش چییە؟', opts: ['خواردنەوەی ئاو بە بڕی کەم و بەردەوام لە ڕێگەدا', 'خواردنی خوێی زۆر', 'نەخواردنەوەی ئاو تا کۆتایی شاخەکە', 'ڕاکردنی خێرا'], ans: 0 },
-        { q: 'کام لەم چیایانە دەکەوێتە سنووری پارێزگای هەولێر؟', opts: ['چیای سەفین و کۆڕەک و هەڵگورد', 'چیای پیرەمەگروون', 'چیای مەتین', 'چیای شنروێ'], ans: 0 },
-        { q: 'لە ناو جانتای فریاگوزاریی سەرەتایی کامپینگدا، کام لەمانە زۆر پێویستە؟', opts: ['باندج و ماددەی پاکژکەرەوە (تعقیم) و حەبی ئازارشکێن', 'بۆن و عەتر', 'کێبڵی تەلەڤزیۆن', 'ئوتووی جل'], ans: 0 }
+        { q: 'لە گەشتی کوردەواریدا، خۆشترین چای دار و خەڵووز بە چی دەناسرێت؟', opts: ['چای سەوز', 'چای ڕەشکەی سەر پۆلوو', 'چای کیسی خێرا', 'قاوەی سارد'], ans: 1 }
       ],
       'مێژوو و جوگرافیای کوردستان': [
         { q: 'شاعیری گەورەی کورد "نالی" ناوی تەواوی چییە؟', opts: ['مەلا خدری ئەحمەدی شاوەیسی مکایەڵی', 'عەبدولڕەحمان بەگی ساحێبقڕان', 'تاهیر بەگی جاف', 'مەلا محەمەدی کۆیی'], ans: 0 },
         { q: 'یەکەم ڕۆژنامەی کوردی لە ساڵی ١٨٩٨ لە قاهیرە دەرچوو ناوی چی بوو؟', opts: ['ژیان', 'کوردستان', 'هاوار', 'ڕۆژی کورد'], ans: 1 },
         { q: 'داستانی بەناوبانگی "مەم و زین" شاکاری کام شاعیری ناوداری کوردە؟', opts: ['ئەحمەدی خانی', 'مەلای جزیری', 'فەقێ تەیران', 'وەفایی'], ans: 0 },
         { q: 'بەرزترین لووتکە چیا لە هەرێمی کوردستان و عێراق کامەیە؟', opts: ['پیرەمەگروون', 'هەڵگورد (٣٦٠٧ مەتر)', 'کۆڕەک', 'گارە'], ans: 1 },
-        { q: 'پردی مێژوویی "دەلال" دەکەوێتە کام شاری کوردستان؟', opts: ['ئامێدی', 'زاخۆ', 'ئاکرێ', 'ڕواندز'], ans: 1 },
-        { q: 'ئەشکەوتی مێژوویی شانەدەر دەکەوێتە کام پارێزگای کوردستان؟', opts: ['سلێمانی', 'هەولێر', 'دهۆک', 'کەرکووک'], ans: 1 },
-        { q: 'زێی گەورە دەکەوێتە نێوان کام دوو پارێزگای هەرێمی کوردستان؟', opts: ['سلێمانی و هەڵەبجە', 'هەولێر و دهۆک', 'هەولێر و کەرکووک', 'دهۆک و مووسڵ'], ans: 1 },
-        { q: 'پایتەختی میرنشینی سۆران کام شار بوو لە سەردەمی میر محەمەد (پاشای کۆرە)؟', opts: ['ڕەواندز', 'ئامێدی', 'کۆیە', 'قەڵاچۆلان'], ans: 0 },
-        { q: 'کتێبی مێژوویی "شەرەفنامە" لەلایەن کام میر و مێژوونووسی کوردەوە نووسراوە؟', opts: ['شەرەفخانی بدلیسی', 'ئەمین زەکی بەگ', 'حوسێن حوزنی موکریانی', 'مەسعوود محەمەد'], ans: 0 },
-        { q: 'کام شاعیری کورد خاوەنی دیوانی "ناڵەی جودایی" و "تاریک و ڕوون"ـە؟', opts: ['هێمن موکریانی', 'هەژار موکریانی', 'گۆران', 'پیرەمێرد'], ans: 0 }
+        { q: 'پردی مێژوویی "دەلال" دەکەوێتە کام شاری کوردستان؟', opts: ['ئامێدی', 'زاخۆ', 'ئاکرێ', 'ڕواندز'], ans: 1 }
       ],
       'زانیاری گشتی جۆراوجۆر': [
         { q: 'درێژترین ڕووباری جیهان کامەیە؟', opts: ['ئەمازۆن', 'نیل', 'فورات', 'میسیسیپی'], ans: 1 },
         { q: 'گەورەترین زەریای سەر ڕووی زەوی کامەیە؟', opts: ['زەریای ئەتڵەسی', 'زەریای هێمن (پاسیفیک)', 'زەریای هیندی', 'زەریای بەستەڵەک'], ans: 1 },
         { q: 'هێمای کیمیایی توخمی "زێڕ" چییە؟', opts: ['Ag', 'Fe', 'Au', 'Cu'], ans: 2 },
-        { q: 'پایتەختی وڵاتی ژاپۆن کام شارە؟', opts: ['سیئۆل', 'پەکین', 'تۆکیۆ', 'بانکۆک'], ans: 2 },
-        { q: 'کام هەسارە لە کۆمەڵەی خۆردا بە "هەسارەی سوور" دەناسرێت؟', opts: ['مەریخ', 'زوهرە', 'موشتەری', 'عوتارد'], ans: 0 },
-        { q: 'کام ئەندامی لەشی مرۆڤ بەرپرسە لە پاڵاوتنی خوێن لە ژەهرەکان؟', opts: ['گەدە', 'گورچیلە و جگەر', 'سییەکان', 'پەنکریاس'], ans: 1 },
-        { q: 'کام گاز زۆرترین ڕێژەی هەوای بەرگەهەوای زەوی پێکدەهێنێت (٧٨٪)؟', opts: ['ئۆکسجین', 'نایترۆجین', 'دووانەئۆکسیدی کاربۆن', 'هایدرۆجین'], ans: 1 },
-        { q: 'یەکەم مرۆڤ کە پێی نایە سەر ڕووی مانگ لە ساڵی ١٩٦٩ کێ بوو؟', opts: ['یوری گاگارین', 'نیڵ ئارمسترۆنگ', 'باز ئۆڵدرین', 'جۆن گلێن'], ans: 1 },
-        { q: 'خێرایی ڕووناکی لە بۆشاییدا نزیکەی چەندە لە چرکەیەکدا؟', opts: ['٣٠٠ هەزار کیلۆمەتر', '١٠٠ هەزار کیلۆمەتر', '١٠ هەزار کیلۆمەتر', '١ ملیۆن کیلۆمەتر'], ans: 0 },
-        { q: 'گەورەترین وڵاتی جیهان لە ڕووی ڕووبەری جوگرافییەوە کامەیە؟', opts: ['کەنەدا', 'چین', 'ڕووسیا', 'ئەمریکا'], ans: 2 }
+        { q: 'پایتەختی وڵاتی ژاپۆن کام شارە؟', opts: ['سیئۆل', 'پەکین', 'تۆکیۆ', 'بانکۆک'], ans: 2 }
       ],
       'تۆپی پێ و وەرزشی جیهانی': [
         { q: 'کام وڵات زۆرترین جار جامی جیهانی (مۆندیال)ی بردووەتەوە (٥ جار)؟', opts: ['ئەڵمانیا', 'بەڕازیل', 'ئەرجەنتین', 'ئیتاڵیا'], ans: 1 },
         { q: 'کام یانە زۆرترین نازناوی چامپیۆنزلیگی ئەوروپای بەدەستهێناوە؟', opts: ['بەرشەلۆنە', 'بایرن میونشن', 'ڕیاڵ مەدرید', 'ئەی سی میلان'], ans: 2 },
-        { q: 'کێ بوو پاڵەوانی مۆندیالی ٢٠٢٢ی قەتەر؟', opts: ['فەڕەنسا', 'ئەرجەنتین', 'کرواتیا', 'مەغریب'], ans: 1 },
-        { q: 'ماوەی یاسایی یارییەکی تۆپی پێ لەگەڵ دوو گێمی زیادکراو چەند خولەکە؟', opts: ['٩٠ خولەک', '١٠٥ خولەک', '١٢٠ خولەک', '١٣٠ خولەک'], ans: 2 },
-        { q: 'ئەلقەکانی ئاڵای ئۆڵۆمپیاد لە چەند ئەلقەی ڕەنگاوڕەنگ پێکهاتوون؟', opts: ['٤ ئەلقە', '٥ ئەلقە (ئاماژە بۆ ٥ کیشوەر)', '٦ ئەلقە', '٧ ئەلقە'], ans: 1 },
-        { q: 'یەکەم مۆندیالی تۆپی پێ لە ساڵی ١٩٣٠ لە کام وڵات ئەنجام درا؟', opts: ['ئینگلتەرا', 'ئۆرۆگوای', 'بەڕازیل', 'ئیتاڵیا'], ans: 1 },
-        { q: 'کام هەڵبژاردە جامی نەتەوەکانی ئەوروپا (یۆرۆی ٢٠٢٤)ی بردەوە؟', opts: ['ئینگلتەرا', 'ئیسپانیا', 'فەڕەنسا', 'ئەڵمانیا'], ans: 1 },
-        { q: 'لە یاریی تۆپی پێدا، ئەگەر یاریزانێک لە یەک یاریدا ٣ گۆڵ تۆمار بکات پێی دەوترێت چی؟', opts: ['دەبڵ', 'هاتریک (Hat-trick)', 'پۆکەر', 'ئۆفساید'], ans: 1 }
+        { q: 'کێ بوو پاڵەوانی مۆندیالی ٢٠٢٢ی قەتەر؟', opts: ['فەڕەنسا', 'ئەرجەنتین', 'کرواتیا', 'مەغریب'], ans: 1 }
       ],
       'مەتەڵ و زیرەکی': [
         { q: 'ئەو شتە چییە کە تا زیاتری لێ ببەیت، گەورەتر دەبێت؟', opts: ['ئاگر', 'چاڵ', 'شاخ', 'بەفر'], ans: 1 },
         { q: 'ئەگەر لە پێشبڕکێیەکی ڕاکردندا پێش کەسی دووەم بکەویت، تۆ لە پلەی چەندەمیت؟', opts: ['یەکەم', 'دووەم', 'سێیەم', 'چوارەم'], ans: 1 },
-        { q: 'ملی هەیە و سەری نییە، دوو قۆڵی هەیە و پەنجەی نییە؛ چییە؟', opts: ['کراس', 'کاتژمێر', 'کورسی', 'گۆزە'], ans: 0 },
-        { q: 'باوکی مەریەم ٥ کچی هەیە: (نانا، نێنێ، نینی، نۆنۆ)؛ ناوی کچی پێنجەم چییە؟', opts: ['نونو', 'مەریەم', 'نەرمین', 'نازە'], ans: 1 },
-        { q: 'ئەو شتە چییە کە ددانی زۆری هەیە بەڵام گاز لە هیچ کەسێک ناگرێت؟', opts: ['شەپۆل', 'شانە', 'مشار', 'کلیل'], ans: 1 },
-        { q: 'کام مانگ لە ساڵدا ٢٨ ڕۆژی تێدایە؟', opts: ['تەنها مانگی شوبات', 'هەموو ١٢ مانگەکە ٢٨ ڕۆژیان تێدایە!', 'مانگی ئازار', 'مانگی نیسان'], ans: 1 },
-        { q: 'ئەو شتە چییە کە بەبێ قاچ دەڕوات و بەبێ چاو دەگری؟', opts: ['هەور', 'دار', 'با', 'شاخ'], ans: 0 },
-        { q: 'هەموو شتێک دەخوات و ئەگەر ئاوی پێ بدەیت دەمرێت؛ چییە؟', opts: ['ئاگر', 'ماسی', 'ڕووەک', 'ئاسن'], ans: 0 }
+        { q: 'ملی هەیە و سەری نییە، دوو قۆڵی هەیە و پەنجەی نییە؛ چییە؟', opts: ['کراس', 'کاتژمێر', 'کورسی', 'گۆزە'], ans: 0 }
       ],
       'زانیاری ئایینی و قورئان': [
         { q: 'قورئانی پیرۆز لە چەند سورەت پێکهاتووە؟', opts: ['١١٠ سورەت', '١١٤ سورەت', '١٢٠ سورەت', '٩٩ سورەت'], ans: 1 },
         { q: 'درێژترین سورەتی قورئانی پیرۆز کامەیە؟', opts: ['ئالی عیمران', 'نیساء', 'بەقەرە', 'مائیدە'], ans: 2 },
-        { q: 'کورتترین سورەتی قورئانی پیرۆز کامەیە؟', opts: ['ئیخلاس', 'فەلەق', 'کەوسەر', 'عەسر'], ans: 2 },
-        { q: 'تاکە سورەت لە قورئانی پیرۆزدا کە بە بسم اللە دەست پێ ناکات کامەیە؟', opts: ['سورەتی تەوبە', 'سورەتی ئەنفال', 'سورەتی فاتیحە', 'سورەتی نەمل'], ans: 0 },
-        { q: 'کام سورەتی قورئانی پیرۆز بە "دڵی قورئان" ناسراوە؟', opts: ['سورەتی کەهف', 'سورەتی یس (یاسین)', 'سورەتی مولک', 'سورەتی ڕەحمان'], ans: 1 },
-        { q: 'یەکەم جەنگ لە مێژووی ئیسلامدا ناوی چی بوو؟', opts: ['جەنگی ئوحود', 'جەنگی بەدر', 'جەنگی خەندەق', 'فەتحی مەککە'], ans: 1 },
-        { q: 'کام پێغەمبەر (د.خ) لە سکی نەهەنگدا مایەوە و دوعای کرد؟', opts: ['موسا (د.خ)', 'یونس (د.خ)', 'عیسا (د.خ)', 'نوح (د.خ)'], ans: 1 },
-        { q: 'یەکەم بانگبێژ (مؤذن) لە ئیسلامدا کێ بوو؟', opts: ['عومەری کوڕی خەتاب', 'بیلالی حەبەشی', 'ئەبوبەکری سدیق', 'عەلی کوڕی ئەبو تاڵیب'], ans: 1 }
+        { q: 'کورتترین سورەتی قورئانی پیرۆز کامەیە؟', opts: ['ئیخلاس', 'فەلەق', 'کەوسەر', 'عەسر'], ans: 2 }
       ]
     };
 
@@ -1088,14 +1155,12 @@
       render();
     }
 
-    // هەڵبژاردنی دوگمەی بابەت: خانەی بابەتی دڵخواز بەتاڵ دەکاتەوە
     function handleTopicChipClick(topic) {
       state.selectedTopic = topic;
       state.customTopicText = '';
       render();
     }
 
-    // نووسین لە خانەی بابەتی دڵخواز: ڕاستەوخۆ هەڵبژاردنی دوگمەکانی تر لادەبات بەبێ لەدەستدانی فۆکەسی کیبۆرد
     function handleCustomTopicInput(val) {
       state.customTopicText = val;
       const inp = document.getElementById('customTopicInp');
@@ -1118,7 +1183,6 @@
       ]);
     }
 
-    // دروستکردنی پرسیار تەنها لەسەر بابەتەکە (بێ تێکەڵکردنی شێوازی دانیشتنەکە لەگەڵ پرسیارەکان)
     async function generateAIQuestions(topic, count, difficulty) {
       if (topic === 'پرسیارەکانی خۆم (تایبەت)' && customQuestions.length > 0) {
         state.questionSourceLabel = '✍️ پرسیاری تایبەتی خۆت';
@@ -1201,7 +1265,6 @@
       });
     }
 
-    // بەکارهێنانی شێوازی دانیشتنەکە (Vibe) تەنها بۆ پیرۆزبایی و قسە کۆمیدییەکەی کۆتایی یاری
     async function generateAIComedyCommentary() {
       const sorted = [...state.players].sort((a, b) => b.score - a.score);
       const winner = sorted[0] || { name: 'پاڵەوان', score: 0 };
@@ -1217,7 +1280,7 @@
         : FALLBACK_LOSER_JOKES[randomSeed % FALLBACK_LOSER_JOKES.length].replace('{losers}', loserNames);
 
       const prompt = isSolo
-        ? `یاریزان "${winner.name}" بە تەنها خۆی تاقیکردەوە و (${winner.score} خاڵ)ی هێنا لە کەشی "${vibeObj.title}" (${vibeObj.comedyHint}). دوو ڕستەی کۆمیدیی کوردی بنووسە: winnerJoke بۆ پیرۆزبایی و دەستخۆشیلێکردنی بەپێی ئەو کەشە، و loserJoke قسەیەکی خۆش لەسەر ئەوەی کە بە تەنها یاری دەکات. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`
+        ? `یاریزان "${winner.name}" بە تەنها خۆی تاقیکردەوە و (${winner.score} خاڵ)ی هێنا لە کەشی "${vibeObj.title}" (${vibeObj.comedyHint}). دوو ڕستەی کۆمیدیی کوردی بنووسە: winnerJoke بۆ دەستخۆشیلێکردنی بەپێی ئەو کەشە، و loserJoke قسەیەکی خۆش لەسەر ئەوەی کە بە تەنها یاری دەکات. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`
         : `تۆ پێشکەشکارێکی کۆمیدیی کوردیت لە یاریی "مەجلیس". بارودۆخ و شێوازی دانیشتنەکە بریتییە لە: "${vibeObj.title}" (${vibeObj.comedyHint}). براوە: "${winner.name}" (${winner.score} خاڵ). دۆڕاوەکان: "${loserNames}". دوو ڕستەی زۆر کۆمیدی و نوێ بە کوردیی سۆرانی ڕێک بەپێی کەشی "${vibeObj.title}" بنووسە (ژمارە: ${randomSeed}): winnerJoke بۆ پیرۆزبایی و پیاهەڵدانی براوە، و loserJoke تەعلیق و سزایەکی کۆمیدی بۆ دۆڕاوەکان گونجاو لەگەڵ بارودۆخی دانیشتنەکە. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`;
 
       if (state.apiKey && state.apiKey.trim().startsWith('AIza')) {
@@ -1308,24 +1371,6 @@
       render();
     }
 
-    function showFloatingEmoji(emoji, senderName) {
-      const el = document.createElement('div');
-      el.className = 'floating-emoji';
-      el.style.left = (15 + Math.random() * 70) + '%';
-      el.innerHTML = `${emoji} <small style="font-size:0.75rem; background:rgba(0,0,0,0.78); padding:2px 8px; border-radius:20px; color:#fff;">${senderName}</small>`;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 2400);
-    }
-
-    function sendEmojiReaction(emoji) {
-      showFloatingEmoji(emoji, state.myName || 'تۆ');
-      if (state.role === 'host') {
-        broadcastPayload({ type: 'EMOJI', emoji, sender: state.myName });
-      } else if (state.role === 'player' && state.hostConn && state.hostConn.open) {
-        state.hostConn.send({ type: 'EMOJI', emoji, sender: state.myName });
-      }
-    }
-
     function updateTimerUIOnly() {
       const timeLabel = document.getElementById('liveTimeLabel');
       const timeFill = document.getElementById('liveTimeFill');
@@ -1379,7 +1424,7 @@
       const vibeSelectorBox = `
         <div class="vibe-section">
           <div style="text-align:center;">
-            <span class="section-tag">🎭 ١. شێوازی دانیشتنەکە هەڵبژێرە (بۆ پیرۆزبایی و قسەی کۆتایی)</span>
+            <span class="section-tag">🎭 شێوازی دانیشتنەکە هەڵبژێرە (بۆ پیرۆزبایی و قسەی کۆتایی)</span>
           </div>
           <div class="vibe-grid">${vibesCardsHtml}</div>
         </div>
@@ -1397,7 +1442,7 @@
       const aiTopicBox = `
         <div class="ai-config-box">
           <div style="text-align:center;">
-            <span class="ai-badge">✨ ٢. بابەتی پرسیارەکان دیاری بکە</span>
+            <span class="ai-badge">✨ بابەتی پرسیارەکان دیاری بکە</span>
           </div>
           <div class="topic-chips">${topicChipsHtml}</div>
           <input type="text" id="customTopicInp" class="input ${hasCustomTopic ? 'custom-active' : ''}" style="margin-bottom:0; font-size:0.85rem;"
@@ -1495,21 +1540,11 @@
         </div>
       `).join('');
 
-      const emojiStrip = `
-        <div class="emoji-bar">
-          <button class="emoji-btn" onclick="sendEmojiReaction('🔥')">🔥</button>
-          <button class="emoji-btn" onclick="sendEmojiReaction('😂')">😂</button>
-          <button class="emoji-btn" onclick="sendEmojiReaction('👏')">👏</button>
-          <button class="emoji-btn" onclick="sendEmojiReaction('🏕️')">🏕️</button>
-          <button class="emoji-btn" onclick="sendEmojiReaction('⚖️')">⚖️</button>
-        </div>
-      `;
-
       if (state.role === 'host') {
         return `
           <div class="card" style="text-align:center;">
             <h2>📱 بارکۆدی هاتنەژوورەوەی هاوڕێیان</h2>
-            <p class="sub">کەش: <strong style="color:#a5f3fc;">${vibeObj.icon} ${vibeObj.title}</strong> • بابەت: <strong style="color:#c084fc;">${activeTopic}</strong></p>
+            <p class="sub">کەش: <strong style="color:var(--cyan);">${vibeObj.icon} ${vibeObj.title}</strong> • بابەت: <strong style="color:var(--primary);">${activeTopic}</strong></p>
             
             <div class="qr-wrap" id="qrcode"></div>
 
@@ -1524,8 +1559,6 @@
             <h3>👥 ئامادەبووانی ناو مەجلیس (${state.players.length} کەس):</h3>
             <div class="players-wrap">${playersChips}</div>
 
-            ${emojiStrip}
-
             <button class="btn btn-primary" style="margin-top:16px; font-size:1.02rem;" ${state.generatingAI ? 'disabled' : ''} onclick="hostStartCompetition()">
               ${state.generatingAI ? '<span class="spinner"></span> خەریکی ئامادەکردنی پرسیارەکانە...' : '✨ دروستکردنی پرسیار و دەستپێکردن!'}
             </button>
@@ -1539,7 +1572,6 @@
             <div class="room-pin">${state.roomCode}</div>
             <h3>👥 هاوڕێیانی ئامادەبوو (${state.players.length}):</h3>
             <div class="players-wrap">${playersChips}</div>
-            ${emojiStrip}
           </div>
         `;
       }
@@ -1550,7 +1582,7 @@
       return `
         <div class="card countdown-overlay">
           <h2>🚀 ئامادەبن! پێشبڕکێ دەست پێ دەکات</h2>
-          <p class="sub">بابەت: <strong style="color:#c084fc;">${activeTopic}</strong> (${state.questionSourceLabel})</p>
+          <p class="sub">بابەت: <strong style="color:var(--primary);">${activeTopic}</strong> (${state.questionSourceLabel})</p>
           <div class="countdown-num">${state.countdownVal}</div>
         </div>
       `;
@@ -1562,8 +1594,6 @@
       const myAns = me ? me.currentAnswer : null;
       const pct = Math.max(0, (state.timeLeft / state.questionDuration) * 100);
 
-      // وەڵامەکان قوفڵ نابن تا کاتەکە تەواو دەبێت (تەنها لە کاتی revealAnswer قوفڵ دەبن)
-      // هەروەها هیچ نیشانەیەکی "نێردرا" یان نیشاندانی کێ وەڵامی داوەتەوە دەرناکەوێت تا کاتەکە سفر دەبێتەوە
       const optsHtml = qObj.opts.map((opt, idx) => {
         let cls = 'opt-card';
         if (state.revealAnswer) {
@@ -1616,13 +1646,6 @@
                     : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکەی تر پیشان دەدرێت...`)}
             </div>
           ` : ''}
-
-          <div class="emoji-bar">
-            <button class="emoji-btn" onclick="sendEmojiReaction('🔥')">🔥</button>
-            <button class="emoji-btn" onclick="sendEmojiReaction('😂')">😂</button>
-            <button class="emoji-btn" onclick="sendEmojiReaction('👏')">👏</button>
-            <button class="emoji-btn" onclick="sendEmojiReaction('😱')">😱</button>
-          </div>
         </div>
 
         <div class="card">
@@ -1692,11 +1715,12 @@
       if (!box) return;
       box.innerHTML = '';
       const joinUrl = `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`;
+      const isLight = document.body.classList.contains('light-mode');
       new QRCode(box, {
         text: joinUrl,
         width: 185,
         height: 185,
-        colorDark: "#060913",
+        colorDark: isLight ? "#0f172a" : "#060913",
         colorLight: "#ffffff"
       });
     }
@@ -1822,24 +1846,16 @@
         syncAllPlayers();
         render();
       } else if (data.type === 'ANSWER') {
-        // ڕێگەدان بە یاریزان کە وەڵامەکەی خۆی بگۆڕێت هەتا کاتەکە تەواو نەبووبێت، بەبێ ئەوەی لای کەسی تر پیشان بدرێت
         const p = state.players.find(x => x.id === data.id);
         if (p && !state.revealAnswer) {
           p.currentAnswer = data.ansIdx;
           p.hasAnswered = true;
           p.answerTime = state.timeLeft;
         }
-      } else if (data.type === 'EMOJI') {
-        showFloatingEmoji(data.emoji, data.sender);
-        broadcastPayload(data);
       }
     }
 
     function onPlayerReceiveData(data) {
-      if (data.type === 'EMOJI') {
-        showFloatingEmoji(data.emoji, data.sender);
-        return;
-      }
       if (data.type === 'TIMER_TICK') {
         state.timeLeft = data.timeLeft;
         updateTimerUIOnly();
@@ -1899,7 +1915,6 @@
       });
     }
 
-    // شاردنەوەی تەواوەتی وەڵام و باری وەڵامدانەوەی یاریزانەکان تا چرکەی سفر
     function syncAllPlayers() {
       if (state.role !== 'host') return;
       const qObj = state.questions[state.qIndex];
@@ -1996,7 +2011,6 @@
       }, 1000);
     }
 
-    // ڕێگەدان بە گۆڕینی وەڵام تا کاتەکە تەواو دەبێت و چاوەڕێکردنی تەواوبوونی کاتەکە بۆ هەمووان پێکەوە
     function submitPlayerAnswer(optIdx) {
       const me = state.players.find(p => p.id === state.myId);
       if (!me || state.revealAnswer) return;
@@ -2011,7 +2025,6 @@
       }
     }
 
-    // کاتێک کاتەکە دەگاتە سفر، ئەنجامی هەمووان پێکەوە پیشان دەدرێت و دوای ٣ چرکە خۆکارانە دەچێتە پرسیاری دواتر
     function revealQuestionResult() {
       clearInterval(state.timerInterval);
       clearInterval(state.revealInterval);
@@ -2082,7 +2095,16 @@
       render();
     }
 
+    function openSettingsModal() {
+      document.getElementById('settingsModal').classList.add('open');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('open');
+    }
+
     function openApiModal() {
+      closeSettingsModal();
       document.getElementById('apiKeyInput').value = state.apiKey;
       document.getElementById('seenCountTxt').textContent = seenQuestions.length;
       document.getElementById('apiModal').classList.add('open');
@@ -2101,6 +2123,7 @@
     }
 
     function openCustomQModal() {
+      closeSettingsModal();
       document.getElementById('customQStatus').textContent = `کۆی پرسیارە تایبەتەکانت: ${customQuestions.length} پرسیار`;
       document.getElementById('customQModal').classList.add('open');
     }
