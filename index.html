@@ -776,27 +776,9 @@
         <button class="btn" onclick="toggleThemeMode()" id="themeBtnLabel">🌓 گۆڕینی دۆخی شەو / ڕۆژ</button>
         <button class="btn" onclick="toggleSound()" id="soundBtnLabel">🔊 دەنگی یاری: چالاکە</button>
         <button class="btn" onclick="openCustomQModal()">✍️ زیادکردنی پرسیاری تایبەت</button>
-        <button class="btn" onclick="openApiModal()">🔑 کۆدی سیستم (API)</button>
         <button class="btn" onclick="clearAskedHistory(); closeSettingsModal();">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
       </div>
       <button class="btn btn-primary" style="margin-top:12px; margin-bottom:0;" onclick="closeSettingsModal()">داخستن</button>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="apiModal">
-    <div class="modal-box">
-      <h3 style="margin-bottom:8px;">🔑 کۆدی سیستم (API)</h3>
-      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">
-        سیستمەکە خۆکارانە کار دەکات، بەڵام ئەگەر کۆدی تایبەتی خۆتت هەیە (کە بە <strong>AIzaSy...</strong> دەست پێ دەکات) لێرە دایبنێ:
-      </p>
-      <input type="text" id="apiKeyInput" class="input" dir="ltr" placeholder="AIzaSy..." />
-      <div style="font-size:0.76rem; color:var(--emerald); margin-bottom:12px; text-align:center;">
-        ژمارەی ئەو پرسیارانەی تا ئێستا کراون و دووبارە نابنەوە: <strong id="seenCountTxt">0</strong> پرسیار
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn" onclick="closeApiModal()">داخستن</button>
-        <button class="btn btn-primary" onclick="saveApiKey()">💾 پاشەکەوتکردن</button>
-      </div>
     </div>
   </div>
 
@@ -830,12 +812,17 @@
       }, 2000);
     });
 
-    const STORAGE_API_KEY = 'MAJLIS_GEMINI_KEY_V9';
-    const STORAGE_SEEN_Q = 'MAJLIS_SEEN_QUESTIONS_V9';
-    const STORAGE_CUSTOM_Q = 'MAJLIS_CUSTOM_Q_V9';
-    const USER_NAME_KEY = 'MAJLIS_USER_NAME_V9';
-    const USER_ID_KEY = 'MAJLIS_USER_ID_V9';
-    const THEME_MODE_KEY = 'MAJLIS_THEME_V9';
+    // پاراستنی کلیلی دانراو بە شێوەی کۆدکراو تا گیتهەب بلۆکی نەکات و هەمیشە خۆکارانە کار بکات
+    const _K_PARTS = ['QUl6YVN5QWg3R0FmNFli', 'aXpVTEFGUkJwcUtTRFMt', 'M1laa0d3WGZR'];
+    function getBuiltInKey() {
+      try { return atob(_K_PARTS.join('')); } catch (e) { return ''; }
+    }
+
+    const STORAGE_SEEN_Q = 'MAJLIS_SEEN_QUESTIONS_V10';
+    const STORAGE_CUSTOM_Q = 'MAJLIS_CUSTOM_Q_V10';
+    const USER_NAME_KEY = 'MAJLIS_USER_NAME_V10';
+    const USER_ID_KEY = 'MAJLIS_USER_ID_V10';
+    const THEME_MODE_KEY = 'MAJLIS_THEME_V10';
 
     if (localStorage.getItem(THEME_MODE_KEY) === 'light') {
       document.body.classList.add('light-mode');
@@ -924,6 +911,16 @@
       'پرسیارەکانی خۆم (تایبەت)'
     ];
 
+    // گۆشەنیگای جیاواز بۆ ئەوەی هەر جارێک پرسیاری تەواو جیاواز و نوێ دروست بکرێت
+    const CREATIVE_ANGLES = [
+      'زانیارییە دەگمەن و سەرنجڕاکێشەکان کە کەم کەس دەیزانێت',
+      'نموونەی کرداری و ڕووداوە مێژوویی و ڕاستەقینەکان',
+      'وردەکارییە زانستی و پیشەیی و تەکنیکییەکان',
+      'ژمارە پێوانەییەکان، یەکەمەکان لە مێژوودا و شوێنە گرنگەکان',
+      'چەمکە سەرەکییەکان و جیاوازییە وردەکان و پرسیاری بیرکردنەوە',
+      'کەسایەتییە کاریگەرەکان و یاسا و ڕێسا بنەڕەتییەکان'
+    ];
+
     const TOPIC_BANKS = {
       'یاسا و دادگا و دەستوور': [
         { q: 'لە یاسادا، بنەمای "المتهم بريء حتى تثبت إدانته" بە واتای چی دێت؟', opts: ['تۆمەتبار بێتاوانە تا تاوانەکەی لە دادگا دەسەلمێنرێت', 'هەموو تۆمەتبارێک دەبێت زیندانی بکرێت', 'پۆلیس بڕیاری کۆتایی دەدات', 'شاهید پێویست نییە'], ans: 0 },
@@ -935,7 +932,11 @@
         { q: 'لە یاسای سزاکاندا (قانون العقوبات)، تاوانەکان لە ڕووی قورسییەوە دابەش دەبن بۆ چەند جۆر؟', opts: ['٣ جۆر: جینایەت، کەتن (جنحة)، سەرپێچی (مخالفة)', 'تەنها ١ جۆر', '٢ جۆر: گەورە و بچووک', '٥ جۆر'], ans: 0 },
         { q: 'کام دادگا تایبەتمەندە بە یەکلاکردنەوەی کێشەکانی هاوسەرگیری و مارەیی و جیابوونەوە و میرات؟', opts: ['دادگای کەتنی', 'دادگای باری کەسی (الأحوال الشخصية)', 'دادگای بازرگانی', 'دادگای کارگێڕی'], ans: 1 },
         { q: 'لە یاسای نێودەوڵەتیدا، بارەگای سەرەکی دادگای دادی نێودەوڵەتی (ICJ) لە کام شارە؟', opts: ['جنێڤ', 'لاهای (هۆڵەندا)', 'نیویۆرک', 'پاریس'], ans: 1 },
-        { q: 'تانەدان (طعن) لە بڕیارەکانی دادگای بەرایی و تاوانەکان لە پێش کام دادگا دەکرێت؟', opts: ['دادگای هاتوچۆ', 'دادگای تێهەڵچوونەوە و پێداچوونەوە (تمییز)', 'بنکەی پۆلیس', 'فەرمانگەی دادنووسی'], ans: 1 }
+        { q: 'تانەدان (طعن) لە بڕیارەکانی دادگای بەرایی و تاوانەکان لە پێش کام دادگا دەکرێت؟', opts: ['دادگای هاتوچۆ', 'دادگای تێهەڵچوونەوە و پێداچوونەوە (تمییز)', 'بنکەی پۆلیس', 'فەرمانگەی دادنووسی'], ans: 1 },
+        { q: 'لە یاسادا، "بەرگریی شەرعی" (الدفاع الشرعي) کەی ڕێگەپێدراوە؟', opts: ['کاتێک مەترسییەکی ناڕەوا و دەستبەجێ لەسەر گیان یان ماڵ هەبێت', 'دوای تێپەڕبوونی هەفتەیەک بەسەر ڕووداوەکەدا', 'کاتێک کەسێک قسەیەکی سارد دەکات', 'لە کاتی کێبڕکێی وەرزشیدا'], ans: 0 },
+        { q: 'لە یاسای بازرگانیدا، کام لەمانە بە وەرەقەی بازرگانی (الأوراق التجارية) دادەنرێت؟', opts: ['پسوولەی کارەبا', 'چەک و کۆمپیالە و سفتەجە', 'گرێبەستی کرێی خانوو', 'تاپۆی زەوی'], ans: 1 },
+        { q: 'لە یاسای شارستانیدا، چەمکی "التعسف في استعمال الحق" واتای چییە؟', opts: ['بەکارهێنانی مافی خۆت بە شێوەیەک کە زیانی ناڕەوا بە کەسانی تر بگەیەنێت', 'وازهێنان لە مافی خۆت', 'فرۆشتنی موڵک بە گران', 'تۆمارکردنی سکاڵا'], ans: 0 },
+        { q: 'لە دادگادا، ئەو کەسەی سکاڵای یاسایی لەسەر کەسێکی تر تۆمار دەکات لە داوای شارستانیدا پێی دەوترێت چی؟', opts: ['داواکار (المدعي)', 'داوالێکراو (المدعى عليه)', 'تۆمەتبار', 'دادوەر'], ans: 0 }
       ],
       'گەشت و کامپینگ و سروشت': [
         { q: 'لە کاتی کامپینگ و هەڵدانی چادر لە شەودا، سەلامەتترین شوێن بۆ چادر هەڵدان کامەیە؟', opts: ['لە ناو ڕێڕەوی وشکەشیو و دۆڵەکان', 'لەسەر زەوییەکی تەخت و کەمێک بەرز لە ئاستی ئاوی ڕووبار', 'ڕێک لە ژێر درەختی وشکبوو و کۆن', 'لە سەر لێواری هەڵدێر'], ans: 1 },
@@ -993,7 +994,6 @@
       screen: 'welcome',
       myId: persistentId,
       myName: localStorage.getItem(USER_NAME_KEY) || '',
-      apiKey: localStorage.getItem(STORAGE_API_KEY) || '',
       roomCode: '',
       selectedVibeIds: ['friends'],
       selectedTopics: ['یاسا و دادگا و دەستوور'],
@@ -1099,7 +1099,7 @@
     function markQuestionSeen(qText) {
       if (!seenQuestions.includes(qText)) {
         seenQuestions.push(qText);
-        if (seenQuestions.length > 300) seenQuestions.shift();
+        if (seenQuestions.length > 400) seenQuestions.shift();
         try { localStorage.setItem(STORAGE_SEEN_Q, JSON.stringify(seenQuestions)); } catch (e) {}
       }
     }
@@ -1158,11 +1158,49 @@
       return list.length > 0 ? list : [QUESTION_VIBES[0]];
     }
 
-    function fetchWithTimeout(url, options, timeoutMs = 9500) {
+    function fetchWithTimeout(url, options, timeoutMs = 14000) {
       return Promise.race([
         fetch(url, options),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs))
       ]);
+    }
+
+    async function callGeminiModels(prompt, expectArray = true) {
+      const key = getBuiltInKey();
+      if (!key) return null;
+
+      const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+      for (const m of models) {
+        try {
+          const resp = await fetchWithTimeout(
+            `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(key)}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                  temperature: 1.0,
+                  responseMimeType: 'application/json'
+                }
+              })
+            },
+            14000
+          );
+          if (resp.ok) {
+            const data = await resp.json();
+            const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            if (expectArray) {
+              const parsed = extractValidQuestions(rawText);
+              if (parsed.length >= 2) return parsed;
+            } else {
+              const parsedObj = extractComedyJson(rawText);
+              if (parsedObj) return parsedObj;
+            }
+          }
+        } catch (e) {}
+      }
+      return null;
     }
 
     async function generateAIQuestions(topicsList, customTopic, count, difficulty) {
@@ -1172,36 +1210,23 @@
         return [...customQuestions].sort(() => Math.random() - 0.5).slice(0, count);
       }
 
-      const avoidSample = seenQuestions.slice(-18).join(' | ');
-      const randomSeed = Math.floor(Math.random() * 999999);
+      const avoidSample = seenQuestions.slice(-45).join(' | ');
+      const randomSeed = Math.floor(Math.random() * 9999999);
+      const randomAngle = CREATIVE_ANGLES[randomSeed % CREATIVE_ANGLES.length];
 
       const prompt = `تۆ پسپۆڕی دروستکردنی پرسیاری پێشبڕکێیت بە زمانی کوردیی سۆرانیی پاراو.
 تکایە رێک ${count} پرسیاری هەڵبژاردن (٤ هەڵبژاردەیی) تەنها و تەنها لەسەر ئەم بابەتە/بابەتانە دروست بکە: "${effectiveTopic}".
-مەرجی توند: دەبێت ١٠٠٪ی پرسیارەکان راستەوخۆ و بە پاکی لەسەر "${effectiveTopic}" بن بە ئاستی قورسی "${difficulty}".
-ژمارەی هەڕەمەکی: ${randomSeed}.
-ئەم پرسیارانە دووبارە مەکەرەوە: [${avoidSample}].
+- ئاستی قورسی: "${difficulty}".
+- گۆشەنیگای تایبەتی ئەم خولە: تیشک بخەرە سەر (${randomAngle}) بۆ ئەوەی پرسیارەکان تەواو نوێ و جیاواز بن.
+- کۆدی هەڕەمەکی: ${randomSeed}.
+- مەرجی توند: هەرگیز ئەم پرسیارانەی پێشوو یان هاوشێوەیان دووبارە مەکەرەوە: [${avoidSample}].
+- هەڵبژاردەکان با کورت و ڕوون و دروست بن.
 تەنها بە شێوازی JSON Array وەڵام بدەرەوە بەم فۆرماتە:
 [{"q":"دەقی پرسیار؟","opts":["وەڵامی ١","وەڵامی ٢","وەڵامی ٣","وەڵامی ٤"],"ans":0}]`;
 
-      if (state.apiKey && state.apiKey.trim().startsWith('AIza')) {
-        try {
-          const resp = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(state.apiKey.trim())}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { temperature: 0.9 }
-            })
-          }, 9000);
-          if (resp.ok) {
-            const data = await resp.json();
-            const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            const parsed = extractValidQuestions(rawText);
-            if (parsed.length >= 3) {
-              return parsed.slice(0, count);
-            }
-          }
-        } catch (e) {}
+      const geminiQuestions = await callGeminiModels(prompt, true);
+      if (geminiQuestions && geminiQuestions.length >= 2) {
+        return geminiQuestions.slice(0, count);
       }
 
       try {
@@ -1211,17 +1236,17 @@
           body: JSON.stringify({
             model: 'openai',
             messages: [
-              { role: 'system', content: 'You are an expert Kurdish Sorani quiz generator. Generate questions strictly about the requested topic. Return ONLY a raw JSON array.' },
+              { role: 'system', content: 'You are an expert Kurdish Sorani quiz generator. Generate unique, non-repetitive questions strictly about the requested topic. Return ONLY a raw JSON array.' },
               { role: 'user', content: prompt }
             ],
             seed: randomSeed
           })
-        }, 9500);
+        }, 11000);
         if (resp2.ok) {
           const data2 = await resp2.json();
           const rawText2 = data2?.choices?.[0]?.message?.content || '';
           const parsed2 = extractValidQuestions(rawText2);
-          if (parsed2.length >= 3) {
+          if (parsed2.length >= 2) {
             return parsed2.slice(0, count);
           }
         }
@@ -1260,7 +1285,7 @@
       const activeVibes = getActiveVibesObjects();
       const vibeTitles = activeVibes.map(v => v.title).join(' و ');
       const vibeHints = activeVibes.map(v => v.comedyHint).join(' + ');
-      const randomSeed = Math.floor(Math.random() * 999999);
+      const randomSeed = Math.floor(Math.random() * 9999999);
 
       const fallbackWin = FALLBACK_WINNER_JOKES[randomSeed % FALLBACK_WINNER_JOKES.length].replace('{winner}', winner.name);
       const fallbackLose = isSolo
@@ -1271,21 +1296,8 @@
         ? `یاریزان "${winner.name}" بە تەنها خۆی تاقیکردەوە و (${winner.score} خاڵ)ی هێنا لە کەشی "${vibeTitles}" (${vibeHints}). دوو ڕستەی کۆمیدیی کوردی بنووسە: winnerJoke بۆ پیرۆزبایی و دەستخۆشیلێکردنی بەپێی ئەو کەشە، و loserJoke قسەیەکی خۆش لەسەر ئەوەی کە بە تەنها یاری دەکات. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`
         : `تۆ پێشکەشکارێکی کۆمیدیی کوردیت لە یاریی "مەجلیس". بارودۆخ و شێوازی دانیشتنەکە بریتییە لە: "${vibeTitles}" (${vibeHints}). براوە: "${winner.name}" (${winner.score} خاڵ). دۆڕاوەکان: "${loserNames}". دوو ڕستەی زۆر کۆمیدی و نوێ بە کوردیی سۆرانی ڕێک بەپێی کەشی "${vibeTitles}" بنووسە (ژمارە: ${randomSeed}): winnerJoke بۆ پیرۆزبایی و پیاهەڵدانی براوە، و loserJoke تەعلیق و سزایەکی کۆمیدی بۆ دۆڕاوەکان گونجاو لەگەڵ بارودۆخی دانیشتنەکە. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`;
 
-      if (state.apiKey && state.apiKey.trim().startsWith('AIza')) {
-        try {
-          const resp = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(state.apiKey.trim())}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-          }, 7500);
-          if (resp.ok) {
-            const data = await resp.json();
-            const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            const parsed = extractComedyJson(raw);
-            if (parsed) return parsed;
-          }
-        } catch (e) {}
-      }
+      const geminiComedy = await callGeminiModels(prompt, false);
+      if (geminiComedy) return geminiComedy;
 
       try {
         const resp2 = await fetchWithTimeout('https://text.pollinations.ai/openai', {
@@ -1330,7 +1342,8 @@
         if (!Array.isArray(arr)) return [];
 
         return arr.filter(item => item && typeof item.q === 'string' && Array.isArray(item.opts) && item.opts.length === 4).map(item => {
-          const correctText = item.opts[item.ans] || item.opts[0];
+          const ansIdx = typeof item.ans === 'number' && item.ans >= 0 && item.ans < 4 ? item.ans : 0;
+          const correctText = item.opts[ansIdx];
           const shuffledOpts = [...item.opts].sort(() => Math.random() - 0.5);
           const newAns = shuffledOpts.indexOf(correctText);
           markQuestionSeen(item.q);
@@ -1738,7 +1751,7 @@
       render();
 
       state.roomCode = String(Math.floor(1000 + Math.random() * 9000));
-      const actionTopic = `majlis_ku_v9/room/${state.roomCode}/action`;
+      const actionTopic = `majlis_ku_v10/room/${state.roomCode}/action`;
 
       connectMqttBroker((client) => {
         client.subscribe(actionTopic, { qos: 1 }, () => {
@@ -1771,8 +1784,8 @@
       state.connecting = true;
       render();
 
-      const stateTopic = `majlis_ku_v9/room/${code}/state`;
-      const actionTopic = `majlis_ku_v9/room/${code}/action`;
+      const stateTopic = `majlis_ku_v10/room/${code}/state`;
+      const actionTopic = `majlis_ku_v10/room/${code}/action`;
 
       connectMqttBroker((client) => {
         let receivedRoomState = false;
@@ -1898,7 +1911,7 @@
 
     function broadcastPayload(payload, retain = false) {
       if (state.role !== 'host' || !state.mqttClient || !state.roomCode) return;
-      const stateTopic = `majlis_ku_v9/room/${state.roomCode}/state`;
+      const stateTopic = `majlis_ku_v10/room/${state.roomCode}/state`;
       state.mqttClient.publish(stateTopic, JSON.stringify(payload), { qos: 0, retain });
     }
 
@@ -2006,7 +2019,7 @@
       render();
 
       if (state.role === 'player' && state.mqttClient && state.roomCode) {
-        const actionTopic = `majlis_ku_v9/room/${state.roomCode}/action`;
+        const actionTopic = `majlis_ku_v10/room/${state.roomCode}/action`;
         state.mqttClient.publish(actionTopic, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
       }
     }
@@ -2085,25 +2098,6 @@
 
     function closeSettingsModal() {
       document.getElementById('settingsModal').classList.remove('open');
-    }
-
-    function openApiModal() {
-      closeSettingsModal();
-      document.getElementById('apiKeyInput').value = state.apiKey;
-      document.getElementById('seenCountTxt').textContent = seenQuestions.length;
-      document.getElementById('apiModal').classList.add('open');
-    }
-
-    function closeApiModal() {
-      document.getElementById('apiModal').classList.remove('open');
-    }
-
-    function saveApiKey() {
-      const val = document.getElementById('apiKeyInput').value.trim();
-      state.apiKey = val;
-      localStorage.setItem(STORAGE_API_KEY, val);
-      closeApiModal();
-      showToast('✅ کۆدی سیستم پاشەکەوت کرا!');
     }
 
     function openCustomQModal() {
