@@ -842,7 +842,7 @@
         <button class="btn" onclick="toggleThemeMode()" id="themeBtnLabel">🌓 گۆڕینی دۆخی قاوەیی تۆخ / سپی</button>
         <button class="btn" onclick="toggleSound()" id="soundBtnLabel">🔊 دەنگی یاری: چالاکە</button>
         <button class="btn" onclick="openCustomQModal()">✍️ زیادکردنی پرسیاری تایبەت</button>
-        <button class="btn" onclick="openKeySetupModal()">🔑 دانانی کلیلی تایبەت</button>
+        <button class="btn" onclick="openKeySetupModal()">🔑 دانان و پشکنینی کلیل</button>
         <button class="btn" onclick="clearAskedHistory(); closeSettingsModal();">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
       </div>
       <button class="btn btn-primary" style="margin-top:12px; margin-bottom:0;" onclick="closeSettingsModal()">داخستن</button>
@@ -851,14 +851,15 @@
 
   <div class="modal-backdrop" id="keySetupModal">
     <div class="modal-box">
-      <h3 style="margin-bottom:8px; text-align:center;">🔑 دانانی کلیلی تایبەت</h3>
+      <h3 style="margin-bottom:8px; text-align:center;">🔑 دانان و پشکنینی کلیل</h3>
       <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px; text-align:center; line-height:1.6;">
-        ئەپەکە خۆکارانە کار دەکات، بەڵام ئەگەر کلیلی تایبەتی خۆتت هەیە (<strong>AIzaSy...</strong> یان <strong>gsk_...</strong> یان <strong>AQ.Ab8...</strong>) لێرە دایبنێ:
+        کلیلەکەت لێرە دابنێ (دەتوانیت کلیلی <strong>AQ.Ab8...</strong> یان <strong>AIzaSy...</strong> یان <strong>gsk_...</strong> دابنێیت):
       </p>
-      <input type="text" id="masterKeyInput" class="input" dir="ltr" placeholder="AIzaSy... / gsk_..." />
+      <input type="text" id="masterKeyInput" class="input" dir="ltr" placeholder="AQ.Ab8... / AIzaSy... / gsk_..." />
+      <div id="keyCheckStatus" style="font-size:0.8rem; text-align:center; margin-bottom:10px; font-weight:800;"></div>
       <div style="display:flex; gap:8px;">
         <button class="btn" onclick="closeKeySetupModal()">داخستن</button>
-        <button class="btn btn-primary" onclick="saveMasterKey()">💾 خەزنکردن</button>
+        <button class="btn btn-primary" id="saveKeyBtn" onclick="saveAndTestMasterKey()">💾 خەزنکردن و پشکنین</button>
       </div>
     </div>
   </div>
@@ -883,12 +884,13 @@
   </div>
 
   <script>
-    const MASTER_KEY_STORAGE = 'MAJLIS_MASTER_KEY_V16';
-    const STORAGE_SEEN_Q = 'MAJLIS_SEEN_HISTORY_V16';
-    const STORAGE_CUSTOM_Q = 'MAJLIS_CUSTOM_QUESTIONS_V16';
-    const USER_NAME_KEY = 'MAJLIS_PLAYER_NAME_V16';
-    const USER_ID_KEY = 'MAJLIS_PLAYER_ID_V16';
-    const THEME_MODE_KEY = 'MAJLIS_THEME_MODE_V16';
+    // ناوی جێگیری خەزنکردن کە هەموو وەشانەکانی پێشووش دەخوێنێتەوە تا هەرگیز کلیلەکەت نەسڕێتەوە
+    const MASTER_KEY_STORAGE = 'MAJLIS_MASTER_KEY';
+    const STORAGE_SEEN_Q = 'MAJLIS_SEEN_HISTORY';
+    const STORAGE_CUSTOM_Q = 'MAJLIS_CUSTOM_QUESTIONS';
+    const USER_NAME_KEY = 'MAJLIS_PLAYER_NAME';
+    const USER_ID_KEY = 'MAJLIS_PLAYER_ID';
+    const THEME_MODE_KEY = 'MAJLIS_THEME_MODE';
 
     if (localStorage.getItem(THEME_MODE_KEY) === 'light') {
       document.body.classList.add('light-mode');
@@ -923,9 +925,26 @@
       return str.replace(/['"\s]/g, '');
     }
 
+    function findSavedKeyAcrossVersions() {
+      const possibleKeys = [
+        'MAJLIS_MASTER_KEY',
+        'MAJLIS_MASTER_KEY_V16',
+        'MAJLIS_MASTER_KEY_V15',
+        'MAJLIS_MASTER_KEY_V14',
+        'MAJLIS_GEMINI_KEY_V9',
+        'MAJLIS_GEMINI_KEY_V8',
+        'MAJLIS_GEMINI_KEY_V7'
+      ];
+      for (const k of possibleKeys) {
+        const val = extractCleanKey(localStorage.getItem(k) || '');
+        if (val) return val;
+      }
+      return '';
+    }
+
     function getCandidateKeys() {
       const keys = [];
-      const saved = extractCleanKey(localStorage.getItem(MASTER_KEY_STORAGE) || '');
+      const saved = findSavedKeyAcrossVersions();
       if (saved) keys.push(saved);
       if (!keys.includes(_BUILT_IN_AQ)) keys.push(_BUILT_IN_AQ);
       return keys;
@@ -939,13 +958,13 @@
 
     let customQuestions = [];
     try {
-      const cq = localStorage.getItem(STORAGE_CUSTOM_Q);
+      const cq = localStorage.getItem(STORAGE_CUSTOM_Q) || localStorage.getItem('MAJLIS_CUSTOM_QUESTIONS_V16');
       if (cq) customQuestions = JSON.parse(cq);
     } catch (e) {}
 
     let seenQuestions = [];
     try {
-      const sq = localStorage.getItem(STORAGE_SEEN_Q);
+      const sq = localStorage.getItem(STORAGE_SEEN_Q) || localStorage.getItem('MAJLIS_SEEN_HISTORY_V16');
       if (sq) seenQuestions = JSON.parse(sq);
     } catch (e) {}
 
@@ -1023,13 +1042,65 @@
       'کەسایەتییە کاریگەرەکان و یاسا بنەڕەتییەکان'
     ];
 
+    // پرسیاری فریاگوزاریی فراوان بۆ ئەوەی تەنانەت ئەگەر هەموو سێرڤەرەکانی ئینتەرنێتیش بلۆک بن، یارییەکە هەرگیز پەکی نەکەوێت
+    const EMERGENCY_POOL = {
+      'یاسا و دادگا و دەستوور': [
+        { q: 'لە یاسای سزاداندا، سزای تاوانی جینایەت (جناية) لە چی پێکدێت؟', opts: ['زیندانیی هەتاهەتایی یان کاتی لە ٥ ساڵ زیاتر', 'تەنها پێبژاردنی دارایی کەم', 'بەندکردن بۆ ماوەی ٢٤ کاتژمێر', 'ئاگادارکردنەوەی زارەکی'], ans: 0 },
+        { q: 'کام لەمانە بە یەکێک لە کۆڵەکەکانی گرێبەست (أركان العقد) لە یاسای شارستانیدا دادەنرێت؟', opts: ['ڕەزامەندی و بابەت و هۆکار', 'بوونی دوو پارێزەر لە کاتی واژۆکردن', 'پەسەندکردنی لەلایەن پۆلیسەوە', 'نووسینی بە زمانی بیانی'], ans: 0 },
+        { q: 'لە یاسای نێودەوڵەتیدا، مافی "ڤیتۆ" لە ئەنجومەنی ئاسایشی نەتەوە یەکگرتووەکان دراوە بە چەند دەوڵەت؟', opts: ['٥ دەوڵەتی هەمیشەیی', '١٠ دەوڵەتی هەڵبژێردراو', '٧ دەوڵەتی پیشەسازی', 'تەنها ٢ دەوڵەت'], ans: 0 },
+        { q: 'لە یاسادا زاراوەی "التقادم" (تێپەڕبوونی کات) بە چ واتایەک دێت؟', opts: ['تێپەڕبوونی ماوەیەکی یاسایی کە دەبێتە هۆی نەمانی مافی داواکردن یان بەدەستهێنانی مافێک', 'خێراکردنی دانیشتنەکانی دادگا', 'دواخستنی مووچەی فەرمانبەر', 'کەمکردنەوەی ماوەی گرێبەست'], ans: 0 },
+        { q: 'کام دادگا بەرپرسە لە چاودێریکردنی دەستووریبوونی یاساکان لە عێراقدا؟', opts: ['دادگای باڵای فیدراڵی', 'دادگای بەرایی', 'دادگای لێکۆڵینەوە', 'دادگای کار'], ans: 0 },
+        { q: 'لە یاسای کاردا، کارپێکردنی منداڵانی خوار تەمەنی یاسایی دەچێتە چوارچێوەی چییەوە؟', opts: ['سەرپێچی یاسایی و قەدەغەکراوە', 'کارێکی خۆبەخشیی ڕێگەپێدراوە', 'مەرجی دامەزراندنە', 'بڕیاری خاوەنکارە'], ans: 0 },
+        { q: 'لە یاسای تاوانەکاندا، جیاوازی نێوان کوشتنی بەئەنقەست (العمد) و کوشتنی بەهەڵە (الخطأ) لە چیدایە؟', opts: ['بوونی نییەتی تاوانکاری (القصد الجنائي)', 'شوێنی ڕوودانی تاوانەکە', 'تەمەنی تاوانبارەکە', 'کاتی ئەنجامدانی تاوانەکە'], ans: 0 },
+        { q: 'ئەو بەڵگەنامە فەرمییەی کە لەلایەن فەرمانگەی دادنووسی (الكاتب العدل) پەسەند دەکرێت پێی دەوترێت چی؟', opts: ['سەنەدی فەرمی (سند رسمي)', 'گرێبەستی زارەکی', 'یاداشتنامەی تایبەت', 'پسوولەی بازرگانی'], ans: 0 },
+        { q: 'لە دەستووردا، بنەمای جیاکردنەوەی دەسەڵاتەکان (الفصل بين السلطات) لەلایەن کام بیرمەندەوە داڕێژرا؟', opts: ['مۆنتسکیۆ', 'ئەرستۆ', 'ماکیاڤێلی', 'تۆماس هۆبز'], ans: 0 },
+        { q: 'لە یاسای باری کەسیدا، وەسیەتکردن لە میراتدا تا چ ڕێژەیەکی ماڵەکە بێ ڕەزامەندی میراتگرەکان جێبەجێ دەکرێت؟', opts: ['تا سێیەکی ماڵەکە (الثلث)', 'هەموو ماڵەکە بە تەواوی', 'تەنها یەک لەسەر دەی ماڵەکە', 'نیوەی ماڵەکە'], ans: 0 }
+      ],
+      'گەشت و کامپینگ و سروشت': [
+        { q: 'لە کاتی هەڵکردنی ئاگر لە گەشت و کامپینگدا، سەلامەتترین ڕێکار پێش خەوتن چییە؟', opts: ['کوژاندنەوەی تەواوەتی ئاگرەکە بە ئاو و خۆڵ تا سارد دەبێتەوە', 'داپۆشینی ئاگرەکە بە گەڵای وشک', 'هێشتنەوەی خەڵووزەکە بە گەشاوەیی تا بەیانی', 'نزیککردنەوەی چادرەکە لە ئاگرەکە'], ans: 0 },
+        { q: 'کام لەم هاوینەهەوارانە دەکەوێتە سنووری قەزای شەقڵاوە و سۆران لە پارێزگای هەولێر؟', opts: ['بێخاڵ و گەلی عەلی بەگ و جوندیان', 'ئەحمەدئاوا و زەڵم', 'سۆلاڤ و ئاشاوا', 'سەرسەنگ و ئەترووش'], ans: 0 },
+        { q: 'لە کاتی شاخەوانیدا، ئەگەر هەورەبرووسکەی بەهێز دەستی پێکرد، کام شوێنە زۆر مەترسیدارە بۆ وەستان؟', opts: ['لە ژێر تاقە درەختێکی بەرز یان لەسەر لووتکەی چیاکە', 'لە ناو چاڵاییەکی نزم و دوور لە درەختی بەرز', 'لە ناو ئۆتۆمبێلی داخراو', 'لە ناوچەیەکی نزم'], ans: 0 },
+        { q: 'لە کاتی ڕاوەماسی لە ڕووبار و دەریاچەکانی کوردستاندا، لە کام وەرزدا ڕاوکردن قەدەغە دەکرێت؟', opts: ['لە وەرزی بەهار و گەرادانانی ماسیدا', 'لە ناوەڕاستی پاییزدا', 'لە کۆتایی هاویندا', 'لە مانگی کانوونی یەکەمدا'], ans: 0 },
+        { q: 'باشترین جۆری قوماش بۆ جلوبەرگی شاخەوانی و پیادەڕەوی لە کەشوهەوای سارددا کامەیە؟', opts: ['خوریی مێرینۆ و قوماشی پۆلیستەری دژەئاو (نەک لۆکە)', 'قوماشی لۆکەی ئەستوور کە ئارەق هەڵدەمژێت', 'قوماشی کابۆی قورس', 'ئاوریشمی تەنک'], ans: 0 }
+      ],
+      'مێژوو و جوگرافیای کوردستان': [
+        { q: 'قەڵای مێژوویی خانزاد دەکەوێتە سەر ڕێگەی نێوان کام دوو ناوچەی هەولێر؟', opts: ['هەولێر و پیرمام (سەڵاحەدین)', 'هەولێر و کۆیە', 'هەولێر و مەخموور', 'هەولێر و خەبات'], ans: 0 },
+        { q: 'کام زانا و مێژوونووسی گەورەی کورد لە سەدەی دوازدەی زایینی لە شاری هەولێر لەدایک بووە؟', opts: ['ئیبن خەلەکان', 'ئیبن خەلدوون', 'ئەبو فیدا', 'تەبەری'], ans: 0 },
+        { q: 'میرنشینی بابان پایتەختەکەی لە قەڵاچۆلانەوە گواستەوە بۆ کام شار لە ساڵی ١٧٨٤؟', opts: ['سلێمانی', 'هەڵەبجە', 'کفری', 'کۆیە'], ans: 0 },
+        { q: 'درێژترین ڕووبار کە بە ناو خاکی هەرێمی کوردستاندا تێپەڕ بێت کامەیە؟', opts: ['زێی گەورە و سیروان', 'خابوور', 'ئاوەسپی', 'چەمی ڕەزان'], ans: 0 },
+        { q: 'شاعیری گەورەی کورد "حاجی قادری کۆیی" لە کام شار کۆچی دوایی کردووە و بەخاک سپێردراوە؟', opts: ['ئەستەمبوڵ', 'قاهیرە', 'بەغدا', 'شام'], ans: 0 }
+      ],
+      'زانیاری گشتی جۆراوجۆر': [
+        { q: 'کام توخم لە سروشتدا بە ڕەقترین ماددەی سەر ڕووی زەوی دادەنرێت؟', opts: ['ئەڵماس', 'پۆڵا', 'تیتانیۆم', 'گرانایت'], ans: 0 },
+        { q: 'ژمارەی ئێسکەکانی لەشی مرۆڤێکی پێگەیشتوو چەند ئێسکە؟', opts: ['٢٠٦ ئێسک', '٣٠٠ ئێسک', '١٥٠ ئێسک', '٢٥٦ ئێسک'], ans: 0 },
+        { q: 'گەورەترین دوورگەی جیهان لە ڕووی ڕووبەرەوە کامەیە؟', opts: ['گرینلاند', 'مەدەغەشقەر', 'کوبا', 'ئایسلەندا'], ans: 0 },
+        { q: 'کام زانای جیهانی یاسای کێشکردنی زەوی و سێ یاساکەی جووڵەی دۆزییەوە؟', opts: ['ئیسحاق نیوتن', 'ئەلبێرت ئاینشتاین', 'گالیلۆ گالیلی', 'نیکۆلا تێسلا'], ans: 0 },
+        { q: 'قووڵترین خاڵی ناو زەریاکانی جیهان ناوی چییە؟', opts: ['خەندەقی ماریانا', 'سێگۆشەی بەرمۆدا', 'کەنداوی مەکسیک', 'دەریای سوور'], ans: 0 }
+      ],
+      'تۆپی پێ و وەرزشی جیهانی': [
+        { q: 'زۆرترین گۆڵکار لە مێژووی پاڵەوانێتی چامپیۆنزلیگی ئەوروپا کێیە؟', opts: ['کریستیانۆ ڕۆناڵدۆ', 'لیۆنێل مێسی', 'ڕۆبێرت لێڤاندۆڤسکی', 'کەریم بێنزێما'], ans: 0 },
+        { q: 'تاکە گۆڵپارێز لە مێژووی تۆپی پێدا کە خەڵاتی باڵۆن دۆری بردبێتەوە کێ بوو؟', opts: ['لێڤ یاشین', 'جیانلویجی بوفۆن', 'مانوێل نۆیەر', 'ئیکەر کاسیاس'], ans: 0 },
+        { q: 'یاریگای بەناوبانگی "سانتیاگۆ بێرنابیۆ" تایبەتە بە کام یانەی ئیسپانی؟', opts: ['ڕیاڵ مەدرید', 'بەرشەلۆنە', 'ئەتلەتیکۆ مەدرید', 'سێڤییا'], ans: 0 }
+      ],
+      'مەتەڵ و زیرەکی': [
+        { q: 'ئەو شتە چییە کە هەمیشە لە پێشتەوەیە بەڵام هەرگیز ناتوانیت بە چاو بیبینیت؟', opts: ['داهاتوو', 'سێبەر', 'ئاوێنە', 'ڕێگە'], ans: 0 },
+        { q: 'پڕە لە کون و کەچی ئاوێکی زۆریش لە خۆیدا هەڵدەگرێت؛ چییە؟', opts: ['ئیسفەنج', 'سەبەتە', 'بێژنگ', 'تۆڕ'], ans: 0 },
+        { q: 'ئەگەر ٣ سێوت هەبێت و ٢ سێویان لێ ببەیت، چەند سێوت لای خۆت هەیە؟', opts: ['٢ سێو (ئەو دووانەی خۆت بردووتن!)', '١ سێو', '٣ سێو', 'هیچ'], ans: 0 }
+      ],
+      'زانیاری ئایینی و قورئان': [
+        { q: 'کام هاوەڵی پێغەمبەر (د.خ) بە نازناوی "ذو النورين" ناسراوە؟', opts: ['عوسمانی کوڕی عەففان (ڕ.خ)', 'عومەری کوڕی خەتاب (ڕ.خ)', 'ئەبوبەکری سدیق (ڕ.خ)', 'عەلی کوڕی ئەبو تاڵیب (ڕ.خ)'], ans: 0 },
+        { q: 'قورئانی پیرۆز لە ماوەی چەند ساڵدا بۆ سەر پێغەمبەر محەمەد (د.خ) دابەزی؟', opts: ['٢٣ ساڵ', '١٠ ساڵ', '١٣ ساڵ', '٤٠ ساڵ'], ans: 0 },
+        { q: 'کام سورەت لە قورئانی پیرۆزدا بەرامبەر سێیەکی قورئانە لە پاداشتدا؟', opts: ['سورەتی ئیخلاس', 'سورەتی فاتیحە', 'سورەتی کەوسەر', 'سورەتی فەلەق'], ans: 0 }
+      ]
+    };
+
     let state = {
       welcomeTab: 'host',
       role: null,
       screen: 'welcome',
       myId: persistentId,
-      myName: localStorage.getItem(USER_NAME_KEY) || '',
-      masterKey: localStorage.getItem(MASTER_KEY_STORAGE) || '',
+      myName: localStorage.getItem(USER_NAME_KEY) || localStorage.getItem('MAJLIS_PLAYER_NAME_V16') || '',
+      masterKey: findSavedKeyAcrossVersions(),
       roomCode: '',
       selectedVibeIds: ['friends'],
       selectedTopics: ['یاسا و دادگا و دەستوور'],
@@ -1199,51 +1270,17 @@
       return list.length > 0 ? list : [QUESTION_VIBES[0]];
     }
 
-    function fetchWithTimeout(url, options, timeoutMs = 11000) {
+    function fetchWithTimeout(url, options, timeoutMs = 9500) {
       return Promise.race([
         fetch(url, options),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs))
       ]);
     }
 
-    // دەرهێنانی زیرەکی هەر پرسیارێک لە ناو وەڵامەکەدا بەبێ کێشەی کەوانە یان هێمای زیادە
     function parseFlexibleQuestions(rawText, count) {
       if (!rawText) return null;
-      const text = String(rawText);
+      const text = String(rawText).replace(/```json/gi, '').replace(/```/g, '').trim();
       const cleaned = [];
-
-      const objectMatches = text.match(/\{[^{}]*"(?:q|question)"[^{}]*\}/g) || [];
-      for (const m of objectMatches) {
-        try {
-          const item = JSON.parse(m);
-          const qText = String(item.q || item.question || '').trim();
-          const rawOpts = item.opts || item.options || item.choices;
-          if (!qText || !Array.isArray(rawOpts) || rawOpts.length < 4) continue;
-
-          const opts = rawOpts.slice(0, 4).map(o => String(o).trim());
-          let ansIdx = 0;
-          const rawAns = item.ans ?? item.answer ?? item.correct ?? 0;
-          if (typeof rawAns === 'number' && rawAns >= 0 && rawAns < 4) {
-            ansIdx = rawAns;
-          } else if (typeof rawAns === 'string') {
-            const num = parseInt(rawAns, 10);
-            if (!isNaN(num) && num >= 0 && num < 4) ansIdx = num;
-            else if (opts.includes(rawAns.trim())) ansIdx = opts.indexOf(rawAns.trim());
-          }
-
-          const correctText = opts[ansIdx];
-          const shuffledOpts = [...opts].sort(() => Math.random() - 0.5);
-          const newAns = shuffledOpts.indexOf(correctText);
-          markQuestionSeen(qText);
-          cleaned.push({
-            q: qText,
-            opts: shuffledOpts,
-            ans: newAns >= 0 ? newAns : 0
-          });
-        } catch (e) {}
-      }
-
-      if (cleaned.length > 0) return cleaned.slice(0, count);
 
       try {
         const start = text.indexOf('[');
@@ -1253,11 +1290,18 @@
           if (Array.isArray(arr)) {
             for (const item of arr) {
               if (!item || typeof item !== 'object') continue;
-              const qText = String(item.q || item.question || '').trim();
-              const rawOpts = item.opts || item.options || item.choices;
+              const qText = String(item.q || item.question || item.text || '').trim();
+              const rawOpts = item.opts || item.options || item.choices || item.answers;
               if (!qText || !Array.isArray(rawOpts) || rawOpts.length < 4) continue;
               const opts = rawOpts.slice(0, 4).map(o => String(o).trim());
-              const ansIdx = typeof item.ans === 'number' && item.ans >= 0 && item.ans < 4 ? item.ans : 0;
+              let ansIdx = 0;
+              const rawAns = item.ans ?? item.answer ?? item.correct ?? 0;
+              if (typeof rawAns === 'number' && rawAns >= 0 && rawAns < 4) ansIdx = rawAns;
+              else if (typeof rawAns === 'string') {
+                const n = parseInt(rawAns, 10);
+                if (!isNaN(n) && n >= 0 && n < 4) ansIdx = n;
+                else if (opts.includes(rawAns.trim())) ansIdx = opts.indexOf(rawAns.trim());
+              }
               const correctText = opts[ansIdx];
               const shuffledOpts = [...opts].sort(() => Math.random() - 0.5);
               markQuestionSeen(qText);
@@ -1271,13 +1315,35 @@
         }
       } catch (e) {}
 
+      if (cleaned.length > 0) return cleaned.slice(0, count);
+
+      const objectMatches = text.match(/\{[\s\S]*?"(?:q|question)"[\s\S]*?\}/g) || [];
+      for (const m of objectMatches) {
+        try {
+          const item = JSON.parse(m);
+          const qText = String(item.q || item.question || '').trim();
+          const rawOpts = item.opts || item.options || item.choices;
+          if (!qText || !Array.isArray(rawOpts) || rawOpts.length < 4) continue;
+          const opts = rawOpts.slice(0, 4).map(o => String(o).trim());
+          const ansIdx = typeof item.ans === 'number' && item.ans >= 0 && item.ans < 4 ? item.ans : 0;
+          const correctText = opts[ansIdx];
+          const shuffledOpts = [...opts].sort(() => Math.random() - 0.5);
+          markQuestionSeen(qText);
+          cleaned.push({
+            q: qText,
+            opts: shuffledOpts,
+            ans: shuffledOpts.indexOf(correctText)
+          });
+        } catch (e) {}
+      }
+
       return cleaned.length > 0 ? cleaned.slice(0, count) : null;
     }
 
     function parseFlexibleComedy(rawText) {
       if (!rawText) return null;
       try {
-        const text = String(rawText);
+        const text = String(rawText).replace(/```json/gi, '').replace(/```/g, '').trim();
         const start = text.indexOf('{');
         const end = text.lastIndexOf('}');
         if (start === -1 || end === -1) return null;
@@ -1289,98 +1355,134 @@
       }
     }
 
-    async function callAIRawText(prompt, shortPromptForGet) {
-      const candidateKeys = getCandidateKeys();
-      const geminiModels = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest'];
+    // تاقیکردنەوەی کلیلێکی دیاریکراو بە هەردوو شێوازی Header و Query Param لە یەک کاتدا
+    async function requestWithSingleKey(key, prompt) {
+      if (!key) throw new Error('NO_KEY');
 
-      for (const key of candidateKeys) {
-        if (!key) continue;
+      if (key.startsWith('gsk_')) {
+        const gResp = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: 'Return ONLY valid raw JSON in Kurdish Sorani.' },
+              { role: 'user', content: prompt }
+            ],
+            temperature: 0.9
+          })
+        }, 9000);
+        if (!gResp.ok) throw new Error('GROQ_' + gResp.status);
+        const gData = await gResp.json();
+        const gText = gData?.choices?.[0]?.message?.content || '';
+        if (!gText) throw new Error('EMPTY');
+        return gText;
+      }
 
-        if (key.startsWith('gsk_')) {
-          try {
-            const gResp = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
+      const models = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+      const tasks = [];
+
+      for (const m of models) {
+        // شێوازی ١: بە هێدەری X-goog-api-key (ڕێک وەک فەرمانی curlـی گووگڵ بۆ کلیلی AQ.Ab8...)
+        tasks.push((async () => {
+          const r = await fetchWithTimeout(
+            `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`,
+            {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${key}`
+                'X-goog-api-key': key
               },
-              body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                  { role: 'system', content: 'Return ONLY valid raw JSON in Kurdish Sorani.' },
-                  { role: 'user', content: prompt }
-                ],
-                temperature: 0.9
-              })
-            }, 9500);
-            if (gResp.ok) {
-              const gData = await gResp.json();
-              const gText = gData?.choices?.[0]?.message?.content || '';
-              if (gText) return gText;
-            }
-          } catch (e) {}
-          continue;
-        }
+              body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            },
+            9000
+          );
+          if (!r.ok) throw new Error('HTTP_' + r.status);
+          const d = await r.json();
+          const t = d?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (!t) throw new Error('EMPTY');
+          return t;
+        })());
 
-        for (const model of geminiModels) {
-          try {
-            const resp = await fetchWithTimeout(
-              `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  contents: [{ parts: [{ text: prompt }] }]
-                })
-              },
-              8500
-            );
-            if (resp.ok) {
-              const data = await resp.json();
-              const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-              if (text) return text;
-            }
-          } catch (e) {}
-        }
+        // شێوازی ٢: بە پارامیتەری ?key=
+        tasks.push((async () => {
+          const r2 = await fetchWithTimeout(
+            `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(key)}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            },
+            9000
+          );
+          if (!r2.ok) throw new Error('HTTP_' + r2.status);
+          const d2 = await r2.json();
+          const t2 = d2?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (!t2) throw new Error('EMPTY');
+          return t2;
+        })());
       }
 
-      // سێرڤەری کراوەی ١
-      try {
-        const respOpen = await fetchWithTimeout('https://text.pollinations.ai/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: [
-              { role: 'system', content: 'You are a Kurdish Sorani quiz generator. Output ONLY valid JSON array.' },
-              { role: 'user', content: prompt }
-            ],
-            model: 'openai',
-            jsonMode: true,
-            seed: Math.floor(Math.random() * 999999)
-          })
-        }, 12000);
-        if (respOpen.ok) {
-          const textOpen = await respOpen.text();
-          if (textOpen) return textOpen;
-        }
-      } catch (e) {}
+      return await Promise.any(tasks);
+    }
 
-      // سێرڤەری کراوەی ٢
-      try {
-        const seed = Math.floor(Math.random() * 999999);
-        const concise = shortPromptForGet || prompt.substring(0, 320);
-        const respGet = await fetchWithTimeout(
-          `https://text.pollinations.ai/${encodeURIComponent(concise)}?json=true&seed=${seed}`,
-          { method: 'GET' },
-          12000
-        );
-        if (respGet.ok) {
-          const textGet = await respGet.text();
-          if (textGet) return textGet;
-        }
-      } catch (e) {}
+    async function callAIRawText(prompt, shortPromptForGet) {
+      const candidateKeys = getCandidateKeys();
 
-      return null;
+      for (const key of candidateKeys) {
+        try {
+          const resText = await requestWithSingleKey(key, prompt);
+          if (resText) return resText;
+        } catch (e) {}
+      }
+
+      // هەوڵی هاوکاتی سێرڤەرە بێ-کلیلەکان لە یەک کاتدا
+      const freeTasks = [
+        (async () => {
+          const respOpen = await fetchWithTimeout('https://text.pollinations.ai/openai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'openai',
+              messages: [
+                { role: 'system', content: 'You are a Kurdish Sorani quiz generator. Output ONLY valid JSON.' },
+                { role: 'user', content: prompt }
+              ],
+              seed: Math.floor(Math.random() * 999999)
+            })
+          }, 9500);
+          if (!respOpen.ok) throw new Error('FAIL');
+          const rawOpen = await respOpen.text();
+          try {
+            const d = JSON.parse(rawOpen);
+            return d?.choices?.[0]?.message?.content || rawOpen;
+          } catch (e) {
+            return rawOpen;
+          }
+        })(),
+        (async () => {
+          const seed = Math.floor(Math.random() * 999999);
+          const concise = shortPromptForGet || prompt.substring(0, 300);
+          const respGet = await fetchWithTimeout(
+            `https://text.pollinations.ai/${encodeURIComponent(concise)}?model=openai&seed=${seed}`,
+            { method: 'GET' },
+            9500
+          );
+          if (!respGet.ok) throw new Error('FAIL');
+          const t = await respGet.text();
+          if (!t) throw new Error('EMPTY');
+          return t;
+        })()
+      ];
+
+      try {
+        return await Promise.any(freeTasks);
+      } catch (e) {
+        return null;
+      }
     }
 
     async function generateAIQuestions(topicsList, customTopic, count, difficulty) {
@@ -1415,8 +1517,32 @@
         return parsed;
       }
 
-      showToast('⚠️ تکایە دووبارە پەنجە بنێ بە دەستپێکردنی یاری');
-      return null;
+      // هێڵی فریاگوزاری: ئەگەر کلیلەکە سوتابوو یان ئینتەرنێت سێرڤەرەکەی بلۆک کردبوو، یارییەکە هەرگیز ناوەستێت!
+      let emergencyList = [];
+      topicsList.forEach(t => {
+        if (t === 'پرسیارەکانی خۆم (تایبەت)') emergencyList.push(...customQuestions);
+        else if (EMERGENCY_POOL[t]) emergencyList.push(...EMERGENCY_POOL[t]);
+      });
+      if (emergencyList.length === 0) {
+        Object.values(EMERGENCY_POOL).forEach(arr => emergencyList.push(...arr));
+      }
+
+      let unseen = emergencyList.filter(item => !seenQuestions.includes(item.q));
+      if (unseen.length < count) {
+        seenQuestions = [];
+        unseen = [...emergencyList];
+      }
+
+      return unseen.sort(() => Math.random() - 0.5).slice(0, count).map(item => {
+        const correctText = item.opts[item.ans];
+        const shuffledOpts = [...item.opts].sort(() => Math.random() - 0.5);
+        markQuestionSeen(item.q);
+        return {
+          q: item.q,
+          opts: shuffledOpts,
+          ans: shuffledOpts.indexOf(correctText)
+        };
+      });
     }
 
     async function generateAIComedyCommentary() {
@@ -1874,7 +2000,7 @@
       render();
 
       state.roomCode = String(Math.floor(1000 + Math.random() * 9000));
-      const actionTopic = `majlis_ku_v16/room/${state.roomCode}/action`;
+      const actionTopic = `majlis_ku_v17/room/${state.roomCode}/action`;
 
       connectMqttBroker((client) => {
         client.subscribe(actionTopic, { qos: 1 }, () => {
@@ -1909,8 +2035,8 @@
       state.connecting = true;
       render();
 
-      const stateTopic = `majlis_ku_v16/room/${code}/state`;
-      const actionTopic = `majlis_ku_v16/room/${code}/action`;
+      const stateTopic = `majlis_ku_v17/room/${code}/state`;
+      const actionTopic = `majlis_ku_v17/room/${code}/action`;
 
       connectMqttBroker((client) => {
         let receivedRoomState = false;
@@ -2036,7 +2162,7 @@
 
     function broadcastPayload(payload, retain = false) {
       if (state.role !== 'host' || !state.mqttClient || !state.roomCode) return;
-      const stateTopic = `majlis_ku_v16/room/${state.roomCode}/state`;
+      const stateTopic = `majlis_ku_v17/room/${state.roomCode}/state`;
       state.mqttClient.publish(stateTopic, JSON.stringify(payload), { qos: 0, retain });
     }
 
@@ -2151,7 +2277,7 @@
       render();
 
       if (state.role === 'player' && state.mqttClient && state.roomCode) {
-        const actionTopic = `majlis_ku_v16/room/${state.roomCode}/action`;
+        const actionTopic = `majlis_ku_v17/room/${state.roomCode}/action`;
         state.mqttClient.publish(actionTopic, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
       }
     }
@@ -2235,6 +2361,7 @@
     function openKeySetupModal() {
       closeSettingsModal();
       document.getElementById('masterKeyInput').value = state.masterKey;
+      document.getElementById('keyCheckStatus').textContent = '';
       document.getElementById('keySetupModal').classList.add('open');
     }
 
@@ -2242,13 +2369,39 @@
       document.getElementById('keySetupModal').classList.remove('open');
     }
 
-    function saveMasterKey() {
+    async function saveAndTestMasterKey() {
       const rawVal = document.getElementById('masterKeyInput').value;
       const cleanVal = extractCleanKey(rawVal);
+      const statusEl = document.getElementById('keyCheckStatus');
+      const btn = document.getElementById('saveKeyBtn');
+
       state.masterKey = cleanVal;
       localStorage.setItem(MASTER_KEY_STORAGE, cleanVal);
-      closeKeySetupModal();
-      showToast('✅ کلیلەکەت بە سەرکەوتوویی خەزن کرا!');
+
+      if (!cleanVal) {
+        closeKeySetupModal();
+        showToast('✅ کلیل لابرا');
+        return;
+      }
+
+      btn.disabled = true;
+      statusEl.style.color = 'var(--amber)';
+      statusEl.textContent = '⏳ خەریکی پشکنینی کلیلەکەیە...';
+
+      try {
+        await requestWithSingleKey(cleanVal, 'Say OK');
+        statusEl.style.color = 'var(--emerald)';
+        statusEl.textContent = '✅ کلیلەکەت ١٠٠٪ کارایە و خەزن کرا!';
+        setTimeout(() => {
+          btn.disabled = false;
+          closeKeySetupModal();
+          showToast('✅ کلیلەکەت چالاکە!');
+        }, 1000);
+      } catch (e) {
+        btn.disabled = false;
+        statusEl.style.color = 'var(--danger)';
+        statusEl.textContent = '⚠️ ئەم کلیلە لەلایەن گووگڵەوە وەستێنراوە، تکایە کلیلێکی نوێ دروست بکە و لە چات دایمەنێ!';
+      }
     }
 
     function openCustomQModal() {
