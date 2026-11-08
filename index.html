@@ -29,7 +29,6 @@
       --radius: 20px;
     }
 
-    /* کەشی چادرگە (دارستان و ئاگر) */
     body.vibe-camping:not(.light-mode) {
       --bg-main: #0c140e;
       --bg-surface: rgba(20, 33, 24, 0.95);
@@ -44,7 +43,6 @@
       --accent: #fb923c;
     }
 
-    /* کەشی شەوبێداری - قيام الليل (مانگەشەو و شینی قووڵ) */
     body.vibe-qiyam:not(.light-mode) {
       --bg-main: #070b19;
       --bg-surface: rgba(15, 23, 42, 0.95);
@@ -59,7 +57,6 @@
       --accent: #fde047;
     }
 
-    /* کەشی دانیشتنە فەرمییەکان (دیپلۆماسی و سەنگین) */
     body.vibe-formal:not(.light-mode) {
       --bg-main: #0b0f17;
       --bg-surface: rgba(17, 24, 39, 0.96);
@@ -88,13 +85,7 @@
       --accent: #b07238;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Vazirmatn', system-ui, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
 
     body {
       background: var(--bg-main) radial-gradient(at 15% 10%, var(--primary-glow) 0px, transparent 50%) fixed;
@@ -107,653 +98,259 @@
     }
 
     body.vibe-camping:not(.light-mode) {
-      background-image: 
-        radial-gradient(at 50% 95%, rgba(234, 88, 12, 0.28) 0px, transparent 55%),
-        radial-gradient(at 15% 15%, rgba(16, 185, 129, 0.12) 0px, transparent 45%);
+      background-image: radial-gradient(at 50% 95%, rgba(234, 88, 12, 0.28) 0px, transparent 55%), radial-gradient(at 15% 15%, rgba(16, 185, 129, 0.12) 0px, transparent 45%);
     }
 
     body.vibe-qiyam:not(.light-mode) {
-      background-image: 
-        radial-gradient(at 85% 10%, rgba(234, 179, 8, 0.2) 0px, transparent 45%),
-        radial-gradient(at 20% 80%, rgba(56, 189, 248, 0.12) 0px, transparent 50%);
+      background-image: radial-gradient(at 85% 10%, rgba(234, 179, 8, 0.2) 0px, transparent 45%), radial-gradient(at 20% 80%, rgba(56, 189, 248, 0.12) 0px, transparent 50%);
     }
 
     #splashScreen {
-      position: fixed;
-      inset: 0;
-      background: var(--bg-main);
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
+      position: fixed; inset: 0; background: var(--bg-main); z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
       animation: autoHideSplash 0.45s ease 1.8s forwards;
     }
-    @keyframes autoHideSplash {
-      to { opacity: 0; visibility: hidden; pointer-events: none; }
-    }
+    @keyframes autoHideSplash { to { opacity: 0; visibility: hidden; pointer-events: none; } }
 
     .splash-logo {
-      width: 86px;
-      height: 86px;
-      border-radius: 26px;
+      width: 86px; height: 86px; border-radius: 26px;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border: 2px solid var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.6rem;
-      box-shadow: 0 14px 34px var(--primary-glow);
+      border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center;
+      font-size: 2.6rem; box-shadow: 0 14px 34px var(--primary-glow);
       animation: pulseSplash 0.9s infinite alternate;
     }
-    @keyframes pulseSplash {
-      from { transform: scale(0.94); }
-      to { transform: scale(1.06); }
-    }
-    .splash-title {
-      font-weight: 900;
-      font-size: 2.3rem;
-      color: var(--text);
-    }
+    @keyframes pulseSplash { from { transform: scale(0.94); } to { transform: scale(1.06); } }
+    .splash-title { font-weight: 900; font-size: 2.3rem; color: var(--text); }
 
     header {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-surface);
-      backdrop-filter: blur(14px);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-surface);
+      backdrop-filter: blur(14px); display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 100;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
+    .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
+      width: 38px; height: 38px; border-radius: 12px;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border: 1px solid var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      box-shadow: 0 4px 12px var(--primary-glow);
-      color: #fff;
+      border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; box-shadow: 0 4px 12px var(--primary-glow); color: #fff;
     }
-    .brand-title {
-      font-weight: 900;
-      font-size: 1.28rem;
-    }
+    .brand-title { font-weight: 900; font-size: 1.28rem; }
     .icon-pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 14px;
-      border-radius: 50px;
-      font-size: 0.82rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
+      padding: 8px 14px; border-radius: 50px; font-size: 0.82rem; font-weight: 800;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     }
     .icon-pill:active { transform: scale(0.96); }
 
-    main {
-      max-width: 680px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 14px 12px 60px;
-      flex: 1;
-    }
+    main { max-width: 680px; width: 100%; margin: 0 auto; padding: 14px 12px 60px; flex: 1; }
     .card {
-      background: var(--bg-surface);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 16px;
-      margin-bottom: 14px;
+      background: var(--bg-surface); backdrop-filter: blur(16px); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 16px; margin-bottom: 14px;
       box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
     }
 
-    h2 {
-      font-size: 1.2rem;
-      font-weight: 900;
-      margin-bottom: 4px;
-      text-align: center;
-    }
-    p.sub {
-      color: var(--muted);
-      font-size: 0.82rem;
-      text-align: center;
-      margin-bottom: 14px;
-      line-height: 1.5;
-    }
+    h2 { font-size: 1.2rem; font-weight: 900; margin-bottom: 4px; text-align: center; }
+    p.sub { color: var(--muted); font-size: 0.82rem; text-align: center; margin-bottom: 14px; line-height: 1.5; }
 
     .welcome-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-bottom: 14px;
-      background: var(--bg-card);
-      padding: 5px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 14px;
+      background: var(--bg-card); padding: 5px; border-radius: 14px; border: 1px solid var(--border);
     }
     .w-tab {
-      padding: 10px 8px;
-      border-radius: 10px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-weight: 800;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: 0.2s;
+      padding: 10px 8px; border-radius: 10px; border: none; background: transparent;
+      color: var(--muted); font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
     }
     .w-tab.active {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff;
-      box-shadow: 0 4px 12px var(--primary-glow);
+      color: #fff; box-shadow: 0 4px 12px var(--primary-glow);
     }
 
     .input {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1.5px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text);
-      font-size: 0.94rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      outline: none;
-      text-align: center;
-      transition: 0.2s;
+      width: 100%; padding: 12px 14px; border-radius: 14px; border: 1.5px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-size: 0.94rem; font-weight: 700;
+      margin-bottom: 12px; outline: none; text-align: center; transition: 0.2s;
     }
     .input::placeholder { color: var(--muted); opacity: 0.8; }
-    .input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-glow);
-    }
+    .input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
 
     .btn {
-      width: 100%;
-      padding: 13px 18px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text);
-      font-size: 0.95rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: transform 0.12s, box-shadow 0.2s;
-      margin-bottom: 10px;
-      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22);
+      width: 100%; padding: 13px 18px; border-radius: 14px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-size: 0.95rem; font-weight: 800;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: transform 0.12s, box-shadow 0.2s; margin-bottom: 10px; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22);
     }
-    .btn:active:not(:disabled) {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
-    }
+    .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.22); }
     .btn:disabled { opacity: 0.55; pointer-events: none; }
     .btn-primary {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border: 1px solid var(--accent);
-      color: #fff;
+      border: 1px solid var(--accent); color: #fff;
       box-shadow: 0 4px 0 rgba(0,0,0,0.4), 0 8px 20px var(--primary-glow);
     }
     .btn-emerald {
       background: linear-gradient(135deg, #059669, #10b981);
-      border: none;
-      color: #fff;
-      box-shadow: 0 4px 0 #065f46;
+      border: none; color: #fff; box-shadow: 0 4px 0 #065f46;
     }
     .btn-task-spin {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border: 1.5px solid var(--accent);
-      color: #fff;
+      border: 1.5px solid var(--accent); color: #fff;
       box-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 8px 20px var(--primary-glow);
     }
 
     .section-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 12px;
-      margin-bottom: 12px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 12px; margin-bottom: 12px;
     }
     .section-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      padding: 4px 12px;
-      border-radius: 50px;
-      font-size: 0.74rem;
-      font-weight: 800;
-      margin-bottom: 10px;
+      display: inline-flex; align-items: center; gap: 6px; background: var(--bg-elevated);
+      border: 1px solid var(--border); padding: 4px 12px; border-radius: 50px;
+      font-size: 0.74rem; font-weight: 800; margin-bottom: 10px;
     }
 
-    .vibe-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 7px;
-    }
+    .vibe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 7px; }
     .vibe-card {
-      background: var(--bg-surface);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 9px 6px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.18s;
+      background: var(--bg-surface); border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 9px 6px; text-align: center; cursor: pointer; transition: 0.18s;
     }
     .vibe-card .v-ico { font-size: 1.3rem; display: block; margin-bottom: 2px; }
     .vibe-card strong { font-size: 0.77rem; display: block; }
     .vibe-card small { font-size: 0.64rem; color: var(--muted); display: block; margin-top: 2px; }
     .vibe-card.active {
       background: linear-gradient(145deg, var(--primary), var(--primary-dark));
-      border-color: #fff;
-      box-shadow: 0 4px 12px var(--primary-glow);
+      border-color: #fff; box-shadow: 0 4px 12px var(--primary-glow);
     }
     .vibe-card.active strong, .vibe-card.active small { color: #fff; }
 
-    .topic-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-    }
+    .topic-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
     .topic-chip {
-      padding: 7px 12px;
-      border-radius: 50px;
-      border: 1.5px solid var(--border);
-      background: var(--bg-surface);
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 800;
-      cursor: pointer;
+      padding: 7px 12px; border-radius: 50px; border: 1.5px solid var(--border);
+      background: var(--bg-surface); color: var(--muted); font-size: 0.78rem; font-weight: 800; cursor: pointer;
     }
     .topic-chip.active {
-      background: var(--primary);
-      border-color: #fff;
-      color: #fff;
+      background: var(--primary); border-color: #fff; color: #fff;
       box-shadow: 0 3px 10px var(--primary-glow);
     }
 
-    .settings-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
+    .settings-stack { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
     .setting-row-inline {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 7px 10px;
-      border-radius: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      background: var(--bg-card); border: 1px solid var(--border); padding: 7px 10px;
+      border-radius: 13px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
     }
-    .setting-row-inline label {
-      font-size: 0.76rem;
-      font-weight: 800;
-      color: var(--muted);
-    }
+    .setting-row-inline label { font-size: 0.76rem; font-weight: 800; color: var(--muted); }
     .seg-group { display: flex; gap: 5px; }
     .seg-btn {
-      padding: 5px 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg-surface);
-      color: var(--muted);
-      font-size: 0.75rem;
-      font-weight: 800;
-      cursor: pointer;
+      padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-surface); color: var(--muted); font-size: 0.75rem; font-weight: 800; cursor: pointer;
     }
-    .seg-btn.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--accent);
-    }
+    .seg-btn.active { background: var(--primary); color: #fff; border-color: var(--accent); }
 
     .qr-wrap {
-      background: #fff;
-      padding: 12px;
-      border-radius: 18px;
-      width: fit-content;
-      margin: 8px auto 14px;
-      box-shadow: 0 10px 26px rgba(0,0,0,0.3);
-      border: 3px solid var(--primary);
+      background: #fff; padding: 12px; border-radius: 18px; width: fit-content;
+      margin: 8px auto 14px; box-shadow: 0 10px 26px rgba(0,0,0,0.3); border: 3px solid var(--primary);
     }
-    .pin-boxes {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin: 6px 0 14px;
-      direction: ltr;
-    }
+    .pin-boxes { display: flex; justify-content: center; gap: 8px; margin: 6px 0 14px; direction: ltr; }
     .pin-digit {
-      width: 48px;
-      height: 54px;
-      border-radius: 14px;
-      background: var(--bg-card);
-      border: 2px solid var(--primary);
-      font-size: 1.55rem;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 48px; height: 54px; border-radius: 14px; background: var(--bg-card);
+      border: 2px solid var(--primary); font-size: 1.55rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .players-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin: 10px 0;
-    }
+    .players-wrap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0; }
     .p-badge {
-      background: var(--bg-card);
-      border: 1.5px solid var(--primary);
-      padding: 6px 13px;
-      border-radius: 50px;
-      font-weight: 800;
-      font-size: 0.84rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      background: var(--bg-card); border: 1.5px solid var(--primary); padding: 6px 13px;
+      border-radius: 50px; font-weight: 800; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 6px;
     }
     .kick-btn {
-      background: rgba(239, 68, 68, 0.22);
-      border: none;
-      color: var(--danger);
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      font-size: 0.7rem;
-      cursor: pointer;
+      background: rgba(239, 68, 68, 0.22); border: none; color: var(--danger);
+      width: 20px; height: 20px; border-radius: 50%; font-size: 0.7rem; cursor: pointer;
     }
 
-    .quiz-top-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      font-weight: 800;
-      font-size: 0.84rem;
-    }
-    .source-tag {
-      font-size: 0.74rem;
-      padding: 3px 10px;
-      border-radius: 50px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--accent);
-    }
-    .timer-track {
-      height: 10px;
-      background: var(--bg-card);
-      border-radius: 50px;
-      overflow: hidden;
-      margin-bottom: 14px;
-      border: 1px solid var(--border);
-    }
-    .timer-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--emerald), var(--primary), var(--danger));
-      transition: width 0.95s linear;
-    }
+    .quiz-top-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 800; font-size: 0.84rem; }
+    .source-tag { font-size: 0.74rem; padding: 3px 10px; border-radius: 50px; background: var(--bg-card); border: 1px solid var(--border); color: var(--accent); }
+    .timer-track { height: 10px; background: var(--bg-card); border-radius: 50px; overflow: hidden; margin-bottom: 14px; border: 1px solid var(--border); }
+    .timer-fill { height: 100%; background: linear-gradient(90deg, var(--emerald), var(--primary), var(--danger)); transition: width 0.95s linear; }
 
     .q-banner {
-      font-size: 1.12rem;
-      font-weight: 900;
-      text-align: center;
-      padding: 18px 14px;
-      background: var(--bg-card);
-      border-radius: 16px;
-      border: 1.5px solid var(--border);
-      margin-bottom: 14px;
-      line-height: 1.65;
+      font-size: 1.12rem; font-weight: 900; text-align: center; padding: 18px 14px;
+      background: var(--bg-card); border-radius: 16px; border: 1.5px solid var(--border);
+      margin-bottom: 14px; line-height: 1.65;
     }
     .opts-list { display: grid; gap: 10px; }
     .opt-card {
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 2px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text);
-      font-size: 0.94rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 3px 0 rgba(0,0,0,0.18);
+      padding: 12px 14px; border-radius: 14px; border: 2px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-size: 0.94rem; font-weight: 800;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; box-shadow: 0 3px 0 rgba(0,0,0,0.18);
     }
-    .opt-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-align: right;
-    }
+    .opt-right { display: flex; align-items: center; gap: 10px; text-align: right; }
     .opt-num {
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      color: var(--primary);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 0.85rem;
-      flex-shrink: 0;
+      width: 30px; height: 30px; border-radius: 9px; background: var(--bg-surface);
+      border: 1px solid var(--border); color: var(--primary); display: inline-flex;
+      align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem; flex-shrink: 0;
     }
-    .opt-card.selected {
-      border-color: var(--primary);
-      background: var(--bg-elevated);
-    }
-    .opt-card.selected .opt-num {
-      background: var(--primary);
-      color: #fff;
-      border-color: #fff;
-    }
-    .opt-card.correct {
-      border-color: var(--emerald);
-      background: rgba(16, 185, 129, 0.28);
-    }
-    .opt-card.correct .opt-num {
-      background: var(--emerald);
-      color: #fff;
-    }
-    .opt-card.wrong {
-      border-color: var(--danger);
-      background: rgba(239, 68, 68, 0.25);
-    }
-    .opt-card.wrong .opt-num {
-      background: var(--danger);
-      color: #fff;
-    }
+    .opt-card.selected { border-color: var(--primary); background: var(--bg-elevated); }
+    .opt-card.selected .opt-num { background: var(--primary); color: #fff; border-color: #fff; }
+    .opt-card.correct { border-color: var(--emerald); background: rgba(16, 185, 129, 0.28); }
+    .opt-card.correct .opt-num { background: var(--emerald); color: #fff; }
+    .opt-card.wrong { border-color: var(--danger); background: rgba(239, 68, 68, 0.25); }
+    .opt-card.wrong .opt-num { background: var(--danger); color: #fff; }
 
     .gain-badge {
-      display: inline-block;
-      background: rgba(16, 185, 129, 0.22);
-      color: var(--emerald);
-      border: 1px solid var(--emerald);
-      padding: 2px 8px;
-      border-radius: 50px;
-      font-size: 0.74rem;
-      margin-right: 6px;
+      display: inline-block; background: rgba(16, 185, 129, 0.22); color: var(--emerald);
+      border: 1px solid var(--emerald); padding: 2px 8px; border-radius: 50px; font-size: 0.74rem; margin-right: 6px;
     }
     .next-auto-banner {
-      margin-top: 14px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      background: var(--bg-card);
-      border: 1px solid var(--primary);
-      text-align: center;
-      font-weight: 800;
-      font-size: 0.85rem;
+      margin-top: 14px; padding: 10px 14px; border-radius: 12px; background: var(--bg-card);
+      border: 1px solid var(--primary); text-align: center; font-weight: 800; font-size: 0.85rem;
     }
 
     .leader-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 11px 14px;
-      border-radius: 12px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      margin-bottom: 8px;
-      font-weight: 800;
-      font-size: 0.9rem;
-      gap: 8px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: center; padding: 11px 14px;
+      border-radius: 12px; background: var(--bg-card); border: 1px solid var(--border);
+      margin-bottom: 8px; font-weight: 800; font-size: 0.9rem; gap: 8px; flex-wrap: wrap;
     }
-    .leader-row.first {
-      background: linear-gradient(90deg, var(--primary-glow), var(--bg-card));
-      border-color: var(--primary);
-    }
+    .leader-row.first { background: linear-gradient(90deg, var(--primary-glow), var(--bg-card)); border-color: var(--primary); }
     .vibe-rank-tag {
-      display: inline-block;
-      font-size: 0.72rem;
-      padding: 2px 8px;
-      border-radius: 50px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--primary);
-      color: var(--accent);
-      margin-right: 6px;
+      display: inline-block; font-size: 0.72rem; padding: 2px 8px; border-radius: 50px;
+      background: var(--bg-elevated); border: 1px solid var(--primary); color: var(--accent); margin-right: 6px;
     }
 
-    .comedy-grid {
-      display: grid;
-      gap: 12px;
-      margin: 16px 0;
-      text-align: right;
-    }
-    .comedy-card {
-      padding: 15px;
-      border-radius: 16px;
-      line-height: 1.7;
-      font-size: 0.92rem;
-      font-weight: 700;
-    }
-    .comedy-card.winner-box {
-      background: rgba(16, 185, 129, 0.14);
-      border: 1.5px solid var(--emerald);
-    }
-    .comedy-card.loser-box {
-      background: var(--bg-card);
-      border: 1.5px solid var(--primary);
-    }
+    .comedy-grid { display: grid; gap: 12px; margin: 16px 0; text-align: right; }
+    .comedy-card { padding: 15px; border-radius: 16px; line-height: 1.7; font-size: 0.92rem; font-weight: 700; }
+    .comedy-card.winner-box { background: rgba(16, 185, 129, 0.14); border: 1.5px solid var(--emerald); }
+    .comedy-card.loser-box { background: var(--bg-card); border: 1.5px solid var(--primary); }
     .comedy-card.task-box {
       background: linear-gradient(135deg, var(--primary-glow), var(--bg-card));
-      border: 2px dashed var(--accent);
-      text-align: center;
-      animation: popIn 0.35s ease;
+      border: 2px dashed var(--accent); text-align: center; animation: popIn 0.35s ease;
     }
-    .comedy-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 900;
-      font-size: 0.96rem;
-      margin-bottom: 5px;
-    }
+    .comedy-head { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 0.96rem; margin-bottom: 5px; }
 
     .countdown-overlay { text-align: center; padding: 46px 20px; }
-    .countdown-num {
-      font-size: 4.8rem;
-      font-weight: 900;
-      color: var(--primary);
-      animation: popIn 0.4s ease;
-    }
-    @keyframes popIn {
-      from { transform: scale(0.6); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+    .countdown-num { font-size: 4.8rem; font-weight: 900; color: var(--primary); animation: popIn 0.4s ease; }
+    @keyframes popIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    .confetti-piece {
-      position: fixed;
-      top: -20px;
-      width: 10px;
-      height: 16px;
-      z-index: 280;
-      pointer-events: none;
-      animation: fallDown 3.2s linear forwards;
-    }
-    @keyframes fallDown {
-      to { transform: translateY(105vh) rotate(720deg); opacity: 0; }
-    }
+    .confetti-piece { position: fixed; top: -20px; width: 10px; height: 16px; z-index: 280; pointer-events: none; animation: fallDown 3.2s linear forwards; }
+    @keyframes fallDown { to { transform: translateY(105vh) rotate(720deg); opacity: 0; } }
 
     .toast-msg {
-      position: fixed;
-      top: 70px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-surface);
-      border: 1.5px solid var(--primary);
-      color: var(--text);
-      padding: 10px 18px;
-      border-radius: 50px;
-      font-size: 0.82rem;
-      font-weight: 800;
-      z-index: 400;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-      animation: popIn 0.25s ease;
-      text-align: center;
-      max-width: 90vw;
+      position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+      background: var(--bg-surface); border: 1.5px solid var(--primary); color: var(--text);
+      padding: 10px 18px; border-radius: 50px; font-size: 0.82rem; font-weight: 800;
+      z-index: 400; box-shadow: 0 10px 25px rgba(0,0,0,0.4); animation: popIn 0.25s ease; text-align: center; max-width: 90vw;
     }
 
     .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.78);
-      backdrop-filter: blur(6px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 250;
-      padding: 14px;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center; z-index: 250; padding: 14px;
     }
     .modal-backdrop.open { display: flex; }
     .modal-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      max-width: 480px;
-      width: 100%;
-      padding: 20px;
-      max-height: 88vh;
-      overflow-y: auto;
+      background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius);
+      max-width: 480px; width: 100%; padding: 20px; max-height: 88vh; overflow-y: auto;
     }
 
     .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      display: inline-block;
+      width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
@@ -846,7 +443,6 @@
       return String(str).replace(/[٠-٩۰-۹]/g, d => map[d] || d).trim().toUpperCase();
     }
 
-    // ٥ شێوازی سەرەکیی دانیشتنەکە
     const QUESTION_VIBES = [
       { id: 'friends_funny', icon: '😂', title: 'هاوڕێیان و کۆمیدی', desc: 'گەعدە و قسەی خۆش و تەنز', spinBtnLabel: '🎯 تیروپشکی سزای کۆمیدیی هاوڕێیان' },
       { id: 'camping', icon: '⛺', title: 'چادرگە', desc: 'شەوی دەوری ئاگر و سەیران', spinBtnLabel: '🎯 تیروپشکی سزا و ئەرکی چادرگە' },
@@ -855,38 +451,12 @@
       { id: 'family', icon: '👨‍👩‍👧‍👦', title: 'دانیشتنی خێزانی', desc: 'کۆبوونەوەی ماڵ و خزمان', spinBtnLabel: '🎯 تیروپشکی خزمەتی مەجلیسی خێزانی' }
     ];
 
-    // نازناوی تایبەتی ڕیزبەندی بۆ هەر ٥ شێوازەکە
     const VIBE_RANK_TITLES = {
-      friends_funny: {
-        first: '👑 سەرۆکی گەعدە',
-        last: '💸 خاوەنی دەعوەتەکە',
-        secondLast: '☕ چایچیی مەجلیس',
-        mid: '😎 هاوڕێی قسەخۆش'
-      },
-      camping: {
-        first: '🔥 فەرماندەی چادرگە',
-        last: '🫖 چایچیی سەر خەڵووز',
-        secondLast: '🧽 قاپشۆری گەشت',
-        mid: '🧭 گەشتیاری کارامە'
-      },
-      qiyam: {
-        first: '🌙 پێشەنگی شەوبێداران',
-        last: '😴 خەواڵووی کۆڕەکە',
-        secondLast: '🕯️ بانگبێژی پارشێو',
-        mid: '✨ هاوەڵی بێدار'
-      },
-      formal: {
-        first: '🎙️ سەرۆکی دیوان',
-        last: '📝 بڕیاردەری کۆبوونەوە',
-        secondLast: '📂 ڕێکخەری پرۆتۆکۆڵ',
-        mid: '💼 ئەندامی کارا'
-      },
-      family: {
-        first: '🌟 تاجی سەری خێزان',
-        last: '🍉 میوەپاککەری ماڵ',
-        secondLast: '🫖 سینی هەڵگری دیوان',
-        mid: '🌺 گوڵی مەجلیس'
-      }
+      friends_funny: { first: '👑 سەرۆکی گەعدە', last: '💸 خاوەنی دەعوەتەکە', secondLast: '☕ چایچیی مەجلیس', mid: '😎 هاوڕێی قسەخۆش' },
+      camping: { first: '🔥 فەرماندەی چادرگە', last: '🫖 چایچیی سەر خەڵووز', secondLast: '🧽 قاپشۆری گەشت', mid: '🧭 گەشتیاری کارامە' },
+      qiyam: { first: '🌙 پێشەنگی شەوبێداران', last: '😴 خەواڵووی کۆڕەکە', secondLast: '🕯️ بانگبێژی پارشێو', mid: '✨ هاوەڵی بێدار' },
+      formal: { first: '🎙️ سەرۆکی دیوان', last: '📝 بڕیاردەری کۆبوونەوە', secondLast: '📂 ڕێکخەری پرۆتۆکۆڵ', mid: '💼 ئەندامی کارا' },
+      family: { first: '🌟 تاجی سەری خێزان', last: '🍉 میوەپاککەری ماڵ', secondLast: '🫖 سینی هەڵگری دیوان', mid: '🌺 گوڵی مەجلیس' }
     };
 
     const PRESET_TOPICS = [
@@ -968,7 +538,6 @@
       ]
     };
 
-    // ٣٠ بڕگەی تایبەت بۆ هەر یەکێک لە ٥ شێوازەکە (١٠ پیرۆزبایی + ١٠ تەعلیق + ١٠ سزا و ئەرکی تیروپشک = ٣٠ بڕگە بۆ هەر بەشێک)
     const VIBE_COMEDY_BANK = {
       friends_funny: {
         win: [
@@ -1139,7 +708,7 @@
           'ئازیزان ({losers})، دیارە خەیاڵتان لای میوانداری و قسەی خۆشی خزمان بووە، هێنان و بردنی سینی چایەکە لەسەر ئێوەیە!',
           'بۆ ({losers}): هەوڵێکی جوان بوو، بەڵام لە خوارەوەی لیستەکە مانەوە؛ پاککردن و دابەشکردنی میوەکان لەسەر ئێوەیە!',
           'دیارە ({losers}) سەرقاڵی خواردنی چەرەزات و شیرینییەکە بوون بۆیە فریای دوگمەکان نەکەوتن!',
-          'بەڕێزان ({losers})، لە دانیشتنی خێزانیدا دۆڕان نییە، بەڵام حزمەتکردنی میوانەکان ئەمشەو بە تەواوی لەسەر شانی ئێوەیە!',
+          'بەڕێزان ({losers})، لە دانیشتنی خێزانیدا دۆڕان نییە، بەڵام خزمەتکردنی میوانەکان ئەمشەو بە تەواوی لەسەر شانی ئێوەیە!',
           'ئاگاداری بۆ ({losers}): ئەمشەو کۆنترۆڵی تەلەڤزیۆن و سینی چایەکە لە لای ئێوە دەبێت بۆ خزمەتی براوە!',
           'دیارە ({losers}) لەبەر ڕێزی گەورەکانی مەجلیس نەیانویستووە خاڵی زۆر بهێنن و خۆیان لە خوارەوە هێشتووەتەوە!',
           'بۆ خۆشەویستان ({losers}): کۆکردنەوەی پیاڵە و قاپە میوەکان دوای تەواوبوونی دانیشتنەکە ئەرکی فەرمیی ئێوەیە!',
@@ -1739,4 +1308,465 @@
           </div>
 
           ${state.role === 'host' ? `
-            <button class
+            <button class="btn btn-task-spin" onclick="spinVibePenaltyTask()">
+              ${vibeObj.spinBtnLabel}
+            </button>
+            <button class="btn" onclick="regenerateComedyNow()">
+              🎲 گۆڕینی قسەی مەجلیس (شتێکی تر بڵێ!)
+            </button>
+            <button class="btn btn-primary" onclick="hostStartCompetition()">
+              🔄 خولێکی نوێ لەگەڵ هاوڕێیان
+            </button>
+          ` : ''}
+          <button class="btn" onclick="resetToHome()">🏠 گەڕانەوە بۆ پەڕەی سەرەکی</button>
+        </div>
+      `;
+    }
+
+    function drawQRCode() {
+      const box = document.getElementById('qrcode');
+      if (!box) return;
+      box.innerHTML = '';
+      const joinUrl = `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`;
+      const pVibe = getPrimaryVibeId();
+      const darkColor = pVibe === 'camping' ? "#14532d" : (pVibe === 'qiyam' ? "#0f172a" : "#291a0d");
+      new QRCode(box, {
+        text: joinUrl,
+        width: 185,
+        height: 185,
+        colorDark: darkColor,
+        colorLight: "#ffffff"
+      });
+    }
+
+    function copyInvite(url) {
+      navigator.clipboard.writeText(url);
+      showToast('📋 لینکی مەجلیس کۆپی کرا!');
+    }
+
+    function shareInviteWA(url) {
+      const msg = `☕ وەرنە ناو پێشبڕکێی مەجلیس! کۆدی ژوور: (${state.roomCode})\nکلیک لەم لینکە بکەن:\n${url}`;
+      if (navigator.share) {
+        navigator.share({ title: 'مەجلیس', text: msg, url }).catch(() => {});
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+      }
+    }
+
+    function kickPlayer(playerId) {
+      state.players = state.players.filter(p => p.id !== playerId);
+      syncAllPlayers();
+      render();
+    }
+
+    function connectMqttBroker(onConnected) {
+      if (state.mqttClient) {
+        try { state.mqttClient.end(true); } catch (e) {}
+      }
+      const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+        clientId: 'majlis_' + state.myId + '_' + Math.random().toString(16).slice(2, 6),
+        clean: true,
+        connectTimeout: 7000,
+        reconnectPeriod: 1500
+      });
+      state.mqttClient = client;
+
+      client.on('connect', () => {
+        onConnected(client);
+      });
+
+      client.on('error', () => {
+        if (state.connecting) {
+          state.connecting = false;
+          showToast('⚠️ کێشە لە پەیوەندیی ئینتەرنێتدا هەیە.');
+          render();
+        }
+      });
+    }
+
+    function startHostRoom() {
+      const name = (state.myName || '').trim();
+      if (!name) return showToast('⚠️ تکایە سەرەتا ناوی خۆت بنووسە!');
+      localStorage.setItem(KEYS.NAME, name);
+      requestScreenWakeLock();
+      state.role = 'host';
+      state.connecting = true;
+      render();
+
+      state.roomCode = String(Math.floor(1000 + Math.random() * 9000));
+      const actionTopic = `majlis_ku_v12/room/${state.roomCode}/action`;
+
+      connectMqttBroker((client) => {
+        client.subscribe(actionTopic, { qos: 1 }, () => {
+          state.connecting = false;
+          state.players = [{ id: state.myId, name: state.myName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 }];
+          state.screen = 'lobby';
+          syncAllPlayers();
+          render();
+        });
+
+        client.on('message', (topic, message) => {
+          if (topic === actionTopic) {
+            try {
+              const data = JSON.parse(message.toString());
+              onHostReceiveData(data);
+            } catch (e) {}
+          }
+        });
+      });
+    }
+
+    function joinHostRoom() {
+      const name = (state.myName || '').trim();
+      const code = normalizeDigits(state.roomCode);
+      state.roomCode = code;
+      if (!name || !code) return showToast('⚠️ تکایە ناوی خۆت و کۆدی ژوورەکە بنووسە!');
+
+      localStorage.setItem(KEYS.NAME, name);
+      requestScreenWakeLock();
+      state.role = 'player';
+      state.connecting = true;
+      render();
+
+      const stateTopic = `majlis_ku_v12/room/${code}/state`;
+      const actionTopic = `majlis_ku_v12/room/${code}/action`;
+
+      connectMqttBroker((client) => {
+        let receivedRoomState = false;
+
+        const joinTimeout = setTimeout(() => {
+          if (!receivedRoomState && state.connecting) {
+            state.connecting = false;
+            showToast('⚠️ ئەم کۆدی ژوورە نەدۆزرایەوە! دڵنیابە لە کۆدەکە.');
+            render();
+          }
+        }, 7000);
+
+        client.subscribe(stateTopic, { qos: 1 }, () => {
+          client.publish(actionTopic, JSON.stringify({ type: 'JOIN', id: state.myId, name: state.myName }), { qos: 1 });
+        });
+
+        client.on('message', (topic, message) => {
+          if (topic === stateTopic) {
+            try {
+              const data = JSON.parse(message.toString());
+              receivedRoomState = true;
+              clearTimeout(joinTimeout);
+              state.connecting = false;
+              onPlayerReceiveData(data);
+
+              if (data.players && !data.players.some(p => p.id === state.myId)) {
+                client.publish(actionTopic, JSON.stringify({ type: 'JOIN', id: state.myId, name: state.myName }), { qos: 1 });
+              }
+            } catch (e) {}
+          }
+        });
+      });
+    }
+
+    function onHostReceiveData(data) {
+      if (data.type === 'JOIN') {
+        let existing = state.players.find(p => p.id === data.id);
+        if (existing) {
+          existing.name = data.name;
+        } else {
+          let cleanName = data.name;
+          if (state.players.some(p => p.name === cleanName && p.id !== data.id)) {
+            cleanName = `${data.name} (${state.players.length + 1})`;
+          }
+          state.players.push({ id: data.id, name: cleanName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 });
+        }
+        syncAllPlayers();
+        render();
+      } else if (data.type === 'ANSWER') {
+        const p = state.players.find(x => x.id === data.id);
+        if (p && !state.revealAnswer) {
+          p.currentAnswer = data.ansIdx;
+          p.hasAnswered = true;
+          p.answerTime = state.timeLeft;
+        }
+      }
+    }
+
+    function onPlayerReceiveData(data) {
+      if (data.type === 'TIMER_TICK') {
+        state.timeLeft = data.timeLeft;
+        updateTimerUIOnly();
+        return;
+      }
+      if (data.type === 'REVEAL_TICK') {
+        state.revealCountdown = data.revealCountdown;
+        updateRevealCountdownUIOnly();
+        return;
+      }
+      if (data.type === 'SYNC') {
+        const prevReveal = state.revealAnswer;
+        const prevScreen = state.screen;
+        const prevQIndex = state.qIndex;
+
+        state.screen = data.screen;
+        state.countdownVal = data.countdownVal;
+        state.qIndex = data.qIndex;
+        state.timeLeft = data.timeLeft;
+        state.questionDuration = data.questionDuration;
+        state.revealAnswer = data.revealAnswer;
+        state.revealCountdown = data.revealCountdown || 5;
+        if (Array.isArray(data.selectedVibeIds)) state.selectedVibeIds = data.selectedVibeIds;
+        if (data.comedyResult) state.comedyResult = data.comedyResult;
+        state.taskResult = data.taskResult || '';
+
+        const myOld = state.players.find(p => p.id === state.myId);
+        const keepMyChoice = !data.revealAnswer && prevQIndex === data.qIndex && myOld;
+        state.players = data.players.map(p => {
+          if (p.id === state.myId && keepMyChoice) {
+            return { ...p, currentAnswer: myOld.currentAnswer, hasAnswered: myOld.hasAnswered };
+          }
+          return p;
+        });
+
+        if (!state.players.some(p => p.id === state.myId)) {
+          state.players.push({
+            id: state.myId,
+            name: state.myName,
+            score: 0,
+            lastGain: 0,
+            streak: 0,
+            hasAnswered: keepMyChoice ? myOld.hasAnswered : false,
+            currentAnswer: keepMyChoice ? myOld.currentAnswer : null
+          });
+        }
+
+        if (data.currentQuestion) {
+          state.questions = new Array(data.totalQuestions).fill(null);
+          state.questions[state.qIndex] = data.currentQuestion;
+        }
+
+        if (!prevReveal && state.revealAnswer && state.screen === 'playing') {
+          const me = state.players.find(p => p.id === state.myId);
+          const qObj = state.questions[state.qIndex];
+          if (me && qObj && me.currentAnswer === qObj.ans) playTone('correct');
+          else playTone('wrong');
+        }
+
+        if (prevScreen !== 'finished' && state.screen === 'finished') {
+          launchConfetti();
+        }
+        render();
+      }
+    }
+
+    function broadcastPayload(payload, retain = false) {
+      if (state.role !== 'host' || !state.mqttClient || !state.roomCode) return;
+      const stateTopic = `majlis_ku_v12/room/${state.roomCode}/state`;
+      state.mqttClient.publish(stateTopic, JSON.stringify(payload), { qos: 0, retain });
+    }
+
+    function syncAllPlayers() {
+      if (state.role !== 'host') return;
+      const qObj = state.questions[state.qIndex];
+      const safeQuestion = qObj ? {
+        q: qObj.q,
+        opts: qObj.opts,
+        ans: state.revealAnswer ? qObj.ans : null
+      } : null;
+
+      const safePlayers = state.players.map(p => ({
+        id: p.id,
+        name: p.name,
+        score: p.score,
+        lastGain: state.revealAnswer ? p.lastGain : 0,
+        streak: p.streak,
+        hasAnswered: false,
+        currentAnswer: state.revealAnswer ? p.currentAnswer : null
+      }));
+
+      broadcastPayload({
+        type: 'SYNC',
+        screen: state.screen,
+        countdownVal: state.countdownVal,
+        selectedVibeIds: state.selectedVibeIds,
+        players: safePlayers,
+        currentQuestion: safeQuestion,
+        totalQuestions: state.questions.length,
+        qIndex: state.qIndex,
+        timeLeft: state.timeLeft,
+        questionDuration: state.questionDuration,
+        revealAnswer: state.revealAnswer,
+        revealCountdown: state.revealCountdown,
+        comedyResult: state.comedyResult,
+        taskResult: state.taskResult
+      }, true);
+    }
+
+    function hostStartCompetition() {
+      requestScreenWakeLock();
+      state.taskResult = '';
+      state.questions = getLocalQuestions(state.selectedTopics, state.questionLimit);
+      state.qIndex = 0;
+      state.players.forEach(p => { p.score = 0; p.lastGain = 0; p.streak = 0; p.hasAnswered = false; p.currentAnswer = null; });
+      runPreGameCountdown();
+    }
+
+    function runPreGameCountdown() {
+      clearInterval(state.timerInterval);
+      clearInterval(state.revealInterval);
+      state.screen = 'countdown';
+      state.countdownVal = 10;
+      syncAllPlayers();
+      render();
+      playTone('tick');
+
+      state.timerInterval = setInterval(() => {
+        state.countdownVal--;
+        if (state.countdownVal <= 0) {
+          clearInterval(state.timerInterval);
+          state.screen = 'playing';
+          beginQuestionCountdown();
+        } else {
+          playTone('tick');
+          syncAllPlayers();
+          render();
+        }
+      }, 1000);
+    }
+
+    function beginQuestionCountdown() {
+      clearInterval(state.timerInterval);
+      clearInterval(state.revealInterval);
+      state.timeLeft = state.questionDuration;
+      state.revealAnswer = false;
+      state.players.forEach(p => { p.hasAnswered = false; p.currentAnswer = null; p.answerTime = 0; p.lastGain = 0; });
+      syncAllPlayers();
+      render();
+
+      state.timerInterval = setInterval(() => {
+        state.timeLeft--;
+        if (state.timeLeft <= 3 && state.timeLeft > 0) playTone('tick');
+
+        if (state.timeLeft <= 0) {
+          revealQuestionResult();
+        } else {
+          updateTimerUIOnly();
+          if (state.role === 'host') {
+            broadcastPayload({ type: 'TIMER_TICK', timeLeft: state.timeLeft }, false);
+          }
+        }
+      }, 1000);
+    }
+
+    function submitPlayerAnswer(optIdx) {
+      const me = state.players.find(p => p.id === state.myId);
+      if (!me || state.revealAnswer) return;
+
+      me.currentAnswer = optIdx;
+      me.hasAnswered = true;
+      me.answerTime = state.timeLeft;
+      render();
+
+      if (state.role === 'player' && state.mqttClient && state.roomCode) {
+        const actionTopic = `majlis_ku_v12/room/${state.roomCode}/action`;
+        state.mqttClient.publish(actionTopic, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
+      }
+    }
+
+    function revealQuestionResult() {
+      clearInterval(state.timerInterval);
+      clearInterval(state.revealInterval);
+      state.revealAnswer = true;
+      state.revealCountdown = 5;
+      const qObj = state.questions[state.qIndex];
+
+      state.players.forEach(p => {
+        if (p.currentAnswer === qObj.ans) {
+          p.streak = (p.streak || 0) + 1;
+          const speedBonus = Math.round((p.answerTime / state.questionDuration) * 60);
+          const streakBonus = p.streak >= 2 ? 25 : 0;
+          const totalGain = 100 + speedBonus + streakBonus;
+          p.lastGain = totalGain;
+          p.score += totalGain;
+        } else {
+          p.streak = 0;
+          p.lastGain = 0;
+        }
+      });
+
+      const me = state.players.find(p => p.id === state.myId);
+      if (me && me.currentAnswer === qObj.ans) playTone('correct');
+      else playTone('wrong');
+
+      syncAllPlayers();
+      render();
+
+      if (state.role === 'host') {
+        state.revealInterval = setInterval(() => {
+          state.revealCountdown--;
+          if (state.revealCountdown <= 0) {
+            clearInterval(state.revealInterval);
+            advanceToNextQuestion();
+          } else {
+            updateRevealCountdownUIOnly();
+            broadcastPayload({ type: 'REVEAL_TICK', revealCountdown: state.revealCountdown }, false);
+          }
+        }, 1000);
+      }
+    }
+
+    function advanceToNextQuestion() {
+      clearInterval(state.revealInterval);
+      if (state.qIndex + 1 < state.questions.length) {
+        state.qIndex++;
+        beginQuestionCountdown();
+      } else {
+        state.comedyResult = getLocalComedyCommentary();
+        state.screen = 'finished';
+        launchConfetti();
+        syncAllPlayers();
+        render();
+      }
+    }
+
+    function regenerateComedyNow() {
+      state.comedyResult = getLocalComedyCommentary();
+      syncAllPlayers();
+      render();
+    }
+
+    function openCustomQModal() {
+      toggleModal('settingsModal', false);
+      document.getElementById('customQStatus').textContent = `کۆی پرسیارە تایبەتەکانت: ${customQuestions.length} پرسیار`;
+      toggleModal('customQModal', true);
+    }
+
+    function saveCustomQuestion() {
+      const q = document.getElementById('cqText').value.trim();
+      const o0 = document.getElementById('cqOpt0').value.trim();
+      const o1 = document.getElementById('cqOpt1').value.trim();
+      const o2 = document.getElementById('cqOpt2').value.trim();
+      const o3 = document.getElementById('cqOpt3').value.trim();
+
+      if (!q || !o0 || !o1 || !o2 || !o3) {
+        return showToast('⚠️ تکایە پرسیارەکە و هەر ٤ هەڵبژاردەکە پڕ بکەرەوە!');
+      }
+
+      const opts = [o0, o1, o2, o3].sort(() => Math.random() - 0.5);
+      customQuestions.push({
+        q,
+        opts,
+        ans: opts.indexOf(o0)
+      });
+      localStorage.setItem(KEYS.CUSTOM, JSON.stringify(customQuestions));
+      document.getElementById('cqText').value = '';
+      document.getElementById('cqOpt0').value = '';
+      document.getElementById('cqOpt1').value = '';
+      document.getElementById('cqOpt2').value = '';
+      document.getElementById('cqOpt3').value = '';
+      document.getElementById('customQStatus').textContent = `✅ زیادکرا! کۆی پرسیارە تایبەتەکانت: ${customQuestions.length}`;
+      if (!state.selectedTopics.includes('پرسیارەکانی خۆم (تایبەت)')) {
+        state.selectedTopics.push('پرسیارەکانی خۆم (تایبەت)');
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
