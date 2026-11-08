@@ -223,7 +223,7 @@
       transition: 0.2s;
     }
     .input::placeholder { color: var(--muted); opacity: 0.8; }
-    .input:focus, .input.custom-active {
+    .input:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px var(--primary-glow);
     }
@@ -312,7 +312,6 @@
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-bottom: 10px;
       justify-content: center;
     }
     .topic-chip {
@@ -703,25 +702,9 @@
         <button class="btn" onclick="toggleThemeMode()">🌓 گۆڕینی دۆخی قاوەیی تۆخ / سپی</button>
         <button class="btn" onclick="toggleSound()" id="soundBtnLabel">🔊 دەنگی یاری: چالاکە</button>
         <button class="btn" onclick="openCustomQModal()">✍️ زیادکردنی پرسیاری تایبەت</button>
-        <button class="btn" onclick="openKeySetupModal()">🔑 دانان و پشکنینی کلیل</button>
         <button class="btn" onclick="clearAskedHistory(); toggleModal('settingsModal', false);">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
       </div>
       <button class="btn btn-primary" style="margin-top:12px; margin-bottom:0;" onclick="toggleModal('settingsModal', false)">داخستن</button>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="keySetupModal">
-    <div class="modal-box">
-      <h3 style="margin-bottom:8px; text-align:center;">🔑 دانان و پشکنینی کلیل</h3>
-      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px; text-align:center; line-height:1.6;">
-        کلیلەکەت لێرە دابنێ (دەتوانیت کلیلی <strong>AIzaSy...</strong> یان <strong>gsk_...</strong> یان <strong>AQ.Ab8...</strong> دابنێیت):
-      </p>
-      <input type="text" id="masterKeyInput" class="input" dir="ltr" placeholder="AIzaSy... / gsk_... / AQ.Ab8..." />
-      <div id="keyCheckStatus" style="font-size:0.8rem; text-align:center; margin-bottom:10px; font-weight:800;"></div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn" onclick="toggleModal('keySetupModal', false)">داخستن</button>
-        <button class="btn btn-primary" id="saveKeyBtn" onclick="saveAndTestMasterKey()">💾 خەزنکردن و پشکنین</button>
-      </div>
     </div>
   </div>
 
@@ -746,18 +729,12 @@
 
   <script>
     const KEYS = {
-      API: 'MAJLIS_MASTER_KEY',
       SEEN: 'MAJLIS_SEEN_HISTORY',
       CUSTOM: 'MAJLIS_CUSTOM_QUESTIONS',
       NAME: 'MAJLIS_PLAYER_NAME',
       ID: 'MAJLIS_PLAYER_ID',
       THEME: 'MAJLIS_THEME_MODE'
     };
-
-    const _DEFAULT_KEYS = [
-      'QUl6YVN5QWg3R0FmNFliaXpVTEFGUkJwcUtTRFMtM1laa0d3WGZR',
-      'QVEuQWI4Uk42S1YzUHNLTmpUaUZtQ1NUOEVWcVZySWd2Q1k0T19JNWxuekh6cXRsd29FNmc='
-    ];
 
     if (localStorage.getItem(KEYS.THEME) === 'light') document.body.classList.add('light-mode');
     setTimeout(() => document.getElementById('splashScreen')?.remove(), 2200);
@@ -770,13 +747,6 @@
           wakeLock.addEventListener('release', () => { wakeLock = null; });
         }
       } catch (e) {}
-    }
-
-    function extractCleanKey(raw) {
-      if (!raw) return '';
-      const str = String(raw).trim();
-      const m = str.match(/(?:gsk_|AQ\.|AIza)[A-Za-z0-9_.-]{20,}/);
-      return m ? m[0] : str.replace(/['"\s]/g, '');
     }
 
     let persistentId = localStorage.getItem(KEYS.ID);
@@ -797,12 +767,12 @@
     }
 
     const QUESTION_VIBES = [
-      { id: 'friends', icon: '☕', title: 'دانیشتنی هاوڕێیان', desc: 'گەنجانە و گەعدە', comedyHint: 'بە شێوازی دانیشتنی گەنجانە و هاوڕێیانە و کافتریا و دەعوەتکردن' },
-      { id: 'camping', icon: '🏕️', title: 'گەشت و کامپینگ', desc: 'سەیران و سروشت', comedyHint: 'بە شێوازی کەشی کامپینگ و سەیران و چادر هەڵدان و چای سەر خەڵووز و قاپ شۆردن لە دەشت' },
-      { id: 'family', icon: '👨‍👩‍👧‍👦', title: 'دانیشتنی خێزانی', desc: 'کەلتووری و خێزانی', comedyHint: 'بە شێوازی دانیشتنی خێزانیی کوردەواری و شیرینی خواردن و میوانداری' },
-      { id: 'academic', icon: '🎓', title: 'زانکۆ و ڕۆشنبیری', desc: 'ئەکادیمی و خوێندکاری', comedyHint: 'بە شێوازی خوێندکارانی زانکۆ و تاقیکردنەوە و دەرچوون و کەوتن (عبور)' },
-      { id: 'funny', icon: '😂', title: 'کۆمیدی', desc: 'تەنز و پێکەنین', comedyHint: 'بە شێوازێکی زۆر کۆمیدی و پێکەنیناوی و نوکتەئامێز' },
-      { id: 'challenge', icon: '🔥', title: 'تەحەدای بلیمەتەکان', desc: 'کێبڕکێی توند', comedyHint: 'بە شێوازی تەحەدای پاڵەوانان و بلیمەتەکان' }
+      { id: 'friends', icon: '☕', title: 'دانیشتنی هاوڕێیان', desc: 'گەنجانە و گەعدە' },
+      { id: 'camping', icon: '🏕️', title: 'گەشت و کامپینگ', desc: 'سەیران و سروشت' },
+      { id: 'family', icon: '👨‍👩‍👧‍👦', title: 'دانیشتنی خێزانی', desc: 'کەلتووری و خێزانی' },
+      { id: 'academic', icon: '🎓', title: 'زانکۆ و ڕۆشنبیری', desc: 'ئەکادیمی و خوێندکاری' },
+      { id: 'funny', icon: '😂', title: 'کۆمیدی', desc: 'تەنز و پێکەنین' },
+      { id: 'challenge', icon: '🔥', title: 'تەحەدای بلیمەتەکان', desc: 'کێبڕکێی توند' }
     ];
 
     const PRESET_TOPICS = [
@@ -811,13 +781,7 @@
       'زانیاری ئایینی و قورئان', 'پرسیارەکانی خۆم (تایبەت)'
     ];
 
-    const CREATIVE_ANGLES = [
-      'زانیارییە دەگمەن و سەرنجڕاکێشەکان', 'نموونەی کرداری و ڕووداوە مێژووییەکان',
-      'وردەکارییە زانستی و پیشەییەکان', 'ژمارە پێوانەییەکان و یەکەمەکان لە مێژوودا',
-      'چەمکە سەرەکییەکان و پرسیاری بیرکردنەوە', 'کەسایەتییە کاریگەرەکان و یاسا بنەڕەتییەکان'
-    ];
-
-    const EMERGENCY_POOL = {
+    const QUESTION_BANK = {
       'یاسا و دادگا و دەستوور': [
         { q: 'لە یاسای سزاداندا، سزای تاوانی جینایەت (جناية) لە چی پێکدێت؟', opts: ['زیندانیی هەتاهەتایی یان کاتی لە ٥ ساڵ زیاتر', 'تەنها پێبژاردنی دارایی کەم', 'بەندکردن بۆ ماوەی ٢٤ کاتژمێر', 'ئاگادارکردنەوەی زارەکی'], ans: 0 },
         { q: 'کام لەمانە بە یەکێک لە کۆڵەکەکانی گرێبەست (أركان العقد) لە یاسای شارستانیدا دادەنرێت؟', opts: ['ڕەزامەندی و بابەت و هۆکار', 'بوونی دوو پارێزەر لە کاتی واژۆکردن', 'پەسەندکردنی لەلایەن پۆلیسەوە', 'نووسینی بە زمانی بیانی'], ans: 0 },
@@ -888,17 +852,68 @@
       ]
     };
 
-    const FALLBACK_WINNER_JOKES = [
-      'ماشەڵڵا لە مێشکت {winner}! دەڵێی ڕاوێژکاری باڵای ئەم مەجلیسەیت، ئەوانی تر هەر فریای سەیرکردنی پەنجەکانت نەکەوتن!',
-      'بژی {winner}! بەم زیرەکییەت دەبێت بکرێیتە سەرۆکی مەجلیس، ئەمشەو چای تایبەت و میوە بێننە بەردەمی!',
-      'ئافەرین {winner}! سەلماندت کە تەنها بۆ دانیشتن نەهاتوویت و سوپەرکۆمپیوتەرێک لە مێشکتدا کار دەکات!'
-    ];
-
-    const FALLBACK_LOSER_JOKES = [
-      'بەداخەوە بۆ ({losers})! دیارە شەبەکەی مێشکتان خەتی 2G بووە، ئەمشەو تێچووی مەجلیسەکە و چا لێنان لەسەر ئێوەیە!',
-      'کاکە ({losers})، ئێوە هاتوون بۆ پێشبڕکێ یان هاتوون سەیری ڕەنگی دوگمەکان بکەن؟ دەستێک چەپڵە بۆ خۆتان لێبدەن لە خوارەوەی لیستەکە!',
-      'پرسیارەکان زۆر ڕوون بوون، بەڵام دیارە ({losers}) خەیاڵیان لای سینی چایەکە بووە نەک شاشەی مۆبایلەکە!'
-    ];
+    const VIBE_COMEDY_BANK = {
+      friends: {
+        win: [
+          'ماشەڵڵا لە مێشکت {winner}! دەڵێی ڕاوێژکاری باڵای ئەم مەجلیسەیت، ئەوانی تر هەر فریای سەیرکردنی پەنجەکانت نەکەوتن!',
+          'بژی {winner}! بەم زیرەکییەت دەبێت بکرێیتە سەرۆکی گەعدە و مەجلیس، ئەمشەو چای تایبەت و میوە بێننە بەردەمی!'
+        ],
+        lose: [
+          'بەداخەوە بۆ ({losers})! دیارە شەبەکەی مێشکتان خەتی 2G بووە، ئەمشەو حیسابی کافتریا و چا لێنان لەسەر ئێوەیە!',
+          'کاکە ({losers})، ئێوە هاتوون بۆ پێشبڕکێ یان هاتوون سەیری ڕەنگی دوگمەکان بکەن؟ دەعوەتێکی گەرمتان کەوتە سەر!'
+        ]
+      },
+      camping: {
+        win: [
+          'ئافەرین {winner}! سەلماندت کە ڕێبەری شاخەوانی و گەشتەکەیت، لە نزیک ئاگرەکە باشترین شوێنی بۆ چۆڵ بکەن!',
+          'دەستخۆش {winner}! بەم وریاییەت لە کامپینگدا هەرگیز ڕێگە ون ناکەیت، یەکەم پیاڵە چای سەر خەڵووزەکە بۆ تۆیە!'
+        ],
+        lose: [
+          'کاکە ({losers})، دیارە دووکەڵی ئاگرەکە چاوتانی لێڵ کردبوو! کۆکردنەوەی دار و شۆردنی قاپەکانی گەشتەکە لەسەر ئێوەیە!',
+          'بڕیاری مەجلیس بۆ ({losers}): هەڵگرتنی چادرەکان و تێکردنی چای سەر پۆلووەکە تا کۆتایی سەیرانەکە ئەرکی ئێوەیە!'
+        ]
+      },
+      family: {
+        win: [
+          'پیرۆزە {winner}! سەربەرزی مەجلیس و خێزانەکەیت، جێگەی شانازیی هەمووانیت بەم زانیارییە جوانانەت!',
+          'ماشەڵڵا لە زیرەکیی {winner}! شیرینی و میوەی تایبەتی مەجلیسەکە پێشکەشی تۆ بێت!'
+        ],
+        lose: [
+          'ئازیزان ({losers})، دیارە خەیاڵتان لای میوانداری و قسەی خۆشی مەجلیسەکە بووە، هێنان و بردنی سینی چایەکە لەسەر ئێوەیە!',
+          'بۆ ({losers}): هەوڵێکی جوان بوو، بەڵام لە خوارەوەی لیستەکە مانەوە؛ ئامادەکردنی شیرینیی دانیشتنی داهاتوو لەسەر ئێوەیە!'
+        ]
+      },
+      academic: {
+        win: [
+          'پڕۆفیسۆر {winner}! بە پلەی نایاب و بێ ڕکابەر یەکەمی ئەم خولە بوویت، شایەنی بڕوانامەی دکتۆرای فەخریی ئەم مەجلیسەیت!',
+          'بژی {winner}! وەڵامەکانت دەڵێی لە ناو کتێبی سەرچاوەی زانکۆوە دەرهێنرابوون!'
+        ],
+        lose: [
+          'ئاگاداری بۆ ({losers}): بەداخەوە لەم کۆرسەی مەجلیسدا کەوتنە خولی دووەم (ئیکمال)، دەبێت زیاتر بخوێننەوە!',
+          'کاکە ({losers})، دیارە ئەمڕۆ بێ خوێندنەوە هاتبوونە ناو هۆڵی تاقیکردنەوەی مەجلیس!'
+        ]
+      },
+      funny: {
+        win: [
+          'ئافەرین {winner}! سەلماندت کە سوپەرکۆمپیوتەرێک لە مێشکتدا کار دەکات نەک تەنها بۆ دانیشتن هاتبیت!',
+          'بژی {winner}! ئەوانی تر هێشتا پرسیاری یەکەمیان دەخوێندەوە تۆ گەیشتبوویتە کۆتایی!'
+        ],
+        lose: [
+          'پرسیارەکان زۆر ڕوون بوون، بەڵام دیارە ({losers}) خەیاڵیان لای سینی چایەکە بووە نەک شاشەی مۆبایلەکە!',
+          'بەڕێزان ({losers})، دەستێک چەپڵەی قایم بۆ خۆتان لێبدەن کە توانیوتانە لە خوارەوەی لیستەکەەوە سەیری سەرەوە بکەن!'
+        ]
+      },
+      challenge: {
+        win: [
+          'پاڵەوانی بێ ڕکابەر {winner}! لە تەحەدای بلیمەتەکاندا سەرت بەرز کردینەوە و سەلماندت کێ پاشای مەیدانەکەیە!',
+          'بژی {winner}! هیچ پرسیارێکی قورس نەیتوانی ڕێت لێ بگرێت!'
+        ],
+        lose: [
+          'بۆ ({losers}): تەحەداکە قورس بوو و بەرگەی فشاری کاتژمێرەکەتان نەگرت، خۆتان بۆ تۆڵەسەندنەوەی خولی داهاتوو ئامادە بکەن!',
+          'بەداخەوە ({losers})، لە بەرامبەر زیرەکیی پاڵەوانی مەجلیسدا چۆکتان دادا!'
+        ]
+      }
+    };
 
     let state = {
       welcomeTab: 'host',
@@ -906,17 +921,12 @@
       screen: 'welcome',
       myId: persistentId,
       myName: localStorage.getItem(KEYS.NAME) || '',
-      masterKey: extractCleanKey(localStorage.getItem(KEYS.API) || ''),
       roomCode: '',
       selectedVibeIds: ['friends'],
       selectedTopics: [PRESET_TOPICS[0]],
-      customTopicText: '',
-      difficulty: 'مامناوەند',
       questionLimit: 6,
       questionDuration: 15,
       soundOn: true,
-      generatingAI: false,
-      generatingComedy: false,
       connecting: false,
       countdownVal: 10,
       revealCountdown: 5,
@@ -1037,240 +1047,27 @@
     }
 
     function handleTopicChipClick(topic) {
-      state.customTopicText = '';
       toggleMultiSelect(state.selectedTopics, topic);
     }
 
-    function handleCustomTopicInput(val) {
-      state.customTopicText = val;
-      const hasVal = val.trim().length > 0;
-      document.querySelectorAll('.topic-chip').forEach(c => hasVal && c.classList.remove('active'));
-      document.getElementById('customTopicInp')?.classList.toggle('custom-active', hasVal);
-      if (!hasVal) render();
-    }
+    const getActiveTopicsSummary = () => state.selectedTopics.join(' + ');
 
-    const getActiveTopicsSummary = () => state.customTopicText.trim() || state.selectedTopics.join(' + ');
-    const getActiveVibesObjects = () => {
-      const list = QUESTION_VIBES.filter(v => state.selectedVibeIds.includes(v.id));
-      return list.length ? list : [QUESTION_VIBES[0]];
-    };
-
-    function fetchWithTimeout(url, options, timeoutMs = 10000) {
-      return Promise.race([
-        fetch(url, options),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs))
-      ]);
-    }
-
-    function parseFlexibleQuestions(rawText, count) {
-      if (!rawText) return null;
-      const text = String(rawText).replace(/```json|```/gi, '').trim();
-      let items = [];
-      try {
-        const s = text.indexOf('[');
-        const e = text.lastIndexOf(']');
-        if (s !== -1 && e !== -1) {
-          items = JSON.parse(text.substring(s, e + 1));
-        }
-      } catch (_) {
-        const matches = text.match(/\{[\s\S]*?"(?:q|question)"[\s\S]*?\}/g) || [];
-        items = matches.map(m => {
-          try { return JSON.parse(m); } catch (e) { return null; }
-        });
-      }
-      if (!Array.isArray(items)) return null;
-
-      const cleaned = [];
-      for (const item of items) {
-        if (!item || typeof item !== 'object') continue;
-        const qText = String(item.q || item.question || item.text || '').trim();
-        const rawOpts = item.opts || item.options || item.choices || item.answers;
-        if (!qText || !Array.isArray(rawOpts) || rawOpts.length < 4) continue;
-        const opts = rawOpts.slice(0, 4).map(o => String(o).trim());
-        const rawAns = item.ans ?? item.answer ?? item.correct ?? 0;
-        let ansIdx = 0;
-        if (typeof rawAns === 'number' && rawAns >= 0 && rawAns < 4) {
-          ansIdx = rawAns;
-        } else if (opts.indexOf(String(rawAns).trim()) !== -1) {
-          ansIdx = opts.indexOf(String(rawAns).trim());
-        } else {
-          ansIdx = parseInt(rawAns, 10) || 0;
-        }
-        if (ansIdx < 0 || ansIdx > 3) ansIdx = 0;
-
-        const correctText = opts[ansIdx];
-        const shuffledOpts = [...opts].sort(() => Math.random() - 0.5);
-        markQuestionSeen(qText);
-        cleaned.push({
-          q: qText,
-          opts: shuffledOpts,
-          ans: shuffledOpts.indexOf(correctText)
-        });
-      }
-      return cleaned.length >= 2 ? cleaned.slice(0, count) : null;
-    }
-
-    function parseFlexibleComedy(rawText) {
-      if (!rawText) return null;
-      try {
-        const text = String(rawText).replace(/```json|```/gi, '').trim();
-        const s = text.indexOf('{');
-        const e = text.lastIndexOf('}');
-        if (s === -1 || e === -1) return null;
-        const obj = JSON.parse(text.substring(s, e + 1));
-        return (obj && obj.winnerJoke && obj.loserJoke) ? obj : null;
-      } catch (e) {
-        return null;
-      }
-    }
-
-    async function requestWithSingleKey(key, prompt) {
-      if (!key) throw new Error('NO_KEY');
-
-      if (key.startsWith('gsk_')) {
-        const r = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${key}`
-          },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-              { role: 'system', content: 'Return ONLY valid raw JSON in Kurdish Sorani.' },
-              { role: 'user', content: prompt }
-            ],
-            temperature: 0.9
-          })
-        }, 10000);
-        if (!r.ok) throw new Error('GROQ_' + r.status);
-        const d = await r.json();
-        return d?.choices?.[0]?.message?.content || '';
-      }
-
-      const models = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.0-flash'];
-      for (const m of models) {
-        try {
-          const urlWithQuery = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(key)}`;
-          const r = await fetchWithTimeout(urlWithQuery, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { temperature: 0.95 }
-            })
-          }, 9500);
-
-          if (r.ok) {
-            const d = await r.json();
-            const txt = d?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            if (txt) return txt;
-          }
-        } catch (e) {}
-
-        try {
-          const urlHeaderOnly = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`;
-          const r2 = await fetchWithTimeout(urlHeaderOnly, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-goog-api-key': key
-            },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }]
-            })
-          }, 9500);
-
-          if (r2.ok) {
-            const d2 = await r2.json();
-            const txt2 = d2?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            if (txt2) return txt2;
-          }
-        } catch (e) {}
-      }
-
-      throw new Error('GEMINI_FAILED');
-    }
-
-    async function requestAllAvailableAI(prompt) {
-      const candidateKeys = [];
-      if (state.masterKey) candidateKeys.push(state.masterKey);
-      _DEFAULT_KEYS.forEach(k => {
-        try {
-          const decoded = atob(k);
-          if (decoded && !candidateKeys.includes(decoded)) candidateKeys.push(decoded);
-        } catch (e) {}
-      });
-
-      for (const k of candidateKeys) {
-        try {
-          const out = await requestWithSingleKey(k, prompt);
-          if (out && out.length > 10) return out;
-        } catch (e) {}
-      }
-
-      const seed = Math.floor(Math.random() * 999999);
-      try {
-        const r = await fetchWithTimeout('https://text.pollinations.ai/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: [
-              { role: 'system', content: 'You are a Kurdish Sorani quiz generator. Output ONLY valid raw JSON.' },
-              { role: 'user', content: prompt }
-            ],
-            seed
-          })
-        }, 9500);
-        if (r.ok) {
-          const txt = await r.text();
-          if (txt && txt.length > 10) return txt;
-        }
-      } catch (e) {}
-
-      return null;
-    }
-
-    async function generateAIQuestions(topicsList, customTopic, count, difficulty) {
-      const effectiveTopic = customTopic ? customTopic : topicsList.join(' و ');
-
-      if (!customTopic && topicsList.length === 1 && topicsList[0] === 'پرسیارەکانی خۆم (تایبەت)' && customQuestions.length > 0) {
-        return [...customQuestions].sort(() => Math.random() - 0.5).slice(0, count);
-      }
-
-      const avoidSample = seenQuestions.slice(-35).join(' | ');
-      const randomSeed = Math.floor(Math.random() * 9999999);
-      const randomAngle = CREATIVE_ANGLES[randomSeed % CREATIVE_ANGLES.length];
-
-      const prompt = `تۆ پسپۆڕی دروستکردنی پرسیاری پێشبڕکێیت بە زمانی کوردیی سۆرانیی پاراو.
-تکایە رێک ${count} پرسیاری هەڵبژاردن (٤ هەڵبژاردەیی) تەنها و تەنها لەسەر ئەم بابەتە دروست بکە: "${effectiveTopic}".
-- ئاستی قورسی: "${difficulty}".
-- گۆشەنیگای تایبەت: (${randomAngle})، کۆدی جیاوازی: ${randomSeed}.
-- ئەم پرسیارانەی پێشوو دووبارە مەکەرەوە: [${avoidSample}].
-تەنها بە شێوازی JSON Array وەڵام بدەرەوە بەبێ هیچ قسەیەکی زیادە، بەم فۆرماتە:
-[{"q":"دەقی پرسیار؟","opts":["وەڵامی ڕاست","وەڵامی ٢","وەڵامی ٣","وەڵامی ٤"],"ans":0}]`;
-
-      try {
-        const raw = await requestAllAvailableAI(prompt);
-        const parsed = parseFlexibleQuestions(raw, count);
-        if (parsed && parsed.length >= 2) {
-          return parsed;
-        }
-      } catch (e) {}
-
+    function getLocalQuestions(topicsList, count) {
       let combinedBank = [];
       topicsList.forEach(t => {
         if (t === 'پرسیارەکانی خۆم (تایبەت)') combinedBank.push(...customQuestions);
-        else if (EMERGENCY_POOL[t]) combinedBank.push(...EMERGENCY_POOL[t]);
+        else if (QUESTION_BANK[t]) combinedBank.push(...QUESTION_BANK[t]);
       });
+
       if (combinedBank.length === 0) {
-        Object.values(EMERGENCY_POOL).forEach(arr => combinedBank.push(...arr));
+        Object.values(QUESTION_BANK).forEach(arr => combinedBank.push(...arr));
       }
 
       let unseenSpecific = combinedBank.filter(item => !seenQuestions.includes(item.q));
       if (unseenSpecific.length < count) {
         const topicQTexts = combinedBank.map(x => x.q);
         seenQuestions = seenQuestions.filter(q => !topicQTexts.includes(q));
+        try { localStorage.setItem(KEYS.SEEN, JSON.stringify(seenQuestions)); } catch (e) {}
         unseenSpecific = [...combinedBank];
       }
 
@@ -1286,77 +1083,34 @@
       });
     }
 
-    async function generateAIComedyCommentary() {
+    function getLocalComedyCommentary() {
       const sorted = [...state.players].sort((a, b) => b.score - a.score);
       const winner = sorted[0] || { name: 'پاڵەوان', score: 0 };
       const losers = sorted.slice(1);
       const isSolo = state.players.length <= 1;
       const loserNames = !isSolo ? losers.map(p => p.name).join(' و ') : '';
-      const activeVibes = getActiveVibesObjects();
-      const vibeTitles = activeVibes.map(v => v.title).join(' و ');
-      const vibeHints = activeVibes.map(v => v.comedyHint).join(' + ');
-      const randomSeed = Math.floor(Math.random() * 9999999);
 
-      const fallbackWin = FALLBACK_WINNER_JOKES[randomSeed % FALLBACK_WINNER_JOKES.length].replace('{winner}', winner.name);
-      const fallbackLose = isSolo
-        ? `چونکە بە تەنها یاریت کرد (${winner.name})، هەم براوەیت و هەم دۆڕاو! دەبێت خۆت چایەک بۆ خۆت تێبکەیت و دەستخۆشی لە خۆت بکەیت!`
-        : FALLBACK_LOSER_JOKES[randomSeed % FALLBACK_LOSER_JOKES.length].replace('{losers}', loserNames);
-
-      const prompt = isSolo
-        ? `یاریزان "${winner.name}" بە تەنها خۆی تاقیکردەوە و (${winner.score} خاڵ)ی هێنا لە کەشی "${vibeTitles}" (${vibeHints}). دوو ڕستەی کۆمیدیی کوردی بنووسە: winnerJoke بۆ پیرۆزبایی، و loserJoke قسەیەکی خۆش لەسەر ئەوەی کە بە تەنها یاری دەکات. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`
-        : `تۆ پێشکەشکارێکی کۆمیدیی کوردیت لە یاریی "مەجلیس". بارودۆخی دانیشتنەکە: "${vibeTitles}" (${vibeHints}). براوە: "${winner.name}" (${winner.score} خاڵ). دۆڕاوەکان: "${loserNames}". دوو ڕستەی زۆر کۆمیدی و نوێ بە کوردیی سۆرانی بنووسە (ژمارە: ${randomSeed}): winnerJoke بۆ پیرۆزبایی لە براوە، و loserJoke بڕیار و سزایەکی کۆمیدی بۆ دۆڕاوەکان. تەنها JSON: {"winnerJoke":"...","loserJoke":"..."}`;
-
-      try {
-        const raw = await requestAllAvailableAI(prompt);
-        const parsed = parseFlexibleComedy(raw);
-        if (parsed) return parsed;
-      } catch (e) {}
-
-      return { winnerJoke: fallbackWin, loserJoke: fallbackLose };
-    }
-
-    function openKeySetupModal() {
-      toggleModal('settingsModal', false);
-      document.getElementById('masterKeyInput').value = state.masterKey;
-      document.getElementById('keyCheckStatus').textContent = '';
-      toggleModal('keySetupModal', true);
-    }
-
-    async function saveAndTestMasterKey() {
-      const raw = document.getElementById('masterKeyInput').value;
-      const cleaned = extractCleanKey(raw);
-      const statusEl = document.getElementById('keyCheckStatus');
-      const btn = document.getElementById('saveKeyBtn');
-
-      state.masterKey = cleaned;
-      localStorage.setItem(KEYS.API, cleaned);
-
-      if (!cleaned) {
-        statusEl.style.color = 'var(--amber)';
-        statusEl.textContent = 'کلیلەکە سڕایەوە؛ سیستەمی خۆکار بەکاردێت.';
-        return;
-      }
-
-      btn.disabled = true;
-      statusEl.style.color = 'var(--muted)';
-      statusEl.textContent = '⏳ خەریکی پشکنینی کلیلەکەیە...';
-
-      try {
-        const testOut = await requestWithSingleKey(cleaned, 'Say [{"q":"test","opts":["1","2","3","4"],"ans":0}]');
-        if (testOut) {
-          statusEl.style.color = 'var(--emerald)';
-          statusEl.textContent = '✅ کلیلەکە چالاکە و بە سەرکەوتوویی خەزن کرا!';
-          setTimeout(() => toggleModal('keySetupModal', false), 1200);
-        } else {
-          throw new Error('Empty');
+      const winPool = [];
+      const losePool = [];
+      state.selectedVibeIds.forEach(id => {
+        if (VIBE_COMEDY_BANK[id]) {
+          winPool.push(...VIBE_COMEDY_BANK[id].win);
+          losePool.push(...VIBE_COMEDY_BANK[id].lose);
         }
-      } catch (e) {
-        statusEl.style.color = 'var(--emerald)';
-        statusEl.textContent = '💾 کلیلەکە خەزن کرا!';
-        setTimeout(() => toggleModal('keySetupModal', false), 1200);
-      } finally {
-        btn.disabled = false;
-      }
+      });
+
+      if (!winPool.length) winPool.push(...VIBE_COMEDY_BANK.friends.win);
+      if (!losePool.length) losePool.push(...VIBE_COMEDY_BANK.friends.lose);
+
+      const winTemplate = winPool[Math.floor(Math.random() * winPool.length)];
+      const loseTemplate = losePool[Math.floor(Math.random() * losePool.length)];
+
+      return {
+        winnerJoke: winTemplate.replace('{winner}', winner.name),
+        loserJoke: isSolo
+          ? `چونکە بە تەنها یاریت کرد (${winner.name})، هەم براوەیت و هەم دۆڕاو! دەبێت خۆت چایەک بۆ خۆت تێبکەیت و دەستخۆشی لە خۆت بکەیت!`
+          : loseTemplate.replace('{losers}', loserNames)
+      };
     }
 
     function resetToHome() {
@@ -1370,7 +1124,6 @@
       state.screen = 'welcome';
       state.role = null;
       state.connecting = false;
-      state.generatingAI = false;
       render();
     }
 
@@ -1423,9 +1176,8 @@
         </div>
       `).join('');
 
-      const hasCustomTopic = state.customTopicText.trim().length > 0;
       const topicChipsHtml = PRESET_TOPICS.map(t => `
-        <button class="topic-chip ${!hasCustomTopic && state.selectedTopics.includes(t) ? 'active' : ''}"
+        <button class="topic-chip ${state.selectedTopics.includes(t) ? 'active' : ''}"
                 onclick="handleTopicChipClick('${t}')">
           ${t === 'پرسیارەکانی خۆم (تایبەت)' ? `✍️ پرسیارەکانی خۆم (${customQuestions.length})` : t}
         </button>
@@ -1437,12 +1189,6 @@
             <label>ژمارەی پرسیار:</label>
             <div class="seg-group">
               ${[6, 8, 10, 14].map(n => `<button class="seg-btn ${state.questionLimit === n ? 'active' : ''}" onclick="state.questionLimit=${n}; render();">${n}</button>`).join('')}
-            </div>
-          </div>
-          <div class="setting-row-inline">
-            <label>ئاستی قورسی:</label>
-            <div class="seg-group">
-              ${['ئاسان', 'مامناوەند', 'قورس'].map(d => `<button class="seg-btn ${state.difficulty === d ? 'active' : ''}" onclick="state.difficulty='${d}'; render();">${d}</button>`).join('')}
             </div>
           </div>
           <div class="setting-row-inline">
@@ -1471,13 +1217,9 @@
 
             <div class="section-box">
               <div style="text-align:center;">
-                <span class="section-tag">✨ ٢. بابەتی پرسیارەکان دیاری بکە</span>
+                <span class="section-tag">📚 ٢. بابەتی پرسیارەکان دیاری بکە</span>
               </div>
               <div class="topic-chips">${topicChipsHtml}</div>
-              <input type="text" id="customTopicInp" class="input ${hasCustomTopic ? 'custom-active' : ''}" style="margin-bottom:0; font-size:0.84rem;"
-                     placeholder="✍️ یان هەر بابەتێکی دڵخواز دەتەوێت لێرە بینووسە..."
-                     value="${state.customTopicText}"
-                     oninput="handleCustomTopicInput(this.value)" />
             </div>
 
             ${settingsHtml}
@@ -1534,8 +1276,8 @@
             <h3>👥 ئامادەبووانی ناو مەجلیس (${state.players.length} کەس):</h3>
             <div class="players-wrap">${playersChips}</div>
 
-            <button class="btn btn-primary" style="margin-top:16px; font-size:1.02rem;" ${state.generatingAI ? 'disabled' : ''} onclick="hostStartCompetition()">
-              ${state.generatingAI ? '<span class="spinner"></span> پرسیار ئامادە دەکرێ...' : '▶️ دەستپێکردنی یاری'}
+            <button class="btn btn-primary" style="margin-top:16px; font-size:1.02rem;" onclick="hostStartCompetition()">
+              ▶️ دەستپێکردنی یاری
             </button>
           </div>
         `;
@@ -1617,11 +1359,9 @@
 
           ${state.revealAnswer ? `
             <div class="next-auto-banner" id="autoNextBanner">
-              ${state.generatingComedy
-                ? '<span class="spinner"></span> چاوەڕوان بە...'
-                : (state.qIndex + 1 < state.questions.length
-                    ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکەی تر دەست پێ دەکات...`
-                    : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکەی تر پیشان دەدرێت...`)}
+              ${state.qIndex + 1 < state.questions.length
+                ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکەی تر دەست پێ دەکات...`
+                : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکەی تر پیشان دەدرێت...`}
             </div>
           ` : ''}
         </div>
@@ -1667,11 +1407,11 @@
           </div>
 
           ${state.role === 'host' ? `
-            <button class="btn" onclick="regenerateComedyNow()" ${state.generatingComedy ? 'disabled' : ''}>
-              ${state.generatingComedy ? '<span class="spinner"></span> چاوەڕوان بە...' : '🎲 گۆڕینی قسەی مەجلیس (شتێکی تر بڵێ!)'}
+            <button class="btn" onclick="regenerateComedyNow()">
+              🎲 گۆڕینی قسەی مەجلیس (شتێکی تر بڵێ!)
             </button>
-            <button class="btn btn-primary" ${state.generatingAI ? 'disabled' : ''} onclick="hostStartCompetition()">
-              ${state.generatingAI ? '<span class="spinner"></span> پرسیار ئامادە دەکرێ...' : '✨ خولێکی نوێ لەگەڵ هاوڕێیان'}
+            <button class="btn btn-primary" onclick="hostStartCompetition()">
+              🔄 خولێکی نوێ لەگەڵ هاوڕێیان
             </button>
           ` : ''}
           <button class="btn" onclick="resetToHome()">🏠 گەڕانەوە بۆ پەڕەی سەرەکی</button>
@@ -1948,19 +1688,9 @@
       }, true);
     }
 
-    async function hostStartCompetition() {
+    function hostStartCompetition() {
       requestScreenWakeLock();
-      state.generatingAI = true;
-      render();
-
-      try {
-        state.questions = await generateAIQuestions(state.selectedTopics, state.customTopicText.trim(), state.questionLimit, state.difficulty);
-      } catch (e) {
-        state.questions = [...EMERGENCY_POOL['زانیاری گشتی جۆراوجۆر']];
-      } finally {
-        state.generatingAI = false;
-      }
-
+      state.questions = getLocalQuestions(state.selectedTopics, state.questionLimit);
       state.qIndex = 0;
       state.players.forEach(p => { p.score = 0; p.lastGain = 0; p.streak = 0; p.hasAnswered = false; p.currentAnswer = null; });
       runPreGameCountdown();
@@ -2070,16 +1800,13 @@
       }
     }
 
-    async function advanceToNextQuestion() {
+    function advanceToNextQuestion() {
       clearInterval(state.revealInterval);
       if (state.qIndex + 1 < state.questions.length) {
         state.qIndex++;
         beginQuestionCountdown();
       } else {
-        state.generatingComedy = true;
-        render();
-        state.comedyResult = await generateAIComedyCommentary();
-        state.generatingComedy = false;
+        state.comedyResult = getLocalComedyCommentary();
         state.screen = 'finished';
         launchConfetti();
         syncAllPlayers();
@@ -2087,11 +1814,8 @@
       }
     }
 
-    async function regenerateComedyNow() {
-      state.generatingComedy = true;
-      render();
-      state.comedyResult = await generateAIComedyCommentary();
-      state.generatingComedy = false;
+    function regenerateComedyNow() {
+      state.comedyResult = getLocalComedyCommentary();
       syncAllPlayers();
       render();
     }
@@ -2129,7 +1853,6 @@
       if (!state.selectedTopics.includes('پرسیارەکانی خۆم (تایبەت)')) {
         state.selectedTopics.push('پرسیارەکانی خۆم (تایبەت)');
       }
-      state.customTopicText = '';
     }
 
     render();
