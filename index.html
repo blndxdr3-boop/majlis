@@ -298,7 +298,7 @@
         <button class="btn" onclick="toggleThemeMode()">🌓 گۆڕینی دۆخی قاوەیی تۆخ / سپی</button>
         <button class="btn" onclick="toggleSound()" id="soundBtnLabel">🔊 دەنگی یاری: چالاکە</button>
         <button class="btn" onclick="openCustomQModal()">✍️ زیادکردنی پرسیاری تایبەت</button>
-        <button class="btn" onclick="openKeySetupModal()">🔑 دانان و پشکنینی کلیل</button>
+        <button class="btn" onclick="openKeySetupModal()">🔑 دانان و پشکنینی کلیلی OpenRouter</button>
         <button class="btn" onclick="clearAskedHistory(); toggleModal('settingsModal', false);">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
       </div>
       <button class="btn btn-primary" style="margin-top:12px; margin-bottom:0;" onclick="toggleModal('settingsModal', false)">داخستن</button>
@@ -307,11 +307,11 @@
 
   <div class="modal-backdrop" id="keySetupModal">
     <div class="modal-box">
-      <h3 style="margin-bottom:8px; text-align:center;">🔑 دانان و پشکنینی کلیل</h3>
+      <h3 style="margin-bottom:8px; text-align:center;">🔑 کلیلی OpenRouter</h3>
       <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px; text-align:center; line-height:1.6;">
-        کلیلەکەت لێرە دابنێ (دەتوانیت کلیلی <strong>AIzaSy...</strong> یان <strong>gsk_...</strong> یان <strong>AQ.Ab8...</strong> دابنێیت):
+        کلیلە خۆڕاییەکەی <strong>OpenRouter</strong> لێرە دابنێ کە بە (<strong>sk-or-v1-...</strong>) دەست پێ دەکات:
       </p>
-      <input type="text" id="masterKeyInput" class="input" dir="ltr" placeholder="AIzaSy... / gsk_... / AQ.Ab8..." />
+      <input type="text" id="masterKeyInput" class="input" dir="ltr" placeholder="sk-or-v1-..." />
       <div id="keyCheckStatus" style="font-size:0.8rem; text-align:center; margin-bottom:10px; font-weight:800;"></div>
       <div style="display:flex; gap:8px;">
         <button class="btn" onclick="toggleModal('keySetupModal', false)">داخستن</button>
@@ -341,7 +341,7 @@
 
   <script>
     const KEYS = {
-      API: 'MAJLIS_MASTER_KEY',
+      API: 'MAJLIS_OPENROUTER_KEY',
       SEEN: 'MAJLIS_SEEN_HISTORY',
       CUSTOM: 'MAJLIS_CUSTOM_QUESTIONS',
       NAME: 'MAJLIS_PLAYER_NAME',
@@ -365,7 +365,7 @@
     function extractCleanKey(raw) {
       if (!raw) return '';
       const str = String(raw).trim();
-      const m = str.match(/(?:gsk_|AQ\.|AIza)[A-Za-z0-9_-]{20,}/);
+      const m = str.match(/(?:sk-or-v1-|sk-or-|AIza)[A-Za-z0-9_-]{20,}/);
       return m ? m[0] : str.replace(/['"\s]/g, '');
     }
 
@@ -405,61 +405,19 @@
       'چەمکە سەرەکییەکان و پرسیاری بیرکردنەوە', 'کەسایەتییە کاریگەرەکان و یاسا بنەڕەتییەکان'
     ];
 
-    const EMERGENCY_POOL = {
-      'یاسا و دادگا و دەستوور': [
-        { q: 'لە یاسای سزاداندا، سزای تاوانی جینایەت (جناية) لە چی پێکدێت؟', opts: ['زیندانیی هەتاهەتایی یان کاتی لە ٥ ساڵ زیاتر', 'تەنها پێبژاردنی دارایی کەم', 'بەندکردن بۆ ماوەی ٢٤ کاتژمێر', 'ئاگادارکردنەوەی زارەکی'], ans: 0 },
-        { q: 'کام لەمانە بە یەکێک لە کۆڵەکەکانی گرێبەست (أركان العقد) لە یاسای شارستانیدا دادەنرێت؟', opts: ['ڕەزامەندی و بابەت و هۆکار', 'بوونی دوو پارێزەر لە کاتی واژۆکردن', 'پەسەندکردنی لەلایەن پۆلیسەوە', 'نووسینی بە زمانی بیانی'], ans: 0 },
-        { q: 'لە یاسای نێودەوڵەتیدا، مافی "ڤیتۆ" لە ئەنجومەنی ئاسایشی نەتەوە یەکگرتووەکان دراوە بە چەند دەوڵەت؟', opts: ['٥ دەوڵەتی هەمیشەیی', '١٠ دەوڵەتی هەڵبژێردراو', '٧ دەوڵەتی پیشەسازی', 'تەنها ٢ دەوڵەت'], ans: 0 },
-        { q: 'لە یاسادا زاراوەی "التقادم" (تێپەڕبوونی کات) بە چ واتایەک دێت؟', opts: ['تێپەڕبوونی ماوەیەکی یاسایی کە دەبێتە هۆی نەمانی مافی داواکردن یان بەدەستهێنانی مافێک', 'خێراکردنی دانیشتنەکانی دادگا', 'دواخستنی مووچەی فەرمانبەر', 'کەمکردنەوەی ماوەی گرێبەست'], ans: 0 },
-        { q: 'کام دادگا بەرپرسە لە چاودێریکردنی دەستووریبوونی یاساکان لە عێراقدا؟', opts: ['دادگای باڵای فیدراڵی', 'دادگای بەرایی', 'دادگای لێکۆڵینەوە', 'دادگای کار'], ans: 0 },
-        { q: 'لە یاسای کاردا، کارپێکردنی منداڵانی خوار تەمەنی یاسایی دەچێتە چوارچێوەی چییەوە؟', opts: ['سەرپێچی یاسایی و قەدەغەکراوە', 'کارێکی خۆبەخشیی ڕێگەپێدراوە', 'مەرجی دامەزراندنە', 'بڕیاری خاوەنکارە'], ans: 0 },
-        { q: 'لە یاسای تاوانەکاندا، جیاوازی نێوان کوشتنی بەئەنقەست (العمد) و کوشتنی بەهەڵە (الخطأ) لە چیدایە؟', opts: ['بوونی نییەتی تاوانکاری (القصد الجنائي)', 'شوێنی ڕوودانی تاوانەکە', 'تەمەنی تاوانبارەکە', 'کاتی ئەنجامدانی تاوانەکە'], ans: 0 },
-        { q: 'ئەو بەڵگەنامە فەرمییەی کە لەلایەن فەرمانگەی دادنووسی (الكاتب العدل) پەسەند دەکرێت پێی دەوترێت چی؟', opts: ['سەنەدی فەرمی (سند رسمي)', 'گرێبەستی زارەکی', 'یاداشتنامەی تایبەت', 'پسوولەی بازرگانی'], ans: 0 },
-        { q: 'لە دەستووردا، بنەمای جیاکردنەوەی دەسەڵاتەکان (الفصل بين السلطات) لەلایەن کام بیرمەندەوە داڕێژرا؟', opts: ['مۆنتسکیۆ', 'ئەرستۆ', 'ماکیاڤێلی', 'تۆماس هۆبز'], ans: 0 },
-        { q: 'لە یاسای باری کەسیدا، وەسیەتکردن لە میراتدا تا چ ڕێژەیەکی ماڵەکە بێ ڕەزامەندی میراتگرەکان جێبەجێ دەکرێت؟', opts: ['تا سێیەکی ماڵەکە (الثلث)', 'هەموو ماڵەکە بە تەواوی', 'تەنها یەک لەسەر دەی ماڵەکە', 'نیوەی ماڵەکە'], ans: 0 }
-      ],
-      'گەشت و کامپینگ و سروشت': [
-        { q: 'لە کاتی هەڵکردنی ئاگر لە گەشت و کامپینگدا، سەلامەتترین ڕێکار پێش خەوتن چییە؟', opts: ['کوژاندنەوەی تەواوەتی ئاگرەکە بە ئاو و خۆڵ تا سارد دەبێتەوە', 'داپۆشینی ئاگرەکە بە گەڵای وشک', 'هێشتنەوەی خەڵووزەکە بە گەشاوەیی تا بەیانی', 'نزیککردنەوەی چادرەکە لە ئاگرەکە'], ans: 0 },
-        { q: 'کام لەم هاوینەهەوارانە دەکەوێتە سنووری قەزای شەقڵاوە و سۆران لە پارێزگای هەولێر؟', opts: ['بێخاڵ و گەلی عەلی بەگ و جوندیان', 'ئەحمەدئاوا و زەڵم', 'سۆلاڤ و ئاشاوا', 'سەرسەنگ و ئەترووش'], ans: 0 },
-        { q: 'لە کاتی شاخەوانیدا، ئەگەر هەورەبرووسکەی بەهێز دەستی پێکرد، کام شوێنە زۆر مەترسیدارە بۆ وەستان؟', opts: ['لە ژێر تاقە درەختێکی بەرز یان لەسەر لووتکەی چیاکە', 'لە ناو چاڵاییەکی نزم و دوور لە درەختی بەرز', 'لە ناو ئۆتۆمبێلی داخراو', 'لە ناوچەیەکی نزم'], ans: 0 },
-        { q: 'لە کاتی ڕاوەماسی لە ڕووبار و دەریاچەکانی کوردستاندا، لە کام وەرزدا ڕاوکردن قەدەغە دەکرێت؟', opts: ['لە وەرزی بەهار و گەرادانانی ماسیدا', 'لە ناوەڕاستی پاییزدا', 'لە کۆتایی هاویندا', 'لە مانگی کانوونی یەکەمدا'], ans: 0 },
-        { q: 'باشترین جۆری قوماش بۆ جلوبەرگی شاخەوانی و پیادەڕەوی لە کەشوهەوای سارددا کامەیە؟', opts: ['خوریی مێرینۆ و قوماشی پۆلیستەری دژەئاو (نەک لۆکە)', 'قوماشی لۆکەی ئەستوور کە ئارەق هەڵدەمژێت', 'قوماشی کابۆی قورس', 'ئاوریشمی تەنک'], ans: 0 }
-      ],
-      'مێژوو و جوگرافیای کوردستان': [
-        { q: 'قەڵای مێژوویی خانزاد دەکەوێتە سەر ڕێگەی نێوان کام دوو ناوچەی هەولێر؟', opts: ['هەولێر و پیرمام (سەڵاحەدین)', 'هەولێر و کۆیە', 'هەولێر و مەخموور', 'هەولێر و خەبات'], ans: 0 },
-        { q: 'کام زانا و مێژوونووسی گەورەی کورد لە سەدەی دوازدەی زایینی لە شاری هەولێر لەدایک بووە؟', opts: ['ئیبن خەلەکان', 'ئیبن خەلدوون', 'ئەبو فیدا', 'تەبەری'], ans: 0 },
-        { q: 'میرنشینی بابان پایتەختەکەی لە قەڵاچۆلانەوە گواستەوە بۆ کام شار لە ساڵی ١٧٨٤؟', opts: ['سلێمانی', 'هەڵەبجە', 'کفری', 'کۆیە'], ans: 0 },
-        { q: 'درێژترین ڕووبار کە بە ناو خاکی هەرێمی کوردستاندا تێپەڕ بێت کامەیە؟', opts: ['زێی گەورە و سیروان', 'خابوور', 'ئاوەسپی', 'چەمی ڕەزان'], ans: 0 },
-        { q: 'شاعیری گەورەی کورد "حاجی قادری کۆیی" لە کام شار کۆچی دوایی کردووە و بەخاک سپێردراوە؟', opts: ['ئەستەمبوڵ', 'قاهیرە', 'بەغدا', 'شام'], ans: 0 }
-      ],
-      'زانیاری گشتی جۆراوجۆر': [
-        { q: 'کام توخم لە سروشتدا بە ڕەقترین ماددەی سەر ڕووی زەوی دادەنرێت؟', opts: ['ئەڵماس', 'پۆڵا', 'تیتانیۆم', 'گرانایت'], ans: 0 },
-        { q: 'ژمارەی ئێسکەکانی لەشی مرۆڤێکی پێگەیشتوو چەند ئێسکە؟', opts: ['٢٠٦ ئێسک', '٣٠٠ ئێسک', '١٥٠ ئێسک', '٢٥٦ ئێسک'], ans: 0 },
-        { q: 'گەورەترین دوورگەی جیهان لە ڕووی ڕووبەرەوە کامەیە؟', opts: ['گرینلاند', 'مەدەغەشقەر', 'کوبا', 'ئایسلەندا'], ans: 0 },
-        { q: 'کام زانای جیهانی یاسای کێشکردنی زەوی و سێ یاساکەی جووڵەی دۆزییەوە؟', opts: ['ئیسحاق نیوتن', 'ئەلبێرت ئاینشتاین', 'گالیلۆ گالیلی', 'نیکۆلا تێسلا'], ans: 0 },
-        { q: 'قووڵترین خاڵی ناو زەریاکانی جیهان ناوی چییە؟', opts: ['خەندەقی ماریانا', 'سێگۆشەی بەرمۆدا', 'کەنداوی مەکسیک', 'دەریای سوور'], ans: 0 }
-      ],
-      'تۆپی پێ و وەرزشی جیهانی': [
-        { q: 'زۆرترین گۆڵکار لە مێژووی پاڵەوانێتی چامپیۆنزلیگی ئەوروپا کێیە؟', opts: ['کریستیانۆ ڕۆناڵدۆ', 'لیۆنێل مێسی', 'ڕۆبێرت لێڤاندۆڤسکی', 'کەریم بێنزێما'], ans: 0 },
-        { q: 'تاکە گۆڵپارێز لە مێژووی تۆپی پێدا کە خەڵاتی باڵۆن دۆری بردبێتەوە کێ بوو؟', opts: ['لێڤ یاشین', 'جیانلویجی بوفۆن', 'مانوێل نۆیەر', 'ئیکەر کاسیاس'], ans: 0 },
-        { q: 'یاریگای بەناوبانگی "سانتیاگۆ بێرنابیۆ" تایبەتە بە کام یانەی ئیسپانی؟', opts: ['ڕیاڵ مەدرید', 'بەرشەلۆنە', 'ئەتلەتیکۆ مەدرید', 'سێڤییا'], ans: 0 }
-      ],
-      'مەتەڵ و زیرەکی': [
-        { q: 'ئەو شتە چییە کە هەمیشە لە پێشتەوەیە بەڵام هەرگیز ناتوانیت بە چاو بیبینیت؟', opts: ['داهاتوو', 'سێبەر', 'ئاوێنە', 'ڕێگە'], ans: 0 },
-        { q: 'پڕە لە کون و کەچی ئاوێکی زۆریش لە خۆیدا هەڵدەگرێت؛ چییە؟', opts: ['ئیسفەنج', 'سەبەتە', 'بێژنگ', 'تۆڕ'], ans: 0 },
-        { q: 'ئەگەر ٣ سێوت هەبێت و ٢ سێویان لێ ببەیت، چەند سێوت لای خۆت هەیە؟', opts: ['٢ سێو (ئەو دووانەی خۆت بردووتن!)', '١ سێو', '٣ سێو', 'هیچ'], ans: 0 }
-      ],
-      'زانیاری ئایینی و قورئان': [
-        { q: 'کام هاوەڵی پێغەمبەر (د.خ) بە نازناوی "ذو النورين" ناسراوە؟', opts: ['عوسمانی کوڕی عەففان (ڕ.خ)', 'عومەری کوڕی خەتاب (ڕ.خ)', 'ئەبوبەکری سدیق (ڕ.خ)', 'عەلی کوڕی ئەبو تاڵیب (ڕ.خ)'], ans: 0 },
-        { q: 'قورئانی پیرۆز لە ماوەی چەند ساڵدا بۆ سەر پێغەمبەر محەمەد (د.خ) دابەزی؟', opts: ['٢٣ ساڵ', '١٠ ساڵ', '١٣ ساڵ', '٤٠ ساڵ'], ans: 0 },
-        { q: 'کام سورەت لە قورئانی پیرۆزدا بەرامبەر سێیەکی قورئانە لە پاداشتدا؟', opts: ['سورەتی ئیخلاس', 'سورەتی فاتیحە', 'سورەتی کەوسەر', 'سورەتی فەلەق'], ans: 0 }
-      ]
-    };
+    // لیستی مۆدێلە خۆڕاییەکانی OpenRouter (ئەگەر یەکێکیان سەرقاڵ بێت خۆکارانە دەچێتە سەر دانەی دواتر)
+    const OPENROUTER_FREE_MODELS = [
+      'openrouter/free',
+      'google/gemini-2.0-flash-exp:free',
+      'meta-llama/llama-3.3-70b-instruct:free',
+      'deepseek/deepseek-chat-v3-0324:free',
+      'qwen/qwen-2.5-72b-instruct:free'
+    ];
 
     let state = {
       welcomeTab: 'host', role: null, screen: 'welcome',
       myId: persistentId, myName: localStorage.getItem(KEYS.NAME) || '',
-      masterKey: extractCleanKey(localStorage.getItem(KEYS.API) || ''),
+      masterKey: extractCleanKey(localStorage.getItem(KEYS.API) || localStorage.getItem('MAJLIS_MASTER_KEY') || ''),
       roomCode: '', selectedVibeIds: ['friends'], selectedTopics: [PRESET_TOPICS[0]],
       customTopicText: '', difficulty: 'مامناوەند', questionLimit: 6, questionDuration: 15,
       soundOn: true, generatingAI: false, generatingComedy: false, connecting: false,
@@ -582,10 +540,10 @@
       return list.length ? list : [QUESTION_VIBES[0]];
     };
 
-    function fetchWithTimeout(url, options, timeoutMs = 9500) {
+    function fetchWithTimeout(url, options, timeoutMs = 15000) {
       return Promise.race([
         fetch(url, options),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), timeoutMs))
       ]);
     }
 
@@ -631,79 +589,49 @@
       } catch (e) { return null; }
     }
 
-    async function requestWithSingleKey(key, prompt) {
-      if (!key) throw new Error('NO_KEY');
+    // ناردنی داواکاری لە ڕێگەی OpenRouter (لەگەڵ گۆڕینی خۆکاری مۆدێلە خۆڕاییەکان)
+    async function requestOpenRouter(key, prompt) {
+      if (!key) throw new Error('تکایە سەرەتا کلیلەکەت دابنێ');
 
-      if (key.startsWith('gsk_')) {
-        const r = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [{ role: 'system', content: 'Return ONLY valid raw JSON in Kurdish Sorani.' }, { role: 'user', content: prompt }],
-            temperature: 0.9
-          })
-        }, 9000);
-        if (!r.ok) throw new Error('GROQ_' + r.status);
-        const d = await r.json();
-        return d?.choices?.[0]?.message?.content || '';
-      }
-
-      const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest'];
-      for (const m of models) {
+      let lastErr = 'کێشە لە پەیوەندی';
+      for (const model of OPENROUTER_FREE_MODELS) {
         try {
-          const isStandardKey = key.startsWith('AIza');
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent${isStandardKey ? `?key=${encodeURIComponent(key)}` : ''}`;
-          const headers = { 'Content-Type': 'application/json' };
-          if (!isStandardKey) headers['X-goog-api-key'] = key;
+          const r = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${key}`,
+              'HTTP-Referer': window.location.origin || 'https://majlis.app',
+              'X-Title': 'Majlis Quiz'
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [
+                { role: 'system', content: 'You are an expert Kurdish Sorani quiz generator. Respond ONLY with valid raw JSON.' },
+                { role: 'user', content: prompt }
+              ],
+              temperature: 0.9
+            })
+          }, 15000);
 
-          const r = await fetchWithTimeout(url, {
-            method: 'POST', headers,
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-          }, 8500);
+          if (r.status === 401) {
+            throw new Error('کلیلەکە هەڵەیە یان نادروستە (401)');
+          }
+
           if (r.ok) {
             const d = await r.json();
-            const t = d?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            if (t) return t;
+            const content = d?.choices?.[0]?.message?.content || '';
+            if (content && content.trim().length > 0) return content;
+          } else {
+            const errBody = await r.json().catch(() => ({}));
+            lastErr = errBody?.error?.message || `HTTP ${r.status}`;
           }
-        } catch (e) {}
+        } catch (e) {
+          if (e.message && e.message.includes('401')) throw e;
+          lastErr = e.message || 'هەڵەی تۆڕ';
+        }
       }
-      throw new Error('GEMINI_FAILED');
-    }
-
-    async function callAIRawText(prompt, shortPromptForGet) {
-      if (state.masterKey) {
-        try {
-          const res = await requestWithSingleKey(state.masterKey, prompt);
-          if (res) return res;
-        } catch (e) {}
-      }
-
-      const seed = Math.floor(Math.random() * 999999);
-      try {
-        return await Promise.any([
-          (async () => {
-            const r = await fetchWithTimeout('https://text.pollinations.ai/openai', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                model: 'openai',
-                messages: [{ role: 'system', content: 'Output ONLY valid raw JSON in Kurdish Sorani.' }, { role: 'user', content: prompt }],
-                seed
-              })
-            }, 9500);
-            if (!r.ok) throw new Error();
-            const raw = await r.text();
-            try { return JSON.parse(raw)?.choices?.[0]?.message?.content || raw; } catch (_) { return raw; }
-          })(),
-          (async () => {
-            const concise = shortPromptForGet || prompt.substring(0, 300);
-            const r = await fetchWithTimeout(`https://text.pollinations.ai/${encodeURIComponent(concise)}?model=openai&seed=${seed}`, { method: 'GET' }, 9500);
-            if (!r.ok) throw new Error();
-            return await r.text();
-          })()
-        ]);
-      } catch (e) { return null; }
+      throw new Error(lastErr);
     }
 
     async function generateAIQuestions(topicsList, customTopic, count, difficulty) {
@@ -713,38 +641,33 @@
         return [...customQuestions].sort(() => Math.random() - 0.5).slice(0, count);
       }
 
+      if (!state.masterKey) {
+        showToast('🔑 تکایە سەرەتا کلیلی OpenRouter دابنێ');
+        openKeySetupModal();
+        return null;
+      }
+
       const seed = Math.floor(Math.random() * 9999999);
       const angle = CREATIVE_ANGLES[seed % CREATIVE_ANGLES.length];
-      const avoid = seenQuestions.slice(-20).join(' | ');
+      const avoid = seenQuestions.slice(-30).join(' | ');
 
       const prompt = `تۆ پسپۆڕی دروستکردنی پرسیاری پێشبڕکێیت بە زمانی کوردیی سۆرانیی پاراو.
 تکایە رێک ${count} پرسیاری هەڵبژاردن (٤ هەڵبژاردەیی) تەنها لەسەر ئەم بابەتە دروست بکە: "${effectiveTopic}".
-- ئاستی قورسی: "${difficulty}" | گۆشەنیگا: (${angle}) | کۆد: ${seed}.
-- ئەم پرسیارانە دووبارە مەکەرەوە: [${avoid}].
-تەنها JSON Array بنێرەوە بێ هیچ قسەیەکی زیادە:
+- ئاستی قورسی: "${difficulty}" | گۆشەنیگا: (${angle}) | کۆدی هەڕەمەکی: ${seed}.
+- هەرگیز ئەم پرسیارانەی پێشوو دووبارە مەکەرەوە: [${avoid}].
+تەنها JSON Array بنێرەوە بێ هیچ قسەیەکی زیادە بەم فۆرماتە:
 [{"q":"دەقی پرسیار؟","opts":["هەڵبژاردەی ١","هەڵبژاردەی ٢","هەڵبژاردەی ٣","هەڵبژاردەی ٤"],"ans":0}]`;
 
-      const shortPrompt = `Create ${count} unique Kurdish Sorani multiple choice questions about (${effectiveTopic}), difficulty (${difficulty}), seed ${seed}. Return ONLY raw JSON array: [{"q":"...","opts":["1","2","3","4"],"ans":0}]`;
-
-      const parsed = parseFlexibleQuestions(await callAIRawText(prompt, shortPrompt), count);
-      if (parsed?.length) return parsed;
-
-      let pool = [];
-      topicsList.forEach(t => {
-        if (t === 'پرسیارەکانی خۆم (تایبەت)') pool.push(...customQuestions);
-        else if (EMERGENCY_POOL[t]) pool.push(...EMERGENCY_POOL[t]);
-      });
-      if (!pool.length) Object.values(EMERGENCY_POOL).forEach(arr => pool.push(...arr));
-
-      let unseen = pool.filter(i => !seenQuestions.includes(i.q));
-      if (unseen.length < count) { seenQuestions = []; unseen = [...pool]; }
-
-      return unseen.sort(() => Math.random() - 0.5).slice(0, count).map(item => {
-        const correctText = item.opts[item.ans];
-        const shuffledOpts = [...item.opts].sort(() => Math.random() - 0.5);
-        markQuestionSeen(item.q);
-        return { q: item.q, opts: shuffledOpts, ans: shuffledOpts.indexOf(correctText) };
-      });
+      try {
+        const rawText = await requestOpenRouter(state.masterKey, prompt);
+        const parsed = parseFlexibleQuestions(rawText, count);
+        if (parsed?.length) return parsed;
+        showToast('⚠️ دووبارە پەنجە بنێ بە دەستپێکردن بۆ وەرگرتنی پرسیار');
+        return null;
+      } catch (e) {
+        showToast(`⚠️ ${e.message}`);
+        return null;
+      }
     }
 
     async function generateAIComedyCommentary() {
@@ -764,9 +687,13 @@
 - loserJoke: قسەیەکی خۆش و سزایەکی کۆمیدی بۆ دۆڕاوەکان (${loserNames}).
 تەنها JSON بنێرە: {"winnerJoke":"...","loserJoke":"..."}`;
 
-      const shortComedy = `Write funny Kurdish Sorani quiz commentary for winner (${winner.name}) and losers (${loserNames}) in vibe (${vibeTitles}), seed ${seed}. Return ONLY JSON: {"winnerJoke":"...","loserJoke":"..."}`;
+      try {
+        const raw = await requestOpenRouter(state.masterKey, prompt);
+        const parsed = parseFlexibleComedy(raw);
+        if (parsed) return parsed;
+      } catch (e) {}
 
-      return parseFlexibleComedy(await callAIRawText(prompt, shortComedy)) || {
+      return {
         winnerJoke: `بژی ${winner.name}! بەم زیرەکییەت سەلماندت کە سەردەستەی ئەم مەجلیسەیت!`,
         loserJoke: `بەداخەوە بۆ (${loserNames})! ئەمشەو چا لێنان و خزمەتکردنی مەجلیسەکە لەسەر ئێوەیە!`
       };
@@ -923,441 +850,4 @@
             <button class="btn" onclick="copyInvite('${joinUrl}')">📋 کۆپیکردنی لینک</button>
             <button class="btn btn-emerald" onclick="shareInviteNative('${joinUrl}')">📤 بانگهێشتکردنی هاوڕێیان</button>
           </div>
-          <h3>👥 ئامادەبووانی ناو مەجلیس (${state.players.length} کەس):</h3>
-          <div class="players-wrap">${playersChips}</div>
-          <button class="btn btn-primary" style="margin-top:14px; font-size:1.02rem;" ${state.generatingAI ? 'disabled' : ''} onclick="hostStartCompetition()">
-            ${state.generatingAI ? '<span class="spinner"></span> پرسیار ئامادە دەکرێ...' : '▶️ دەستپێکردنی یاری'}
-          </button>
-        </div>`;
-    }
-
-    function renderCountdownScreen() {
-      return `
-        <div class="card countdown-overlay">
-          <h2>🚀 ئامادەبن! پێشبڕکێ دەست پێ دەکات</h2>
-          <p class="sub">بابەت: <strong style="color:var(--primary);">${getActiveTopicsSummary()}</strong></p>
-          <div class="countdown-num">${state.countdownVal}</div>
-        </div>`;
-    }
-
-    function renderPlayingScreen() {
-      const qObj = state.questions[state.qIndex] || { q: '...', opts: ['', '', '', ''], ans: null };
-      const myAns = state.players.find(p => p.id === state.myId)?.currentAnswer ?? null;
-      const pct = Math.max(0, (state.timeLeft / state.questionDuration) * 100);
-
-      const optsHtml = qObj.opts.map((opt, idx) => {
-        let cls = 'opt-card';
-        if (state.revealAnswer) cls += (idx === qObj.ans) ? ' correct' : (myAns === idx ? ' wrong' : '');
-        else if (myAns === idx) cls += ' selected';
-        return `
-          <button class="${cls}" ${state.revealAnswer ? 'disabled' : ''} onclick="submitPlayerAnswer(${idx})">
-            <div class="opt-right"><span class="opt-num">${idx + 1}</span><span>${opt}</span></div>
-            <span>${state.revealAnswer && idx === qObj.ans ? '✅' : (state.revealAnswer && myAns === idx ? '❌' : '')}</span>
-          </button>`;
-      }).join('');
-
-      const sorted = [...state.players].sort((a, b) => b.score - a.score);
-      const leaderboardHtml = sorted.map((p, i) => `
-        <div class="leader-row ${i === 0 ? 'first' : ''}">
-          <span>
-            ${i === 0 ? '👑' : `${i + 1}.`} ${p.name}
-            ${p.streak >= 2 ? `<small style="color:var(--amber);">🔥x${p.streak}</small>` : ''}
-            ${state.revealAnswer && p.lastGain > 0 ? `<span class="gain-badge">+${p.lastGain}</span>` : ''}
-          </span>
-          <span style="color:var(--accent);">${p.score} خاڵ</span>
-        </div>`).join('');
-
-      return `
-        <div class="card">
-          <div class="quiz-top-meta">
-            <span>پرسیاری ${state.qIndex + 1} لە ${state.questions.length}</span>
-            <span class="source-tag">ژوور: ${state.roomCode}</span>
-            <span id="liveTimeLabel" style="color:var(--accent);">⏱️ ${state.timeLeft} چرکە</span>
-          </div>
-          <div class="timer-track"><div class="timer-fill" id="liveTimeFill" style="width:${pct}%"></div></div>
-          <div class="q-banner">${qObj.q}</div>
-          <div class="opts-list">${optsHtml}</div>
-          ${state.revealAnswer ? `
-            <div class="next-auto-banner" id="autoNextBanner">
-              ${state.generatingComedy ? '<span class="spinner"></span> چاوەڕوان بە...' : (state.qIndex + 1 < state.questions.length ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکەی تر دەست پێ دەکات...` : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکەی تر پیشان دەدرێت...`)}
-            </div>` : ''}
-        </div>
-        <div class="card">
-          <h3 style="margin-bottom:10px; font-size:0.95rem;">📊 ڕیزبەندی خاڵەکان:</h3>
-          ${leaderboardHtml}
-        </div>`;
-    }
-
-    function renderFinishedScreen() {
-      const sorted = [...state.players].sort((a, b) => b.score - a.score);
-      const winner = sorted[0];
-      const medals = ['🥇 براوەی یەکەم:', '🥈 دووەم:', '🥉 سێیەم:'];
-
-      return `
-        <div class="card" style="text-align:center;">
-          <div style="font-size:3.5rem; margin-bottom:2px;">🏆</div>
-          <h2>پاڵەوانی مەجلیس: ${winner?.name || ''}!</h2>
-          <p class="sub">کۆی خاڵی بەدەستهاتوو: <strong>${winner?.score || 0} خاڵ</strong></p>
-
-          <div class="comedy-grid">
-            <div class="comedy-card winner-box">
-              <div class="comedy-head">👑 براوەی مەجلیس:</div>
-              <div>"${state.comedyResult.winnerJoke || 'بژی پاڵەوان!'}"</div>
-            </div>
-            <div class="comedy-card loser-box">
-              <div class="comedy-head">☕ بڕیاری مەجلیس بۆ دۆڕاوەکان:</div>
-              <div>"${state.comedyResult.loserJoke || 'جاری داهاتوو هەوڵ بدەنەوە!'}"</div>
-            </div>
-          </div>
-
-          <div style="text-align:right; margin:16px 0;">
-            <h3 style="font-size:0.95rem; margin-bottom:8px;">📋 ڕیزبەندی کۆتایی یاریزانەکان:</h3>
-            ${sorted.map((p, i) => `
-              <div class="leader-row ${i === 0 ? 'first' : ''}">
-                <span>${medals[i] || `🐢 ${i + 1}.`} ${p.name}</span>
-                <span style="color:var(--emerald);">${p.score} خاڵ</span>
-              </div>`).join('')}
-          </div>
-
-          ${state.role === 'host' ? `
-            <button class="btn" onclick="regenerateComedyNow()" ${state.generatingComedy ? 'disabled' : ''}>
-              ${state.generatingComedy ? '<span class="spinner"></span> چاوەڕوان بە...' : '🎲 گۆڕینی قسەی مەجلیس (شتێکی تر بڵێ!)'}
-            </button>
-            <button class="btn btn-primary" ${state.generatingAI ? 'disabled' : ''} onclick="hostStartCompetition()">
-              ${state.generatingAI ? '<span class="spinner"></span> پرسیار ئامادە دەکرێ...' : '✨ خولێکی نوێ لەگەڵ هاوڕێیان'}
-            </button>` : ''}
-          <button class="btn" onclick="resetToHome()">🏠 گەڕانەوە بۆ پەڕەی سەرەکی</button>
-        </div>`;
-    }
-
-    function drawQRCode() {
-      const box = document.getElementById('qrcode');
-      if (!box || typeof QRCode === 'undefined') return;
-      box.innerHTML = '';
-      new QRCode(box, {
-        text: `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`,
-        width: 180, height: 180, colorDark: "#291a0d", colorLight: "#ffffff"
-      });
-    }
-
-    function copyInvite(url) {
-      navigator.clipboard.writeText(url);
-      showToast('📋 لینکی مەجلیس کۆپی کرا!');
-    }
-
-    async function shareInviteNative(url) {
-      const text = `☕ وەرنە ناو پێشبڕکێی مەجلیس! کۆدی ژوور: (${state.roomCode})`;
-      if (navigator.share) { try { await navigator.share({ title: 'مەجلیس', text, url }); return; } catch (e) {} }
-      window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`, '_blank');
-    }
-
-    function kickPlayer(playerId) {
-      state.players = state.players.filter(p => p.id !== playerId);
-      syncAllPlayers(); render();
-    }
-
-    function connectMqttBroker(onConnected) {
-      try { state.mqttClient?.end(true); } catch (e) {}
-      if (typeof mqtt === 'undefined') {
-        state.connecting = false; render();
-        return showToast('⚠️ تکایە پەڕەکە ڕیفرێش بکەرەوە');
-      }
-      const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
-        clientId: 'majlis_' + state.myId + '_' + Math.random().toString(16).slice(2, 6),
-        clean: true, connectTimeout: 7000, reconnectPeriod: 1500
-      });
-      state.mqttClient = client;
-      client.on('connect', () => onConnected(client));
-      client.on('error', () => {
-        if (state.connecting) { state.connecting = false; showToast('⚠️ کێشە لە پەیوەندیی ئینتەرنێتدا هەیە.'); render(); }
-      });
-    }
-
-    function startHostRoom() {
-      const name = state.myName.trim();
-      if (!name) return showToast('⚠️ تکایە سەرەتا ناوی خۆت بنووسە!');
-      localStorage.setItem(KEYS.NAME, name);
-      requestScreenWakeLock();
-      Object.assign(state, { role: 'host', connecting: true, roomCode: String(Math.floor(1000 + Math.random() * 9000)) });
-      render();
-
-      const actionTopic = `majlis_ku_v17/room/${state.roomCode}/action`;
-      connectMqttBroker(client => {
-        client.subscribe(actionTopic, { qos: 1 }, () => {
-          state.connecting = false;
-          state.players = [{ id: state.myId, name, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 }];
-          state.screen = 'lobby';
-          syncAllPlayers(); render();
-        });
-        client.on('message', (t, msg) => {
-          if (t === actionTopic) { try { onHostReceiveData(JSON.parse(msg.toString())); } catch (e) {} }
-        });
-      });
-    }
-
-    function joinHostRoom() {
-      const name = state.myName.trim();
-      const code = normalizeDigits(state.roomCode);
-      state.roomCode = code;
-      if (!name || !code) return showToast('⚠️ تکایە ناوی خۆت و کۆدی ژوورەکە بنووسە!');
-      localStorage.setItem(KEYS.NAME, name);
-      requestScreenWakeLock();
-      Object.assign(state, { role: 'player', connecting: true });
-      render();
-
-      const stateTopic = `majlis_ku_v17/room/${code}/state`;
-      const actionTopic = `majlis_ku_v17/room/${code}/action`;
-
-      connectMqttBroker(client => {
-        let joined = false;
-        const timeout = setTimeout(() => {
-          if (!joined && state.connecting) { state.connecting = false; showToast('⚠️ ئەم کۆدی ژوورە نەدۆزرایەوە!'); render(); }
-        }, 7000);
-
-        client.subscribe(stateTopic, { qos: 1 }, () => {
-          client.publish(actionTopic, JSON.stringify({ type: 'JOIN', id: state.myId, name }), { qos: 1 });
-        });
-
-        client.on('message', (t, msg) => {
-          if (t === stateTopic) {
-            try {
-              const data = JSON.parse(msg.toString());
-              joined = true; clearTimeout(timeout); state.connecting = false;
-              onPlayerReceiveData(data);
-              if (data.players && !data.players.some(p => p.id === state.myId)) {
-                client.publish(actionTopic, JSON.stringify({ type: 'JOIN', id: state.myId, name }), { qos: 1 });
-              }
-            } catch (e) {}
-          }
-        });
-      });
-    }
-
-    function onHostReceiveData(data) {
-      if (data.type === 'JOIN') {
-        const existing = state.players.find(p => p.id === data.id);
-        if (existing) existing.name = data.name;
-        else {
-          const cleanName = state.players.some(p => p.name === data.name) ? `${data.name} (${state.players.length + 1})` : data.name;
-          state.players.push({ id: data.id, name: cleanName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 });
-        }
-        syncAllPlayers(); render();
-      } else if (data.type === 'ANSWER') {
-        const p = state.players.find(x => x.id === data.id);
-        if (p && !state.revealAnswer) Object.assign(p, { currentAnswer: data.ansIdx, hasAnswered: true, answerTime: state.timeLeft });
-      }
-    }
-
-    function onPlayerReceiveData(data) {
-      if (data.type === 'TIMER_TICK') { state.timeLeft = data.timeLeft; return updateTimerUIOnly(); }
-      if (data.type === 'REVEAL_TICK') { state.revealCountdown = data.revealCountdown; return updateRevealCountdownUIOnly(); }
-      if (data.type === 'SYNC') {
-        const prevReveal = state.revealAnswer, prevScreen = state.screen, prevQ = state.qIndex;
-        Object.assign(state, {
-          screen: data.screen, countdownVal: data.countdownVal, qIndex: data.qIndex,
-          timeLeft: data.timeLeft, questionDuration: data.questionDuration,
-          revealAnswer: data.revealAnswer, revealCountdown: data.revealCountdown || 5,
-          comedyResult: data.comedyResult || state.comedyResult
-        });
-
-        const myOld = state.players.find(p => p.id === state.myId);
-        const keepChoice = !data.revealAnswer && prevQ === data.qIndex && myOld;
-        state.players = data.players.map(p => (p.id === state.myId && keepChoice) ? { ...p, currentAnswer: myOld.currentAnswer, hasAnswered: myOld.hasAnswered } : p);
-
-        if (!state.players.some(p => p.id === state.myId)) {
-          state.players.push({ id: state.myId, name: state.myName, score: 0, lastGain: 0, streak: 0, hasAnswered: keepChoice ? myOld.hasAnswered : false, currentAnswer: keepChoice ? myOld.currentAnswer : null });
-        }
-        if (data.currentQuestion) {
-          state.questions = new Array(data.totalQuestions).fill(null);
-          state.questions[state.qIndex] = data.currentQuestion;
-        }
-        if (!prevReveal && state.revealAnswer && state.screen === 'playing') {
-          const me = state.players.find(p => p.id === state.myId);
-          playTone(me && me.currentAnswer === state.questions[state.qIndex]?.ans ? 'correct' : 'wrong');
-        }
-        if (prevScreen !== 'finished' && state.screen === 'finished') launchConfetti();
-        render();
-      }
-    }
-
-    function broadcastPayload(payload, retain = false) {
-      if (state.role === 'host' && state.mqttClient && state.roomCode) {
-        state.mqttClient.publish(`majlis_ku_v17/room/${state.roomCode}/state`, JSON.stringify(payload), { qos: retain ? 1 : 0, retain });
-      }
-    }
-
-    function syncAllPlayers() {
-      if (state.role !== 'host') return;
-      const qObj = state.questions[state.qIndex];
-      broadcastPayload({
-        type: 'SYNC', screen: state.screen, countdownVal: state.countdownVal,
-        players: state.players.map(p => ({
-          id: p.id, name: p.name, score: p.score,
-          lastGain: state.revealAnswer ? p.lastGain : 0, streak: p.streak,
-          hasAnswered: false, currentAnswer: state.revealAnswer ? p.currentAnswer : null
-        })),
-        currentQuestion: qObj ? { q: qObj.q, opts: qObj.opts, ans: state.revealAnswer ? qObj.ans : null } : null,
-        totalQuestions: state.questions.length, qIndex: state.qIndex,
-        timeLeft: state.timeLeft, questionDuration: state.questionDuration,
-        revealAnswer: state.revealAnswer, revealCountdown: state.revealCountdown,
-        comedyResult: state.comedyResult
-      }, true);
-    }
-
-    async function hostStartCompetition() {
-      if (state.generatingAI) return;
-      requestScreenWakeLock();
-      state.generatingAI = true; render();
-
-      const generated = await generateAIQuestions(state.selectedTopics, state.customTopicText.trim(), state.questionLimit, state.difficulty);
-      state.generatingAI = false;
-      if (!generated?.length) return render();
-
-      state.questions = generated; state.qIndex = 0;
-      state.players.forEach(p => Object.assign(p, { score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null }));
-      runPreGameCountdown();
-    }
-
-    function runPreGameCountdown() {
-      clearInterval(state.timerInterval); clearInterval(state.revealInterval);
-      Object.assign(state, { screen: 'countdown', countdownVal: 10 });
-      syncAllPlayers(); render(); playTone('tick');
-
-      state.timerInterval = setInterval(() => {
-        state.countdownVal--;
-        if (state.countdownVal <= 0) {
-          clearInterval(state.timerInterval);
-          state.screen = 'playing';
-          beginQuestionCountdown();
-        } else { playTone('tick'); syncAllPlayers(); render(); }
-      }, 1000);
-    }
-
-    function beginQuestionCountdown() {
-      clearInterval(state.timerInterval); clearInterval(state.revealInterval);
-      Object.assign(state, { timeLeft: state.questionDuration, revealAnswer: false });
-      state.players.forEach(p => Object.assign(p, { hasAnswered: false, currentAnswer: null, answerTime: 0, lastGain: 0 }));
-      syncAllPlayers(); render();
-
-      state.timerInterval = setInterval(() => {
-        state.timeLeft--;
-        if (state.timeLeft <= 3 && state.timeLeft > 0) playTone('tick');
-        if (state.timeLeft <= 0) revealQuestionResult();
-        else {
-          updateTimerUIOnly();
-          if (state.role === 'host') broadcastPayload({ type: 'TIMER_TICK', timeLeft: state.timeLeft }, false);
-        }
-      }, 1000);
-    }
-
-    function submitPlayerAnswer(optIdx) {
-      const me = state.players.find(p => p.id === state.myId);
-      if (!me || state.revealAnswer) return;
-      Object.assign(me, { currentAnswer: optIdx, hasAnswered: true, answerTime: state.timeLeft });
-      render();
-      if (state.role === 'player' && state.mqttClient && state.roomCode) {
-        state.mqttClient.publish(`majlis_ku_v17/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
-      }
-    }
-
-    function revealQuestionResult() {
-      clearInterval(state.timerInterval); clearInterval(state.revealInterval);
-      Object.assign(state, { revealAnswer: true, revealCountdown: 5 });
-      const qObj = state.questions[state.qIndex];
-
-      state.players.forEach(p => {
-        if (p.currentAnswer === qObj.ans) {
-          p.streak = (p.streak || 0) + 1;
-          p.lastGain = 100 + Math.round((p.answerTime / state.questionDuration) * 60) + (p.streak >= 2 ? 25 : 0);
-          p.score += p.lastGain;
-        } else { p.streak = 0; p.lastGain = 0; }
-      });
-
-      const me = state.players.find(p => p.id === state.myId);
-      playTone(me && me.currentAnswer === qObj.ans ? 'correct' : 'wrong');
-      syncAllPlayers(); render();
-
-      if (state.role === 'host') {
-        state.revealInterval = setInterval(() => {
-          state.revealCountdown--;
-          if (state.revealCountdown <= 0) { clearInterval(state.revealInterval); advanceToNextQuestion(); }
-          else { updateRevealCountdownUIOnly(); broadcastPayload({ type: 'REVEAL_TICK', revealCountdown: state.revealCountdown }, false); }
-        }, 1000);
-      }
-    }
-
-    async function advanceToNextQuestion() {
-      clearInterval(state.revealInterval);
-      if (state.qIndex + 1 < state.questions.length) {
-        state.qIndex++; beginQuestionCountdown();
-      } else {
-        state.generatingComedy = true; render();
-        state.comedyResult = await generateAIComedyCommentary();
-        Object.assign(state, { generatingComedy: false, screen: 'finished' });
-        launchConfetti(); syncAllPlayers(); render();
-      }
-    }
-
-    async function regenerateComedyNow() {
-      state.generatingComedy = true; render();
-      state.comedyResult = await generateAIComedyCommentary();
-      state.generatingComedy = false;
-      syncAllPlayers(); render();
-    }
-
-    function openKeySetupModal() {
-      toggleModal('settingsModal', false);
-      document.getElementById('masterKeyInput').value = state.masterKey;
-      document.getElementById('keyCheckStatus').textContent = '';
-      toggleModal('keySetupModal', true);
-    }
-
-    async function saveAndTestMasterKey() {
-      const cleanVal = extractCleanKey(document.getElementById('masterKeyInput').value);
-      const statusEl = document.getElementById('keyCheckStatus');
-      const btn = document.getElementById('saveKeyBtn');
-      state.masterKey = cleanVal;
-      localStorage.setItem(KEYS.API, cleanVal);
-
-      if (!cleanVal) { toggleModal('keySetupModal', false); return showToast('✅ کلیل لابرا'); }
-
-      btn.disabled = true;
-      statusEl.style.color = 'var(--amber)';
-      statusEl.textContent = '⏳ خەریکی پشکنینی کلیلەکەیە...';
-
-      try {
-        await requestWithSingleKey(cleanVal, 'Say OK');
-        statusEl.style.color = 'var(--emerald)';
-        statusEl.textContent = '✅ کلیلەکەت ١٠٠٪ کارایە و خەزن کرا!';
-        setTimeout(() => { btn.disabled = false; toggleModal('keySetupModal', false); showToast('✅ کلیلەکەت چالاکە!'); }, 1000);
-      } catch (e) {
-        btn.disabled = false;
-        statusEl.style.color = 'var(--danger)';
-        statusEl.textContent = '⚠️ ئەم کلیلە کار ناکات، تکایە کلیلێکی نوێ دروست بکە!';
-      }
-    }
-
-    function openCustomQModal() {
-      toggleModal('settingsModal', false);
-      document.getElementById('customQStatus').textContent = `کۆی پرسیارە تایبەتەکانت: ${customQuestions.length} پرسیار`;
-      toggleModal('customQModal', true);
-    }
-
-    function saveCustomQuestion() {
-      const ids = ['cqText', 'cqOpt0', 'cqOpt1', 'cqOpt2', 'cqOpt3'];
-      const [q, o0, o1, o2, o3] = ids.map(id => document.getElementById(id).value.trim());
-      if (!q || !o0 || !o1 || !o2 || !o3) return showToast('⚠️ تکایە پرسیارەکە و هەر ٤ هەڵبژاردەکە پڕ بکەرەوە!');
-
-      const opts = [o0, o1, o2, o3].sort(() => Math.random() - 0.5);
-      customQuestions.push({ q, opts, ans: opts.indexOf(o0) });
-      localStorage.setItem(KEYS.CUSTOM, JSON.stringify(customQuestions));
-      ids.forEach(id => document.getElementById(id).value = '');
-      document.getElementById('customQStatus').textContent = `✅ زیادکرا! کۆی پرسیارە تایبەتەکانت: ${customQuestions.length}`;
-      if (!state.selectedTopics.includes('پرسیارەکانی خۆم (تایبەت)')) state.selectedTopics.push('پرسیارەکانی خۆم (تایبەت)');
-      state.customTopicText = '';
-    }
-
-    render();
-  </script>
-</body>
-</html>
+          <h3>👥 ئامادەبووانی نا
