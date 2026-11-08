@@ -4,272 +4,138 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>مەجلیس</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/mqtt@5.3.4/dist/mqtt.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
   <style>
     :root {
-      --bg-main: #18100a;
-      --bg-surface: rgba(38, 25, 16, 0.95);
-      --bg-card: rgba(58, 39, 25, 0.85);
-      --bg-elevated: #4a3220;
-      --border: rgba(212, 168, 125, 0.22);
-      --text: #fdfaf6;
-      --muted: #c7ad94;
-      --primary: #c88a4b;
-      --primary-dark: #9e652b;
-      --primary-glow: rgba(200, 138, 75, 0.35);
-      --accent: #e6b88a;
-      --emerald: #10b981;
-      --danger: #ef4444;
-      --amber: #f59e0b;
-      --radius: 20px;
+      --bg-main: #18100a; --bg-surface: rgba(38, 25, 16, 0.95); --bg-card: rgba(58, 39, 25, 0.85);
+      --bg-elevated: #4a3220; --border: rgba(212, 168, 125, 0.22); --text: #fdfaf6; --muted: #c7ad94;
+      --primary: #c88a4b; --primary-dark: #9e652b; --primary-glow: rgba(200, 138, 75, 0.35);
+      --accent: #e6b88a; --emerald: #10b981; --danger: #ef4444; --amber: #f59e0b; --radius: 20px;
     }
-
     body.light-mode {
-      --bg-main: #f6f0e8;
-      --bg-surface: rgba(255, 255, 255, 0.96);
-      --bg-card: #ede3d5;
-      --bg-elevated: #e2d4c1;
-      --border: rgba(110, 71, 35, 0.16);
-      --text: #291a0d;
-      --muted: #785a3f;
-      --primary: #8c5523;
-      --primary-dark: #663b14;
-      --primary-glow: rgba(140, 85, 35, 0.25);
-      --accent: #b07238;
+      --bg-main: #f6f0e8; --bg-surface: rgba(255, 255, 255, 0.96); --bg-card: #ede3d5;
+      --bg-elevated: #e2d4c1; --border: rgba(110, 71, 35, 0.16); --text: #291a0d; --muted: #785a3f;
+      --primary: #8c5523; --primary-dark: #663b14; --primary-glow: rgba(140, 85, 35, 0.25); --accent: #b07238;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
-
     body {
       background: var(--bg-main) radial-gradient(at 15% 10%, rgba(200, 138, 75, 0.16) 0px, transparent 50%) fixed;
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-      transition: background-color 0.3s, color 0.3s;
+      color: var(--text); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden;
     }
-
     #splashScreen {
       position: fixed; inset: 0; background: var(--bg-main); z-index: 9999;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-      animation: autoHideSplash 0.45s ease 1.8s forwards;
+      animation: autoHide 0.4s ease 1.5s forwards;
     }
-    @keyframes autoHideSplash { to { opacity: 0; visibility: hidden; pointer-events: none; } }
-
+    @keyframes autoHide { to { opacity: 0; visibility: hidden; pointer-events: none; } }
     .splash-logo {
-      width: 86px; height: 86px; border-radius: 26px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center;
-      font-size: 2.6rem; box-shadow: 0 14px 34px var(--primary-glow);
-      animation: pulseSplash 0.9s infinite alternate;
+      width: 84px; height: 84px; border-radius: 24px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 2.5rem;
     }
-    @keyframes pulseSplash { from { transform: scale(0.94); } to { transform: scale(1.06); } }
-    .splash-title { font-weight: 900; font-size: 2.3rem; color: var(--text); }
-
+    .splash-title { font-weight: 900; font-size: 2.2rem; color: var(--text); }
     header {
       padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-surface);
-      backdrop-filter: blur(14px); display: flex; justify-content: space-between; align-items: center;
-      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;
     }
     .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .brand-icon {
-      width: 38px; height: 38px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center;
-      font-size: 1.25rem; box-shadow: 0 4px 12px var(--primary-glow); color: #fff;
+      width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #fff;
     }
-    .brand-title { font-weight: 900; font-size: 1.28rem; }
+    .brand-title { font-weight: 900; font-size: 1.25rem; }
     .icon-pill {
       background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
-      padding: 8px 14px; border-radius: 50px; font-size: 0.82rem; font-weight: 800;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 50px; font-size: 0.82rem; font-weight: 800; cursor: pointer;
     }
-    .icon-pill:active { transform: scale(0.96); }
-
     main { max-width: 680px; width: 100%; margin: 0 auto; padding: 14px 12px 60px; flex: 1; }
     .card {
-      background: var(--bg-surface); backdrop-filter: blur(16px); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 18px 16px; margin-bottom: 14px;
-      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+      background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px 16px; margin-bottom: 14px; box-shadow: 0 12px 30px rgba(0,0,0,0.25);
     }
-
-    h2 { font-size: 1.2rem; font-weight: 900; margin-bottom: 4px; text-align: center; }
+    h2 { font-size: 1.18rem; font-weight: 900; margin-bottom: 4px; text-align: center; }
     p.sub { color: var(--muted); font-size: 0.82rem; text-align: center; margin-bottom: 14px; line-height: 1.5; }
-
     .welcome-tabs {
       display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 14px;
       background: var(--bg-card); padding: 5px; border-radius: 14px; border: 1px solid var(--border);
     }
-    .w-tab {
-      padding: 10px 8px; border-radius: 10px; border: none; background: transparent;
-      color: var(--muted); font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
-    }
-    .w-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; box-shadow: 0 4px 12px var(--primary-glow); }
-
+    .w-tab { padding: 10px 8px; border-radius: 10px; border: none; background: transparent; color: var(--muted); font-weight: 800; font-size: 0.85rem; cursor: pointer; }
+    .w-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
     .input {
       width: 100%; padding: 12px 14px; border-radius: 14px; border: 1.5px solid var(--border);
-      background: var(--bg-card); color: var(--text); font-size: 0.94rem; font-weight: 700;
-      margin-bottom: 12px; outline: none; text-align: center; transition: 0.2s;
+      background: var(--bg-card); color: var(--text); font-size: 0.94rem; font-weight: 700; margin-bottom: 12px; outline: none; text-align: center;
     }
     .input::placeholder { color: var(--muted); opacity: 0.8; }
     .input:focus, .input.custom-active { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
-
     .btn {
       width: 100%; padding: 13px 18px; border-radius: 14px; border: 1px solid var(--border);
       background: var(--bg-card); color: var(--text); font-size: 0.95rem; font-weight: 800;
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: transform 0.12s, box-shadow 0.2s; margin-bottom: 10px; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22);
+      margin-bottom: 10px; box-shadow: 0 4px 0 rgba(0,0,0,0.22); transition: 0.12s;
     }
-    .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.22); }
+    .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
     .btn:disabled { opacity: 0.55; pointer-events: none; }
-    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: 1px solid var(--accent); color: #fff; box-shadow: 0 4px 0 #593310, 0 8px 20px var(--primary-glow); }
-    .btn-emerald { background: linear-gradient(135deg, #059669, #10b981); border: none; color: #fff; box-shadow: 0 4px 0 #065f46; }
-
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: 1px solid var(--accent); color: #fff; }
+    .btn-emerald { background: linear-gradient(135deg, #059669, #10b981); border: none; color: #fff; }
     .section-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 12px; margin-bottom: 12px; }
     .section-tag {
-      display: inline-flex; align-items: center; gap: 6px; background: var(--bg-elevated);
-      border: 1px solid var(--border); padding: 4px 12px; border-radius: 50px;
-      font-size: 0.74rem; font-weight: 800; margin-bottom: 10px;
+      display: inline-block; background: var(--bg-elevated); border: 1px solid var(--border);
+      padding: 4px 12px; border-radius: 50px; font-size: 0.74rem; font-weight: 800; margin-bottom: 10px;
     }
-
     .vibe-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-    .vibe-card {
-      background: var(--bg-surface); border: 1.5px solid var(--border); border-radius: 12px;
-      padding: 8px 6px; text-align: center; cursor: pointer; transition: 0.18s;
-    }
-    .vibe-card .v-ico { font-size: 1.2rem; display: block; margin-bottom: 2px; }
-    .vibe-card strong { font-size: 0.76rem; display: block; }
-    .vibe-card small { font-size: 0.64rem; color: var(--muted); display: block; margin-top: 2px; }
-    .vibe-card.active { background: linear-gradient(145deg, var(--primary), var(--primary-dark)); border-color: #fff; box-shadow: 0 4px 12px var(--primary-glow); }
+    .vibe-card { background: var(--bg-surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 8px 6px; text-align: center; cursor: pointer; }
+    .vibe-card .v-ico { font-size: 1.2rem; display: block; }
+    .vibe-card strong { font-size: 0.75rem; display: block; }
+    .vibe-card small { font-size: 0.63rem; color: var(--muted); display: block; }
+    .vibe-card.active { background: linear-gradient(145deg, var(--primary), var(--primary-dark)); border-color: #fff; }
     .vibe-card.active strong, .vibe-card.active small { color: #fff; }
-
     .topic-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; justify-content: center; }
-    .topic-chip {
-      padding: 7px 12px; border-radius: 50px; border: 1.5px solid var(--border);
-      background: var(--bg-surface); color: var(--muted); font-size: 0.78rem; font-weight: 800; cursor: pointer;
-    }
-    .topic-chip.active { background: var(--primary); border-color: #fff; color: #fff; box-shadow: 0 3px 10px var(--primary-glow); }
-
+    .topic-chip { padding: 7px 12px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--bg-surface); color: var(--muted); font-size: 0.78rem; font-weight: 800; cursor: pointer; }
+    .topic-chip.active { background: var(--primary); border-color: #fff; color: #fff; }
     .settings-stack { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-    .setting-row-inline {
-      background: var(--bg-card); border: 1px solid var(--border); padding: 7px 10px;
-      border-radius: 13px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    }
+    .setting-row-inline { background: var(--bg-card); border: 1px solid var(--border); padding: 7px 10px; border-radius: 13px; display: flex; align-items: center; justify-content: space-between; }
     .setting-row-inline label { font-size: 0.76rem; font-weight: 800; color: var(--muted); }
     .seg-group { display: flex; gap: 5px; }
-    .seg-btn {
-      padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--bg-surface); color: var(--muted); font-size: 0.75rem; font-weight: 800; cursor: pointer;
-    }
+    .seg-btn { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--muted); font-size: 0.75rem; font-weight: 800; cursor: pointer; }
     .seg-btn.active { background: var(--primary); color: #fff; border-color: var(--accent); }
-
-    .qr-wrap {
-      background: #fff; padding: 12px; border-radius: 18px; width: fit-content;
-      margin: 8px auto 14px; box-shadow: 0 10px 26px rgba(0,0,0,0.3); border: 3px solid var(--primary);
-    }
+    .qr-wrap { background: #fff; padding: 12px; border-radius: 18px; width: fit-content; margin: 8px auto 14px; border: 3px solid var(--primary); }
     .pin-boxes { display: flex; justify-content: center; gap: 8px; margin: 6px 0 14px; direction: ltr; }
-    .pin-digit {
-      width: 48px; height: 54px; border-radius: 14px; background: var(--bg-card);
-      border: 2px solid var(--primary); font-size: 1.55rem; font-weight: 900;
-      display: flex; align-items: center; justify-content: center;
-    }
-
+    .pin-digit { width: 48px; height: 54px; border-radius: 14px; background: var(--bg-card); border: 2px solid var(--primary); font-size: 1.55rem; font-weight: 900; display: flex; align-items: center; justify-content: center; }
     .players-wrap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0; }
-    .p-badge {
-      background: var(--bg-card); border: 1.5px solid var(--primary); padding: 6px 13px;
-      border-radius: 50px; font-weight: 800; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .kick-btn {
-      background: rgba(239, 68, 68, 0.22); border: none; color: var(--danger);
-      width: 20px; height: 20px; border-radius: 50%; font-size: 0.7rem; cursor: pointer;
-    }
-
+    .p-badge { background: var(--bg-card); border: 1.5px solid var(--primary); padding: 6px 13px; border-radius: 50px; font-weight: 800; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 6px; }
+    .kick-btn { background: rgba(239,68,68,0.22); border: none; color: var(--danger); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; }
     .quiz-top-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 800; font-size: 0.84rem; }
     .source-tag { font-size: 0.74rem; padding: 3px 10px; border-radius: 50px; background: var(--bg-card); border: 1px solid var(--border); color: var(--accent); }
     .timer-track { height: 10px; background: var(--bg-card); border-radius: 50px; overflow: hidden; margin-bottom: 14px; border: 1px solid var(--border); }
     .timer-fill { height: 100%; background: linear-gradient(90deg, var(--emerald), var(--primary), var(--danger)); transition: width 0.95s linear; }
-
-    .q-banner {
-      font-size: 1.12rem; font-weight: 900; text-align: center; padding: 18px 14px;
-      background: var(--bg-card); border-radius: 16px; border: 1.5px solid var(--border);
-      margin-bottom: 14px; line-height: 1.65;
-    }
+    .q-banner { font-size: 1.12rem; font-weight: 900; text-align: center; padding: 18px 14px; background: var(--bg-card); border-radius: 16px; border: 1.5px solid var(--border); margin-bottom: 14px; line-height: 1.65; }
     .opts-list { display: grid; gap: 10px; }
-    .opt-card {
-      padding: 12px 14px; border-radius: 14px; border: 2px solid var(--border);
-      background: var(--bg-card); color: var(--text); font-size: 0.94rem; font-weight: 800;
-      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-      gap: 10px; box-shadow: 0 3px 0 rgba(0,0,0,0.18);
-    }
+    .opt-card { padding: 12px 14px; border-radius: 14px; border: 2px solid var(--border); background: var(--bg-card); color: var(--text); font-size: 0.94rem; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     .opt-right { display: flex; align-items: center; gap: 10px; text-align: right; }
-    .opt-num {
-      width: 30px; height: 30px; border-radius: 9px; background: var(--bg-surface);
-      border: 1px solid var(--border); color: var(--primary); display: inline-flex;
-      align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem; flex-shrink: 0;
-    }
+    .opt-num { width: 30px; height: 30px; border-radius: 9px; background: var(--bg-surface); border: 1px solid var(--border); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0; }
     .opt-card.selected { border-color: var(--primary); background: var(--bg-elevated); }
-    .opt-card.selected .opt-num { background: var(--primary); color: #fff; border-color: #fff; }
-    .opt-card.correct { border-color: var(--emerald); background: rgba(16, 185, 129, 0.28); }
+    .opt-card.selected .opt-num { background: var(--primary); color: #fff; }
+    .opt-card.correct { border-color: var(--emerald); background: rgba(16,185,129,0.28); }
     .opt-card.correct .opt-num { background: var(--emerald); color: #fff; }
-    .opt-card.wrong { border-color: var(--danger); background: rgba(239, 68, 68, 0.25); }
+    .opt-card.wrong { border-color: var(--danger); background: rgba(239,68,68,0.25); }
     .opt-card.wrong .opt-num { background: var(--danger); color: #fff; }
-
-    .gain-badge {
-      display: inline-block; background: rgba(16, 185, 129, 0.22); color: var(--emerald);
-      border: 1px solid var(--emerald); padding: 2px 8px; border-radius: 50px; font-size: 0.74rem; margin-right: 6px;
-    }
-    .next-auto-banner {
-      margin-top: 14px; padding: 10px 14px; border-radius: 12px; background: var(--bg-card);
-      border: 1px solid var(--primary); text-align: center; font-weight: 800; font-size: 0.85rem;
-    }
-
-    .leader-row {
-      display: flex; justify-content: space-between; align-items: center; padding: 11px 14px;
-      border-radius: 12px; background: var(--bg-card); border: 1px solid var(--border);
-      margin-bottom: 8px; font-weight: 800; font-size: 0.9rem;
-    }
-    .leader-row.first { background: linear-gradient(90deg, rgba(200, 138, 75, 0.28), var(--bg-card)); border-color: var(--primary); }
-
+    .gain-badge { background: rgba(16,185,129,0.22); color: var(--emerald); border: 1px solid var(--emerald); padding: 2px 8px; border-radius: 50px; font-size: 0.74rem; margin-right: 6px; }
+    .next-auto-banner { margin-top: 14px; padding: 10px; border-radius: 12px; background: var(--bg-card); border: 1px solid var(--primary); text-align: center; font-weight: 800; font-size: 0.85rem; }
+    .leader-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; border-radius: 12px; background: var(--bg-card); border: 1px solid var(--border); margin-bottom: 8px; font-weight: 800; font-size: 0.9rem; }
+    .leader-row.first { background: linear-gradient(90deg, rgba(200,138,75,0.28), var(--bg-card)); border-color: var(--primary); }
     .comedy-grid { display: grid; gap: 12px; margin: 16px 0; text-align: right; }
     .comedy-card { padding: 15px; border-radius: 16px; line-height: 1.7; font-size: 0.92rem; font-weight: 700; }
-    .comedy-card.winner-box { background: rgba(16, 185, 129, 0.14); border: 1.5px solid var(--emerald); }
-    .comedy-card.loser-box { background: rgba(200, 138, 75, 0.15); border: 1.5px solid var(--primary); }
-    .comedy-head { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 0.96rem; margin-bottom: 5px; }
-
+    .comedy-card.winner-box { background: rgba(16,185,129,0.14); border: 1.5px solid var(--emerald); }
+    .comedy-card.loser-box { background: rgba(200,138,75,0.15); border: 1.5px solid var(--primary); }
+    .comedy-head { font-weight: 900; font-size: 0.96rem; margin-bottom: 5px; }
     .countdown-overlay { text-align: center; padding: 46px 20px; }
-    .countdown-num { font-size: 4.8rem; font-weight: 900; color: var(--primary); animation: popIn 0.4s ease; }
-    @keyframes popIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-    .confetti-piece { position: fixed; top: -20px; width: 10px; height: 16px; z-index: 280; pointer-events: none; animation: fallDown 3.2s linear forwards; }
-    @keyframes fallDown { to { transform: translateY(105vh) rotate(720deg); opacity: 0; } }
-
-    .toast-msg {
-      position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-      background: var(--bg-surface); border: 1.5px solid var(--primary); color: var(--text);
-      padding: 10px 18px; border-radius: 50px; font-size: 0.82rem; font-weight: 800;
-      z-index: 400; box-shadow: 0 10px 25px rgba(0,0,0,0.4); animation: popIn 0.25s ease; text-align: center; max-width: 90vw;
-    }
-
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(6px);
-      display: none; align-items: center; justify-content: center; z-index: 250; padding: 14px;
-    }
+    .countdown-num { font-size: 4.8rem; font-weight: 900; color: var(--primary); }
+    .toast-msg { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: var(--bg-surface); border: 1.5px solid var(--primary); color: var(--text); padding: 10px 18px; border-radius: 50px; font-size: 0.82rem; font-weight: 800; z-index: 400; text-align: center; max-width: 90vw; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.78); display: none; align-items: center; justify-content: center; z-index: 250; padding: 14px; }
     .modal-backdrop.open { display: flex; }
-    .modal-box {
-      background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius);
-      max-width: 480px; width: 100%; padding: 20px; max-height: 88vh; overflow-y: auto;
-    }
-
-    .spinner {
-      width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff;
-      border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;
-    }
+    .modal-box { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); max-width: 480px; width: 100%; padding: 20px; }
+    .spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 400px) { .vibe-grid { grid-template-columns: repeat(2, 1fr); } }
   </style>
@@ -294,40 +160,35 @@
   <div class="modal-backdrop" id="settingsModal">
     <div class="modal-box">
       <h3 style="margin-bottom:14px; text-align:center;">⚙️ دەستکاری و ڕێکخستن</h3>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <button class="btn" onclick="toggleThemeMode()">🌓 گۆڕینی دۆخی قاوەیی تۆخ / سپی</button>
-        <button class="btn" onclick="toggleSound()" id="soundBtnLabel">🔊 دەنگی یاری: چالاکە</button>
-        <button class="btn" onclick="openCustomQModal()">✍️ زیادکردنی پرسیاری تایبەت</button>
-        <button class="btn" onclick="openKeySetupModal()">🔑 دانان و پشکنینی کلیلی OpenRouter</button>
-        <button class="btn" onclick="clearAskedHistory(); toggleModal('settingsModal', false);">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
-      </div>
-      <button class="btn btn-primary" style="margin-top:12px; margin-bottom:0;" onclick="toggleModal('settingsModal', false)">داخستن</button>
+      <button class="btn" onclick="toggleThemeMode()">🌓 گۆڕینی دۆخی قاوەیی تۆخ / سپی</button>
+      <button class="btn" onclick="toggleSound()" id="soundBtnLabel">🔊 دەنگی یاری: چالاکە</button>
+      <button class="btn" onclick="openCustomQModal()">✍️ زیادکردنی پرسیاری تایبەت</button>
+      <button class="btn" onclick="openKeySetupModal()">🔑 دانانی کلیل</button>
+      <button class="btn" onclick="clearAskedHistory(); toggleModal('settingsModal', false);">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
+      <button class="btn btn-primary" style="margin-bottom:0;" onclick="toggleModal('settingsModal', false)">داخستن</button>
     </div>
   </div>
 
   <div class="modal-backdrop" id="keySetupModal">
     <div class="modal-box">
-      <h3 style="margin-bottom:8px; text-align:center;">🔑 کلیلی OpenRouter</h3>
-      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px; text-align:center; line-height:1.6;">
-        کلیلە خۆڕاییەکەی <strong>OpenRouter</strong> لێرە دابنێ کە بە (<strong>sk-or-v1-...</strong>) دەست پێ دەکات:
+      <h3 style="margin-bottom:8px; text-align:center;">🔑 دانانی کلیلی تایبەت</h3>
+      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px; text-align:center;">
+        کلیلەکەت لێرە دابنێ (<strong>AQ.Ab8...</strong> یان <strong>AIzaSy...</strong>):
       </p>
-      <input type="text" id="masterKeyInput" class="input" dir="ltr" placeholder="sk-or-v1-..." />
+      <input type="text" id="masterKeyInput" class="input" dir="ltr" placeholder="AQ.Ab8... / AIzaSy..." />
       <div id="keyCheckStatus" style="font-size:0.8rem; text-align:center; margin-bottom:10px; font-weight:800;"></div>
       <div style="display:flex; gap:8px;">
         <button class="btn" onclick="toggleModal('keySetupModal', false)">داخستن</button>
-        <button class="btn btn-primary" id="saveKeyBtn" onclick="saveAndTestMasterKey()">💾 خەزنکردن و پشکنین</button>
+        <button class="btn btn-primary" id="saveKeyBtn" onclick="saveAndTestMasterKey()">💾 خەزنکردن</button>
       </div>
     </div>
   </div>
 
   <div class="modal-backdrop" id="customQModal">
     <div class="modal-box">
-      <h3 style="margin-bottom:8px;">✍️ زیادکردنی پرسیاری تایبەتی خۆت</h3>
-      <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">
-        پرسیار لەسەر هاوڕێکانت یان هەر بابەتێک بنووسە بۆ ئەوەی لە بەشی (پرسیارەکانی خۆم) یاری پێ بکەن:
-      </p>
-      <input type="text" id="cqText" class="input" placeholder="دەقی پرسیارەکە بنووسە..." style="text-align:right;" />
-      <input type="text" id="cqOpt0" class="input" placeholder="وەڵامی ڕاست لێرە بنووسە ✅" style="text-align:right; border-color:var(--emerald);" />
+      <h3 style="margin-bottom:8px;">✍️ زیادکردنی پرسیاری تایبەت</h3>
+      <input type="text" id="cqText" class="input" placeholder="دەقی پرسیارەکە..." style="text-align:right;" />
+      <input type="text" id="cqOpt0" class="input" placeholder="وەڵامی ڕاست ✅" style="text-align:right; border-color:var(--emerald);" />
       <input type="text" id="cqOpt1" class="input" placeholder="هەڵبژاردەی هەڵەی ١" style="text-align:right;" />
       <input type="text" id="cqOpt2" class="input" placeholder="هەڵبژاردەی هەڵەی ٢" style="text-align:right;" />
       <input type="text" id="cqOpt3" class="input" placeholder="هەڵبژاردەی هەڵەی ٣" style="text-align:right;" />
@@ -340,57 +201,36 @@
   </div>
 
   <script>
-    const KEYS = {
-      API: 'MAJLIS_OPENROUTER_KEY',
-      SEEN: 'MAJLIS_SEEN_HISTORY',
-      CUSTOM: 'MAJLIS_CUSTOM_QUESTIONS',
-      NAME: 'MAJLIS_PLAYER_NAME',
-      ID: 'MAJLIS_PLAYER_ID',
-      THEME: 'MAJLIS_THEME_MODE'
-    };
+    const KEYS = { API: 'MAJLIS_MASTER_KEY', SEEN: 'MAJLIS_SEEN_HISTORY', CUSTOM: 'MAJLIS_CUSTOM_QUESTIONS', NAME: 'MAJLIS_PLAYER_NAME', ID: 'MAJLIS_PLAYER_ID', THEME: 'MAJLIS_THEME_MODE' };
+    function safeGetJSON(k, def) { try { return JSON.parse(localStorage.getItem(k)) || def; } catch (e) { return def; } }
 
     if (localStorage.getItem(KEYS.THEME) === 'light') document.body.classList.add('light-mode');
-    setTimeout(() => document.getElementById('splashScreen')?.remove(), 2200);
-
-    let wakeLock = null;
-    async function requestScreenWakeLock() {
-      try {
-        if ('wakeLock' in navigator && !wakeLock) {
-          wakeLock = await navigator.wakeLock.request('screen');
-          wakeLock.addEventListener('release', () => { wakeLock = null; });
-        }
-      } catch (e) {}
-    }
+    setTimeout(() => document.getElementById('splashScreen')?.remove(), 1800);
 
     function extractCleanKey(raw) {
       if (!raw) return '';
-      const str = String(raw).trim();
-      const m = str.match(/(?:sk-or-v1-|sk-or-|AIza)[A-Za-z0-9_-]{20,}/);
-      return m ? m[0] : str.replace(/['"\s]/g, '');
+      const s = String(raw).trim();
+      const m = s.match(/(?:AQ\.|AIza|sk-or-)[A-Za-z0-9_-]{20,}/);
+      return m ? m[0] : s.replace(/['"\s]/g, '');
     }
 
-    let persistentId = localStorage.getItem(KEYS.ID);
-    if (!persistentId) {
-      persistentId = 'U_' + Math.random().toString(36).substring(2, 10);
-      localStorage.setItem(KEYS.ID, persistentId);
-    }
-
-    let customQuestions = JSON.parse(localStorage.getItem(KEYS.CUSTOM) || '[]');
-    let seenQuestions = JSON.parse(localStorage.getItem(KEYS.SEEN) || '[]');
+    let persistentId = localStorage.getItem(KEYS.ID) || ('U_' + Math.random().toString(36).substring(2, 9));
+    localStorage.setItem(KEYS.ID, persistentId);
+    let customQuestions = safeGetJSON(KEYS.CUSTOM, []);
+    let seenQuestions = safeGetJSON(KEYS.SEEN, []);
 
     function normalizeDigits(str) {
-      if (!str) return '';
       const map = {'٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9','۰':'0','۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','۸':'8','۹':'9'};
-      return String(str).replace(/[٠-٩۰-۹]/g, d => map[d] || d).trim().toUpperCase();
+      return String(str || '').replace(/[٠-٩۰-۹]/g, d => map[d] || d).trim();
     }
 
     const QUESTION_VIBES = [
-      { id: 'friends', icon: '☕', title: 'دانیشتنی هاوڕێیان', desc: 'گەنجانە و گەعدە', comedyHint: 'بە شێوازی دانیشتنی گەنجانە و هاوڕێیانە و کافتریا و دەعوەتکردن' },
-      { id: 'camping', icon: '🏕️', title: 'گەشت و کامپینگ', desc: 'سەیران و سروشت', comedyHint: 'بە شێوازی کەشی کامپینگ و سەیران و چادر هەڵدان و چای سەر خەڵووز و قاپ شۆردن لە دەشت' },
-      { id: 'family', icon: '👨‍👩‍👧‍👦', title: 'دانیشتنی خێزانی', desc: 'کەلتووری و خێزانی', comedyHint: 'بە شێوازی دانیشتنی خێزانیی کوردەواری و شیرینی خواردن و میوانداری' },
-      { id: 'academic', icon: '🎓', title: 'زانکۆ و ڕۆشنبیری', desc: 'ئەکادیمی و خوێندکاری', comedyHint: 'بە شێوازی خوێندکارانی زانکۆ و تاقیکردنەوە و دەرچوون و کەوتن (عبور)' },
-      { id: 'funny', icon: '😂', title: 'کۆمیدی', desc: 'تەنز و پێکەنین', comedyHint: 'بە شێوازێکی زۆر کۆمیدی و پێکەنیناوی و نوکتەئامێز' },
-      { id: 'challenge', icon: '🔥', title: 'تەحەدای بلیمەتەکان', desc: 'کێبڕکێی توند', comedyHint: 'بە شێوازی تەحەدای پاڵەوانان و بلیمەتەکان' }
+      { id: 'friends', icon: '☕', title: 'دانیشتنی هاوڕێیان', desc: 'گەنجانە و گەعدە', hint: 'دانیشتنی گەنجانە و کافتریا' },
+      { id: 'camping', icon: '🏕️', title: 'گەشت و کامپینگ', desc: 'سەیران و سروشت', hint: 'کەشی سەیران و چای سەر خەڵووز' },
+      { id: 'family', icon: '👨‍👩‍👧‍👦', title: 'دانیشتنی خێزانی', desc: 'کەلتووری و خێزانی', hint: 'دانیشتنی خێزانیی کوردەواری' },
+      { id: 'academic', icon: '🎓', title: 'زانکۆ و ڕۆشنبیری', desc: 'ئەکادیمی و خوێندکاری', hint: 'خوێندکارانی زانکۆ و تاقیکردنەوە' },
+      { id: 'funny', icon: '😂', title: 'کۆمیدی', desc: 'تەنز و پێکەنین', hint: 'شێوازێکی زۆر کۆمیدی و نوکتەئامێز' },
+      { id: 'challenge', icon: '🔥', title: 'تەحەدای بلیمەتەکان', desc: 'کێبڕکێی توند', hint: 'تەحەدای پاڵەوانان و بلیمەتەکان' }
     ];
 
     const PRESET_TOPICS = [
@@ -399,64 +239,28 @@
       'زانیاری ئایینی و قورئان', 'پرسیارەکانی خۆم (تایبەت)'
     ];
 
-    const CREATIVE_ANGLES = [
-      'زانیارییە دەگمەن و سەرنجڕاکێشەکان', 'نموونەی کرداری و ڕووداوە مێژووییەکان',
-      'وردەکارییە زانستی و پیشەییەکان', 'ژمارە پێوانەییەکان و یەکەمەکان لە مێژوودا',
-      'چەمکە سەرەکییەکان و پرسیاری بیرکردنەوە', 'کەسایەتییە کاریگەرەکان و یاسا بنەڕەتییەکان'
-    ];
-
-    // لیستی مۆدێلە خۆڕاییەکانی OpenRouter (ئەگەر یەکێکیان سەرقاڵ بێت خۆکارانە دەچێتە سەر دانەی دواتر)
-    const OPENROUTER_FREE_MODELS = [
-      'openrouter/free',
-      'google/gemini-2.0-flash-exp:free',
-      'meta-llama/llama-3.3-70b-instruct:free',
-      'deepseek/deepseek-chat-v3-0324:free',
-      'qwen/qwen-2.5-72b-instruct:free'
-    ];
-
     let state = {
-      welcomeTab: 'host', role: null, screen: 'welcome',
-      myId: persistentId, myName: localStorage.getItem(KEYS.NAME) || '',
-      masterKey: extractCleanKey(localStorage.getItem(KEYS.API) || localStorage.getItem('MAJLIS_MASTER_KEY') || ''),
-      roomCode: '', selectedVibeIds: ['friends'], selectedTopics: [PRESET_TOPICS[0]],
-      customTopicText: '', difficulty: 'مامناوەند', questionLimit: 6, questionDuration: 15,
-      soundOn: true, generatingAI: false, generatingComedy: false, connecting: false,
-      countdownVal: 10, revealCountdown: 5, timerInterval: null, revealInterval: null,
-      mqttClient: null, players: [], questions: [], qIndex: 0, timeLeft: 15,
-      revealAnswer: false, comedyResult: { winnerJoke: '', loserJoke: '' }
+      welcomeTab: 'host', role: null, screen: 'welcome', myId: persistentId,
+      myName: localStorage.getItem(KEYS.NAME) || '', masterKey: extractCleanKey(localStorage.getItem(KEYS.API) || ''),
+      roomCode: '', selectedVibeIds: ['friends'], selectedTopics: [PRESET_TOPICS[0]], customTopicText: '',
+      difficulty: 'مامناوەند', questionLimit: 6, questionDuration: 15, soundOn: true,
+      generatingAI: false, generatingComedy: false, connecting: false, countdownVal: 10, revealCountdown: 5,
+      timerInterval: null, revealInterval: null, mqttClient: null, players: [], questions: [],
+      qIndex: 0, timeLeft: 15, revealAnswer: false, comedyResult: { winnerJoke: '', loserJoke: '' }
     };
 
     const urlRoom = new URLSearchParams(window.location.search).get('room');
     if (urlRoom) {
       state.roomCode = normalizeDigits(urlRoom);
       state.welcomeTab = 'join';
-      setTimeout(() => { if (state.myName.trim() && state.screen === 'welcome') joinHostRoom(); }, 2100);
+      setTimeout(() => { if (state.myName.trim() && state.screen === 'welcome') joinHostRoom(); }, 1900);
     }
 
-    function toggleModal(id, show) {
-      document.getElementById(id)?.classList.toggle('open', show);
-    }
-
+    function toggleModal(id, show) { document.getElementById(id)?.classList.toggle('open', show); }
     function showToast(msg) {
       document.querySelector('.toast-msg')?.remove();
-      const t = document.createElement('div');
-      t.className = 'toast-msg';
-      t.textContent = msg;
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 3500);
-    }
-
-    function launchConfetti() {
-      const colors = ['#c88a4b', '#e6b88a', '#10b981', '#f59e0b', '#ffffff'];
-      for (let i = 0; i < 40; i++) {
-        const c = document.createElement('div');
-        c.className = 'confetti-piece';
-        c.style.left = Math.random() * 100 + 'vw';
-        c.style.backgroundColor = colors[i % colors.length];
-        c.style.animationDuration = (2 + Math.random() * 2) + 's';
-        document.body.appendChild(c);
-        setTimeout(() => c.remove(), 4000);
-      }
+      const t = document.createElement('div'); t.className = 'toast-msg'; t.textContent = msg;
+      document.body.appendChild(t); setTimeout(() => t.remove(), 3500);
     }
 
     let audioCtx = null;
@@ -465,34 +269,18 @@
       try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
         osc.connect(gain); gain.connect(audioCtx.destination);
         const now = audioCtx.currentTime;
-        if (type === 'correct') {
-          osc.frequency.setValueAtTime(523.25, now);
-          osc.frequency.setValueAtTime(659.25, now + 0.1);
-          osc.frequency.setValueAtTime(783.99, now + 0.2);
-          gain.gain.setValueAtTime(0.14, now);
-          osc.start(); osc.stop(now + 0.32);
-        } else if (type === 'wrong') {
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(200, now);
-          osc.frequency.setValueAtTime(150, now + 0.15);
-          gain.gain.setValueAtTime(0.14, now);
-          osc.start(); osc.stop(now + 0.3);
-        } else {
-          osc.frequency.setValueAtTime(800, now);
-          gain.gain.setValueAtTime(0.04, now);
-          osc.start(); osc.stop(now + 0.05);
-        }
+        osc.frequency.setValueAtTime(type === 'correct' ? 650 : (type === 'wrong' ? 180 : 800), now);
+        gain.gain.setValueAtTime(type === 'tick' ? 0.04 : 0.12, now);
+        osc.start(); osc.stop(now + (type === 'tick' ? 0.05 : 0.25));
       } catch (e) {}
     }
 
     function toggleThemeMode() {
       const isLight = document.body.classList.toggle('light-mode');
       localStorage.setItem(KEYS.THEME, isLight ? 'light' : 'dark');
-      showToast(isLight ? '☀️ دۆخی سپی و قاوەیی چالاک کرا' : '☕ دۆخی قاوەیی تۆخ چالاک کرا');
     }
 
     function toggleSound() {
@@ -503,351 +291,18 @@
     function markQuestionSeen(qText) {
       if (!seenQuestions.includes(qText)) {
         seenQuestions.push(qText);
-        if (seenQuestions.length > 500) seenQuestions.shift();
+        if (seenQuestions.length > 400) seenQuestions.shift();
         try { localStorage.setItem(KEYS.SEEN, JSON.stringify(seenQuestions)); } catch (e) {}
       }
     }
 
-    function clearAskedHistory() {
-      seenQuestions = [];
-      localStorage.removeItem(KEYS.SEEN);
-      showToast('✅ مێژووی پرسیارە کراوەکان سفر کرایەوە!');
-    }
+    function clearAskedHistory() { seenQuestions = []; localStorage.removeItem(KEYS.SEEN); showToast('✅ مێژووی پرسیارەکان سفر کرایەوە!'); }
 
     function toggleMultiSelect(arr, item) {
-      const idx = arr.indexOf(item);
-      if (idx > -1) { if (arr.length > 1) arr.splice(idx, 1); }
-      else arr.push(item);
+      const i = arr.indexOf(item);
+      if (i > -1) { if (arr.length > 1) arr.splice(i, 1); } else arr.push(item);
       render();
     }
 
-    function handleTopicChipClick(topic) {
-      state.customTopicText = '';
-      toggleMultiSelect(state.selectedTopics, topic);
-    }
-
-    function handleCustomTopicInput(val) {
-      state.customTopicText = val;
-      const hasVal = val.trim().length > 0;
-      document.querySelectorAll('.topic-chip').forEach(c => hasVal && c.classList.remove('active'));
-      document.getElementById('customTopicInp')?.classList.toggle('custom-active', hasVal);
-      if (!hasVal) render();
-    }
-
-    const getActiveTopicsSummary = () => state.customTopicText.trim() || state.selectedTopics.join(' + ');
-    const getActiveVibesObjects = () => {
-      const list = QUESTION_VIBES.filter(v => state.selectedVibeIds.includes(v.id));
-      return list.length ? list : [QUESTION_VIBES[0]];
-    };
-
-    function fetchWithTimeout(url, options, timeoutMs = 15000) {
-      return Promise.race([
-        fetch(url, options),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), timeoutMs))
-      ]);
-    }
-
-    function parseFlexibleQuestions(rawText, count) {
-      if (!rawText) return null;
-      const text = String(rawText).replace(/```json|```/gi, '').trim();
-      let items = [];
-      try {
-        const s = text.indexOf('['), e = text.lastIndexOf(']');
-        if (s !== -1 && e !== -1) items = JSON.parse(text.substring(s, e + 1));
-      } catch (_) {
-        items = (text.match(/\{[\s\S]*?"(?:q|question)"[\s\S]*?\}/g) || []).map(m => { try { return JSON.parse(m); } catch (e) { return null; } });
-      }
-      if (!Array.isArray(items)) return null;
-
-      const cleaned = [];
-      for (const item of items) {
-        if (!item || typeof item !== 'object') continue;
-        const qText = String(item.q || item.question || item.text || '').trim();
-        const rawOpts = item.opts || item.options || item.choices || item.answers;
-        if (!qText || !Array.isArray(rawOpts) || rawOpts.length < 4) continue;
-        const opts = rawOpts.slice(0, 4).map(o => String(o).trim());
-        const rawAns = item.ans ?? item.answer ?? item.correct ?? 0;
-        let ansIdx = typeof rawAns === 'number' && rawAns >= 0 && rawAns < 4 ? rawAns : (opts.indexOf(String(rawAns).trim()) !== -1 ? opts.indexOf(String(rawAns).trim()) : (parseInt(rawAns, 10) || 0));
-        if (ansIdx < 0 || ansIdx > 3) ansIdx = 0;
-
-        const correctText = opts[ansIdx];
-        const shuffledOpts = [...opts].sort(() => Math.random() - 0.5);
-        markQuestionSeen(qText);
-        cleaned.push({ q: qText, opts: shuffledOpts, ans: shuffledOpts.indexOf(correctText) });
-      }
-      return cleaned.length ? cleaned.slice(0, count) : null;
-    }
-
-    function parseFlexibleComedy(rawText) {
-      if (!rawText) return null;
-      try {
-        const text = String(rawText).replace(/```json|```/gi, '').trim();
-        const s = text.indexOf('{'), e = text.lastIndexOf('}');
-        if (s === -1 || e === -1) return null;
-        const obj = JSON.parse(text.substring(s, e + 1));
-        return (obj && obj.winnerJoke && obj.loserJoke) ? obj : null;
-      } catch (e) { return null; }
-    }
-
-    // ناردنی داواکاری لە ڕێگەی OpenRouter (لەگەڵ گۆڕینی خۆکاری مۆدێلە خۆڕاییەکان)
-    async function requestOpenRouter(key, prompt) {
-      if (!key) throw new Error('تکایە سەرەتا کلیلەکەت دابنێ');
-
-      let lastErr = 'کێشە لە پەیوەندی';
-      for (const model of OPENROUTER_FREE_MODELS) {
-        try {
-          const r = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${key}`,
-              'HTTP-Referer': window.location.origin || 'https://majlis.app',
-              'X-Title': 'Majlis Quiz'
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: [
-                { role: 'system', content: 'You are an expert Kurdish Sorani quiz generator. Respond ONLY with valid raw JSON.' },
-                { role: 'user', content: prompt }
-              ],
-              temperature: 0.9
-            })
-          }, 15000);
-
-          if (r.status === 401) {
-            throw new Error('کلیلەکە هەڵەیە یان نادروستە (401)');
-          }
-
-          if (r.ok) {
-            const d = await r.json();
-            const content = d?.choices?.[0]?.message?.content || '';
-            if (content && content.trim().length > 0) return content;
-          } else {
-            const errBody = await r.json().catch(() => ({}));
-            lastErr = errBody?.error?.message || `HTTP ${r.status}`;
-          }
-        } catch (e) {
-          if (e.message && e.message.includes('401')) throw e;
-          lastErr = e.message || 'هەڵەی تۆڕ';
-        }
-      }
-      throw new Error(lastErr);
-    }
-
-    async function generateAIQuestions(topicsList, customTopic, count, difficulty) {
-      const effectiveTopic = customTopic || topicsList.join(' و ');
-      if (!customTopic && topicsList.length === 1 && topicsList[0] === 'پرسیارەکانی خۆم (تایبەت)') {
-        if (!customQuestions.length) return showToast('⚠️ هیچ پرسیارێکی تایبەتت زیاد نەکردووە!'), null;
-        return [...customQuestions].sort(() => Math.random() - 0.5).slice(0, count);
-      }
-
-      if (!state.masterKey) {
-        showToast('🔑 تکایە سەرەتا کلیلی OpenRouter دابنێ');
-        openKeySetupModal();
-        return null;
-      }
-
-      const seed = Math.floor(Math.random() * 9999999);
-      const angle = CREATIVE_ANGLES[seed % CREATIVE_ANGLES.length];
-      const avoid = seenQuestions.slice(-30).join(' | ');
-
-      const prompt = `تۆ پسپۆڕی دروستکردنی پرسیاری پێشبڕکێیت بە زمانی کوردیی سۆرانیی پاراو.
-تکایە رێک ${count} پرسیاری هەڵبژاردن (٤ هەڵبژاردەیی) تەنها لەسەر ئەم بابەتە دروست بکە: "${effectiveTopic}".
-- ئاستی قورسی: "${difficulty}" | گۆشەنیگا: (${angle}) | کۆدی هەڕەمەکی: ${seed}.
-- هەرگیز ئەم پرسیارانەی پێشوو دووبارە مەکەرەوە: [${avoid}].
-تەنها JSON Array بنێرەوە بێ هیچ قسەیەکی زیادە بەم فۆرماتە:
-[{"q":"دەقی پرسیار؟","opts":["هەڵبژاردەی ١","هەڵبژاردەی ٢","هەڵبژاردەی ٣","هەڵبژاردەی ٤"],"ans":0}]`;
-
-      try {
-        const rawText = await requestOpenRouter(state.masterKey, prompt);
-        const parsed = parseFlexibleQuestions(rawText, count);
-        if (parsed?.length) return parsed;
-        showToast('⚠️ دووبارە پەنجە بنێ بە دەستپێکردن بۆ وەرگرتنی پرسیار');
-        return null;
-      } catch (e) {
-        showToast(`⚠️ ${e.message}`);
-        return null;
-      }
-    }
-
-    async function generateAIComedyCommentary() {
-      const sorted = [...state.players].sort((a, b) => b.score - a.score);
-      const winner = sorted[0] || { name: 'پاڵەوان', score: 0 };
-      const losers = sorted.slice(1);
-      const loserNames = state.players.length > 1 ? losers.map(p => p.name).join(' و ') : 'ئەوانی تر';
-      const vibes = getActiveVibesObjects();
-      const vibeTitles = vibes.map(v => v.title).join(' و ');
-      const vibeHints = vibes.map(v => v.comedyHint).join(' + ');
-      const seed = Math.floor(Math.random() * 9999999);
-
-      const prompt = `تۆ پێشکەشکارێکی کۆمیدیی کوردیت لە یاریی "مەجلیس". شێوازی دانیشتنەکە: "${vibeTitles}" (${vibeHints}).
-براوەی یەکەم: "${winner.name}" (${winner.score} خاڵ). دۆڕاوەکان: "${loserNames}".
-دوو ڕستەی زۆر کۆمیدی و نوێ بە کوردیی سۆرانی بنووسە (ژمارە: ${seed}):
-- winnerJoke: پیرۆزبایی و پیاهەڵدانێکی کۆمیدی بۆ براوەکە (${winner.name}).
-- loserJoke: قسەیەکی خۆش و سزایەکی کۆمیدی بۆ دۆڕاوەکان (${loserNames}).
-تەنها JSON بنێرە: {"winnerJoke":"...","loserJoke":"..."}`;
-
-      try {
-        const raw = await requestOpenRouter(state.masterKey, prompt);
-        const parsed = parseFlexibleComedy(raw);
-        if (parsed) return parsed;
-      } catch (e) {}
-
-      return {
-        winnerJoke: `بژی ${winner.name}! بەم زیرەکییەت سەلماندت کە سەردەستەی ئەم مەجلیسەیت!`,
-        loserJoke: `بەداخەوە بۆ (${loserNames})! ئەمشەو چا لێنان و خزمەتکردنی مەجلیسەکە لەسەر ئێوەیە!`
-      };
-    }
-
-    function resetToHome() {
-      clearInterval(state.timerInterval);
-      clearInterval(state.revealInterval);
-      try { state.mqttClient?.end(true); } catch (e) {}
-      state.mqttClient = null;
-      window.history.replaceState({}, document.title, window.location.pathname);
-      Object.assign(state, { screen: 'welcome', role: null, connecting: false, generatingAI: false, players: [], questions: [] });
-      render();
-    }
-
-    function updateTimerUIOnly() {
-      const lbl = document.getElementById('liveTimeLabel');
-      const fill = document.getElementById('liveTimeFill');
-      if (lbl) lbl.textContent = `⏱️ ${state.timeLeft} چرکە`;
-      if (fill) fill.style.width = `${Math.max(0, (state.timeLeft / state.questionDuration) * 100)}%`;
-    }
-
-    function updateRevealCountdownUIOnly() {
-      const el = document.getElementById('autoNextBanner');
-      if (el) el.textContent = state.qIndex + 1 < state.questions.length
-        ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکەی تر دەست پێ دەکات...`
-        : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکەی تر پیشان دەدرێت...`;
-    }
-
-    function renderPinDigits(code) {
-      return `<div class="pin-boxes">${String(code || '0000').split('').map(d => `<div class="pin-digit">${d}</div>`).join('')}</div>`;
-    }
-
-    function render() {
-      const box = document.getElementById('appContainer');
-      if (!box) return;
-      const views = {
-        welcome: renderWelcomeScreen,
-        lobby: renderLobbyScreen,
-        countdown: renderCountdownScreen,
-        playing: renderPlayingScreen,
-        finished: renderFinishedScreen
-      };
-      box.innerHTML = (views[state.screen] || renderWelcomeScreen)();
-      if (state.screen === 'lobby' && state.role === 'host') setTimeout(drawQRCode, 50);
-    }
-
-    function renderWelcomeScreen() {
-      const tabsHtml = `
-        <div class="welcome-tabs">
-          <button class="w-tab ${state.welcomeTab === 'host' ? 'active' : ''}" onclick="state.welcomeTab='host'; render();">👑 دروستکردنی مەجلیس</button>
-          <button class="w-tab ${state.welcomeTab === 'join' ? 'active' : ''}" onclick="state.welcomeTab='join'; render();">📲 چوونە ژوورەوە</button>
-        </div>`;
-
-      if (state.welcomeTab === 'join') {
-        return `
-          <div class="card">
-            ${tabsHtml}
-            <h2>📲 پەیوەستبوون بە مەجلیس</h2>
-            <p class="sub">ناوی خۆت و کۆدی ٤ ژمارەیی ژوورەکە بنووسە:</p>
-            <input type="text" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value; localStorage.setItem(KEYS.NAME, this.value);" />
-            <input type="text" class="input" inputmode="numeric" placeholder="کۆدی ژوور (بۆ نموونە: 4829)" value="${state.roomCode}" oninput="state.roomCode=normalizeDigits(this.value);" style="letter-spacing:3px; direction:ltr;" />
-            <button class="btn btn-primary" ${state.connecting ? 'disabled' : ''} onclick="joinHostRoom()">
-              ${state.connecting ? '<span class="spinner"></span> خەریکی پەیوەستبوونە...' : '🔗 چوونە ناو یارییەکە'}
-            </button>
-          </div>`;
-      }
-
-      const hasCustomTopic = state.customTopicText.trim().length > 0;
-      return `
-        <div class="card">
-          ${tabsHtml}
-          <h2>👑 دروستکردنی مەجلیس</h2>
-          <p class="sub">کەشی دانیشتن و بابەتەکان هەڵبژێرە و پێشبڕکێ لەگەڵ هاوڕێکانت دەست پێ بکە</p>
-          <input type="text" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value; localStorage.setItem(KEYS.NAME, this.value);" />
-          
-          <div class="section-box">
-            <div style="text-align:center;"><span class="section-tag">🎭 ١. شێوازی دانیشتنەکە هەڵبژێرە</span></div>
-            <div class="vibe-grid">
-              ${QUESTION_VIBES.map(v => `
-                <div class="vibe-card ${state.selectedVibeIds.includes(v.id) ? 'active' : ''}" onclick="toggleMultiSelect(state.selectedVibeIds, '${v.id}')">
-                  <span class="v-ico">${v.icon}</span><strong>${v.title}</strong><small>${v.desc}</small>
-                </div>`).join('')}
-            </div>
-          </div>
-
-          <div class="section-box">
-            <div style="text-align:center;"><span class="section-tag">📚 ٢. بابەتی پرسیارەکان دیاری بکە</span></div>
-            <div class="topic-chips">
-              ${PRESET_TOPICS.map(t => `
-                <button class="topic-chip ${!hasCustomTopic && state.selectedTopics.includes(t) ? 'active' : ''}" onclick="handleTopicChipClick('${t}')">
-                  ${t === 'پرسیارەکانی خۆم (تایبەت)' ? `✍️ پرسیارەکانی خۆم (${customQuestions.length})` : t}
-                </button>`).join('')}
-            </div>
-            <input type="text" id="customTopicInp" class="input ${hasCustomTopic ? 'custom-active' : ''}" style="margin-bottom:0; font-size:0.84rem;"
-                   placeholder="✍️ یان هەر بابەتێکی دڵخواز لێرە بنووسە..." value="${state.customTopicText}" oninput="handleCustomTopicInput(this.value)" />
-          </div>
-
-          <div class="settings-stack">
-            <div class="setting-row-inline">
-              <label>ژمارەی پرسیار:</label>
-              <div class="seg-group">
-                ${[6, 8, 10, 14].map(n => `<button class="seg-btn ${state.questionLimit === n ? 'active' : ''}" onclick="state.questionLimit=${n}; render();">${n}</button>`).join('')}
-              </div>
-            </div>
-            <div class="setting-row-inline">
-              <label>ئاستی قورسی:</label>
-              <div class="seg-group">
-                ${[{val:'ئاسان',lbl:'ئاسان'},{val:'مامناوەند',lbl:'مامناوەند'},{val:'قورس و زیرەکانە',lbl:'قورس'}].map(d => `<button class="seg-btn ${state.difficulty === d.val ? 'active' : ''}" onclick="state.difficulty='${d.val}'; render();">${d.lbl}</button>`).join('')}
-              </div>
-            </div>
-            <div class="setting-row-inline">
-              <label>کاتی وەڵام:</label>
-              <div class="seg-group">
-                ${[12, 15, 25].map(t => `<button class="seg-btn ${state.questionDuration === t ? 'active' : ''}" onclick="state.questionDuration=${t}; render();">${t} چرکە</button>`).join('')}
-              </div>
-            </div>
-          </div>
-
-          <button class="btn btn-primary" ${state.connecting ? 'disabled' : ''} onclick="startHostRoom()">
-            ${state.connecting ? '<span class="spinner"></span> خەریکی دروستکردنی ژوورە...' : '🚀 دروستکردنی مەجلیس و بارکۆد'}
-          </button>
-        </div>`;
-    }
-
-    function renderLobbyScreen() {
-      const joinUrl = `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`;
-      const vibeTitles = getActiveVibesObjects().map(v => `${v.icon} ${v.title}`).join(' + ');
-      const playersChips = state.players.map(p => `
-        <div class="p-badge">
-          <span>👤 ${p.name}</span>
-          ${state.role === 'host' && p.id !== state.myId ? `<button class="kick-btn" onclick="kickPlayer('${p.id}')">✕</button>` : ''}
-        </div>`).join('');
-
-      if (state.role !== 'host') {
-        return `
-          <div class="card" style="text-align:center;">
-            <h2>✅ تۆ لە ناو مەجلیسەکەدایت!</h2>
-            <p class="sub">چاوەڕێ بکە تا سەرپەرشتیاری ژوورەکە پێشبڕکێکە دەست پێ دەکات...</p>
-            ${renderPinDigits(state.roomCode)}
-            <h3>👥 هاوڕێیانی ئامادەبوو (${state.players.length}):</h3>
-            <div class="players-wrap">${playersChips}</div>
-          </div>`;
-      }
-
-      return `
-        <div class="card" style="text-align:center;">
-          <h2>📱 بارکۆدی هاتنەژوورەوەی هاوڕێیان</h2>
-          <p class="sub">کەش: <strong style="color:var(--accent);">${vibeTitles}</strong> • بابەت: <strong style="color:var(--primary);">${getActiveTopicsSummary()}</strong></p>
-          <div class="qr-wrap" id="qrcode"></div>
-          <div style="font-size:0.78rem; color:var(--muted);">کۆدی ژوور:</div>
-          ${renderPinDigits(state.roomCode)}
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-            <button class="btn" onclick="copyInvite('${joinUrl}')">📋 کۆپیکردنی لینک</button>
-            <button class="btn btn-emerald" onclick="shareInviteNative('${joinUrl}')">📤 بانگهێشتکردنی هاوڕێیان</button>
-          </div>
-          <h3>👥 ئامادەبووانی نا
+    function handleTopicChipClick(t) { state.customTopicText = ''; toggleMultiSelect(state.selectedTopics, t); }
+    function
