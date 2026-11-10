@@ -21,13 +21,11 @@
       --text-card: #fdfaf6;
       --muted-main: #6e5239;
       --muted-card: #e2cfb8;
-      --primary: #422611;
-      --primary-dark: #291608;
       --accent: #c88a4b;
       --emerald: #10b981;
       --danger: #ef4444;
       --amber: #f59e0b;
-      --radius: 20px;
+      --radius: 18px;
     }
 
     body.dark-mode {
@@ -40,8 +38,6 @@
       --text-card: #291a0d;
       --muted-main: #c7ad94;
       --muted-card: #6e5239;
-      --primary: #c88a4b;
-      --primary-dark: #9e652b;
       --accent: #8c5523;
     }
 
@@ -73,32 +69,32 @@
       align-items: center;
       justify-content: center;
       gap: 14px;
-      animation: autoHideSplash 0.45s ease 1.8s forwards;
+      animation: autoHideSplash 0.4s ease 1.7s forwards;
     }
     @keyframes autoHideSplash {
       to { opacity: 0; visibility: hidden; pointer-events: none; }
     }
 
     .splash-logo {
-      width: 86px;
-      height: 86px;
-      border-radius: 26px;
+      width: 82px;
+      height: 82px;
+      border-radius: 24px;
       background: var(--bg-card);
       color: var(--text-card);
       border: 2px solid var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.6rem;
+      font-size: 2.5rem;
     }
     .splash-title {
       font-weight: 900;
-      font-size: 2.3rem;
+      font-size: 2.2rem;
       color: var(--text-main);
     }
 
     header {
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-bottom: 1.5px solid var(--border);
       background: var(--bg-surface);
       display: flex;
@@ -115,27 +111,27 @@
       cursor: pointer;
     }
     .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       background: var(--bg-card);
       color: var(--text-card);
       border: 1px solid var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
     }
     .brand-title {
       font-weight: 900;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       color: var(--text-main);
     }
 
     .menu-lines-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
       background: var(--bg-card);
       border: 1.5px solid var(--border);
       display: flex;
@@ -148,8 +144,8 @@
     }
     .menu-lines-btn span {
       display: block;
-      width: 22px;
-      height: 3px;
+      width: 20px;
+      height: 2.8px;
       background-color: var(--text-card);
       border-radius: 3px;
     }
@@ -158,10 +154,10 @@
     }
 
     main {
-      max-width: 680px;
+      max-width: 640px;
       width: 100%;
       margin: 0 auto;
-      padding: 14px 12px 60px;
+      padding: 12px 12px 50px;
       flex: 1;
     }
 
@@ -169,12 +165,12 @@
       background: var(--bg-surface);
       border: 1.5px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px 16px;
-      margin-bottom: 14px;
+      padding: 16px 14px;
+      margin-bottom: 12px;
     }
 
     h2 {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 900;
       margin-bottom: 4px;
       text-align: center;
@@ -182,30 +178,30 @@
     }
     p.sub {
       color: var(--muted-main);
-      font-size: 0.84rem;
+      font-size: 0.8rem;
       text-align: center;
-      margin-bottom: 14px;
-      line-height: 1.5;
+      margin-bottom: 12px;
+      line-height: 1.45;
       font-weight: 600;
     }
 
     .welcome-tabs {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 5px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       background: var(--bg-card);
       padding: 5px;
-      border-radius: 14px;
+      border-radius: 13px;
     }
     .w-tab {
-      padding: 10px 4px;
-      border-radius: 10px;
+      padding: 9px 6px;
+      border-radius: 9px;
       border: none;
       background: transparent;
       color: var(--muted-card);
       font-weight: 800;
-      font-size: 0.76rem;
+      font-size: 0.82rem;
       cursor: pointer;
       text-align: center;
     }
@@ -214,16 +210,49 @@
       color: var(--text-main);
     }
 
+    .host-top-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: stretch;
+    }
+    .host-top-row .input {
+      margin-bottom: 0;
+      flex: 1;
+    }
+    .proj-toggle-btn {
+      padding: 0 13px;
+      border-radius: 13px;
+      border: 2px solid var(--border);
+      background: var(--bg-card);
+      color: var(--muted-card);
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .proj-toggle-btn.active {
+      background: var(--bg-main);
+      color: var(--text-main);
+      border-color: var(--accent);
+      width: 100%;
+      padding: 11px 14px;
+    }
+
     .input {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 14px;
+      padding: 11px 13px;
+      border-radius: 13px;
       border: 2px solid var(--border);
       background: var(--bg-card);
       color: var(--text-card);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 800;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       outline: none;
       text-align: center;
     }
@@ -237,19 +266,19 @@
 
     .btn {
       width: 100%;
-      padding: 13px 18px;
-      border-radius: 14px;
+      padding: 12px 16px;
+      border-radius: 13px;
       border: 1.5px solid var(--border);
       background: var(--bg-card);
       color: var(--text-card);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .btn:active:not(:disabled) {
       transform: translateY(2px);
@@ -273,150 +302,95 @@
       background: var(--bg-card);
       color: var(--text-card);
       border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-    .section-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--bg-elevated);
-      color: var(--text-card);
-      padding: 4px 12px;
-      border-radius: 50px;
-      font-size: 0.76rem;
-      font-weight: 800;
+      border-radius: 14px;
+      padding: 10px;
       margin-bottom: 10px;
     }
-
-    .vibe-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 7px;
-    }
-    .vibe-card {
-      background: var(--bg-elevated);
-      border: 2px solid transparent;
-      border-radius: 12px;
-      padding: 8px 6px;
-      text-align: center;
-      cursor: pointer;
-      color: var(--text-card);
-    }
-    .vibe-card .v-ico {
-      font-size: 1.25rem;
-      display: block;
-      margin-bottom: 2px;
-    }
-    .vibe-card strong {
-      font-size: 0.76rem;
-      display: block;
-      color: var(--text-card);
-    }
-    .vibe-card small {
-      font-size: 0.64rem;
+    .section-label {
+      font-size: 0.74rem;
+      font-weight: 800;
       color: var(--muted-card);
-      display: block;
-      margin-top: 2px;
-    }
-    .vibe-card.active {
-      background: var(--bg-main);
-      color: var(--text-main);
-      border-color: var(--accent);
-    }
-    .vibe-card.active strong,
-    .vibe-card.active small {
-      color: var(--text-main);
+      text-align: center;
+      margin-bottom: 7px;
     }
 
-    .topic-chips {
+    .chips-wrap {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       justify-content: center;
     }
-    .topic-chip {
-      padding: 7px 12px;
+    .chip-btn {
+      padding: 6px 11px;
       border-radius: 50px;
       border: 1.5px solid transparent;
       background: var(--bg-elevated);
       color: var(--text-card);
-      font-size: 0.78rem;
+      font-size: 0.77rem;
       font-weight: 800;
       cursor: pointer;
     }
-    .topic-chip.active {
+    .chip-btn.active {
       background: var(--bg-main);
       color: var(--text-main);
       border-color: var(--accent);
     }
 
-    .settings-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 14px;
+    .cycle-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-bottom: 12px;
     }
-    .setting-row-inline {
+    .cycle-btn {
       background: var(--bg-card);
       color: var(--text-card);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .setting-row-inline label {
-      font-size: 0.78rem;
-      font-weight: 800;
-      color: var(--text-card);
-    }
-    .seg-group {
-      display: flex;
-      gap: 5px;
-    }
-    .seg-btn {
-      padding: 5px 10px;
-      border-radius: 8px;
-      border: 1.5px solid transparent;
-      background: var(--bg-elevated);
-      color: var(--text-card);
-      font-size: 0.75rem;
-      font-weight: 800;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 6px;
+      text-align: center;
       cursor: pointer;
     }
-    .seg-btn.active {
-      background: var(--bg-main);
-      color: var(--text-main);
-      border-color: var(--accent);
+    .cycle-btn:active {
+      transform: scale(0.96);
+    }
+    .cycle-btn small {
+      display: block;
+      font-size: 0.66rem;
+      color: var(--muted-card);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .cycle-btn strong {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 900;
+      color: var(--text-card);
     }
 
     .qr-wrap {
       background: #fff;
-      padding: 12px;
-      border-radius: 18px;
+      padding: 11px;
+      border-radius: 16px;
       width: fit-content;
-      margin: 8px auto 14px;
+      margin: 6px auto 12px;
       border: 3px solid var(--bg-card);
     }
     .pin-boxes {
       display: flex;
       justify-content: center;
       gap: 8px;
-      margin: 6px 0 14px;
+      margin: 4px 0 12px;
       direction: ltr;
     }
     .pin-digit {
-      width: 48px;
-      height: 54px;
-      border-radius: 14px;
+      width: 46px;
+      height: 52px;
+      border-radius: 12px;
       background: var(--bg-card);
       color: var(--text-card);
       border: 2px solid var(--accent);
-      font-size: 1.55rem;
+      font-size: 1.5rem;
       font-weight: 900;
       display: flex;
       align-items: center;
@@ -426,17 +400,17 @@
     .players-wrap {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 7px;
       justify-content: center;
-      margin: 10px 0;
+      margin: 8px 0;
     }
     .p-badge {
       background: var(--bg-card);
       color: var(--text-card);
-      padding: 6px 13px;
+      padding: 5px 12px;
       border-radius: 50px;
       font-weight: 800;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -445,10 +419,10 @@
       background: var(--danger);
       border: none;
       color: #fff;
-      width: 20px;
-      height: 20px;
+      width: 19px;
+      height: 19px;
       border-radius: 50%;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       cursor: pointer;
     }
 
@@ -456,23 +430,23 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
       font-weight: 800;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
     }
     .source-tag {
-      font-size: 0.74rem;
-      padding: 4px 10px;
+      font-size: 0.72rem;
+      padding: 3px 9px;
       border-radius: 50px;
       background: var(--bg-card);
       color: var(--text-card);
     }
     .timer-track {
-      height: 10px;
+      height: 9px;
       background: var(--bg-card);
       border-radius: 50px;
       overflow: hidden;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .timer-fill {
       height: 100%;
@@ -481,27 +455,27 @@
     }
 
     .q-banner {
-      font-size: 1.12rem;
+      font-size: 1.08rem;
       font-weight: 900;
       text-align: center;
-      padding: 18px 14px;
+      padding: 16px 12px;
       background: var(--bg-card);
       color: var(--text-card);
-      border-radius: 16px;
-      margin-bottom: 14px;
-      line-height: 1.65;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      line-height: 1.6;
     }
     .opts-list {
       display: grid;
-      gap: 10px;
+      gap: 9px;
     }
     .opt-card {
-      padding: 13px 14px;
-      border-radius: 14px;
+      padding: 12px 13px;
+      border-radius: 13px;
       border: 2.5px solid transparent;
       background: var(--bg-card);
       color: var(--text-card);
-      font-size: 0.94rem;
+      font-size: 0.92rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -512,20 +486,20 @@
     .opt-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       text-align: right;
     }
     .opt-num {
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
       background: var(--bg-main);
       color: var(--text-main);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       font-weight: 900;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       flex-shrink: 0;
     }
     .opt-card.selected {
@@ -547,34 +521,34 @@
       display: inline-block;
       background: #10b981;
       color: #fff;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 50px;
-      font-size: 0.74rem;
-      margin-right: 6px;
+      font-size: 0.72rem;
+      margin-right: 5px;
     }
     .next-auto-banner {
-      margin-top: 14px;
-      padding: 10px 14px;
-      border-radius: 12px;
+      margin-top: 12px;
+      padding: 9px 12px;
+      border-radius: 11px;
       background: var(--bg-card);
       color: var(--text-card);
       text-align: center;
       font-weight: 800;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
     }
 
     .leader-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 11px 14px;
-      border-radius: 12px;
+      padding: 10px 12px;
+      border-radius: 11px;
       background: var(--bg-card);
       color: var(--text-card);
-      margin-bottom: 8px;
+      margin-bottom: 7px;
       font-weight: 800;
-      font-size: 0.9rem;
-      gap: 8px;
+      font-size: 0.86rem;
+      gap: 6px;
       flex-wrap: wrap;
     }
     .leader-row.first {
@@ -582,25 +556,25 @@
     }
     .vibe-rank-tag {
       display: inline-block;
-      font-size: 0.72rem;
-      padding: 2px 8px;
+      font-size: 0.7rem;
+      padding: 2px 7px;
       border-radius: 50px;
       background: var(--bg-elevated);
       color: var(--text-card);
-      margin-right: 6px;
+      margin-right: 5px;
     }
 
     .comedy-grid {
       display: grid;
-      gap: 12px;
-      margin: 16px 0;
+      gap: 10px;
+      margin: 12px 0;
       text-align: right;
     }
     .comedy-card {
-      padding: 15px;
-      border-radius: 16px;
-      line-height: 1.7;
-      font-size: 0.92rem;
+      padding: 12px 14px;
+      border-radius: 14px;
+      line-height: 1.6;
+      font-size: 0.88rem;
       font-weight: 700;
       background: var(--bg-card);
       color: var(--text-card);
@@ -613,38 +587,51 @@
     }
     .comedy-card.task-box {
       border: 2px dashed var(--amber);
-      text-align: center;
     }
     .comedy-head {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
       font-weight: 900;
-      font-size: 0.96rem;
-      margin-bottom: 5px;
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+    .mini-icon-btn {
+      background: var(--bg-elevated);
+      color: var(--text-card);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .mini-icon-btn:active {
+      transform: scale(0.92);
     }
 
     .countdown-overlay {
       text-align: center;
-      padding: 46px 20px;
+      padding: 40px 16px;
     }
     .countdown-num {
-      font-size: 4.8rem;
+      font-size: 4.5rem;
       font-weight: 900;
       color: var(--text-main);
     }
 
     .toast-msg {
       position: fixed;
-      top: 70px;
+      top: 64px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--bg-card);
       color: var(--text-card);
       border: 2px solid var(--accent);
-      padding: 10px 18px;
+      padding: 9px 16px;
       border-radius: 50px;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       font-weight: 800;
       z-index: 400;
       text-align: center;
@@ -668,9 +655,9 @@
       background: var(--bg-surface);
       border: 2px solid var(--border);
       border-radius: var(--radius);
-      max-width: 480px;
+      max-width: 460px;
       width: 100%;
-      padding: 20px;
+      padding: 18px;
       max-height: 88vh;
       overflow-y: auto;
       color: var(--text-main);
@@ -684,9 +671,6 @@
       line-height: 1.9;
       margin: 12px 0;
       font-weight: 800;
-    }
-    @media (max-width: 400px) {
-      .vibe-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -709,15 +693,15 @@
 
   <div class="modal-backdrop" id="settingsModal">
     <div class="modal-box">
-      <h3 style="margin-bottom:14px; text-align:center;">لیستی سەرەکی</h3>
-      <div style="display:flex; flex-direction:column; gap:8px;">
+      <h3 style="margin-bottom:12px; text-align:center;">لیستی سەرەکی</h3>
+      <div style="display:flex; flex-direction:column; gap:7px;">
         <button class="btn" onclick="toggleThemeMode()">🌓 گۆڕینی دۆخی ڕۆژ (شیری) / شەو (قاوەیی)</button>
         <button class="btn" onclick="toggleSound()" id="soundBtnLabel">🔊 دەنگی یاری: چالاکە</button>
         <button class="btn" onclick="openCustomQModal()">✍️ زیادکردنی پرسیاری تایبەت</button>
         <button class="btn" onclick="clearAskedHistory(); toggleModal('settingsModal', false);">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
         <button class="btn" onclick="openAboutModal()">ℹ️ دەربارە</button>
       </div>
-      <button class="btn btn-primary" style="margin-top:12px; margin-bottom:0;" onclick="toggleModal('settingsModal', false)">داخستن</button>
+      <button class="btn btn-primary" style="margin-top:10px; margin-bottom:0;" onclick="toggleModal('settingsModal', false)">داخستن</button>
     </div>
   </div>
 
@@ -734,14 +718,14 @@
 
   <div class="modal-backdrop" id="customQModal">
     <div class="modal-box">
-      <h3 style="margin-bottom:8px;">✍️ زیادکردنی پرسیاری تایبەتی خۆت</h3>
-      <p style="font-size:0.8rem; color:var(--muted-main); margin-bottom:10px;">پرسیار لەسەر هاوڕێکانت بنووسە بۆ ئەوەی لە بەشی (پرسیارەکانی خۆم) یاری پێ بکەن:</p>
+      <h3 style="margin-bottom:6px;">✍️ زیادکردنی پرسیاری تایبەتی خۆت</h3>
+      <p style="font-size:0.78rem; color:var(--muted-main); margin-bottom:10px;">پرسیار لەسەر هاوڕێکانت بنووسە بۆ ئەوەی لە بەشی (پرسیارەکانی خۆم) یاری پێ بکەن:</p>
       <input type="text" id="cqText" class="input" placeholder="دەقی پرسیارەکە بنووسە..." style="text-align:right;" />
       <input type="text" id="cqOpt0" class="input" placeholder="وەڵامی ڕاست ✅" style="text-align:right;" />
       <input type="text" id="cqOpt1" class="input" placeholder="هەڵبژاردەی هەڵەی ١" style="text-align:right;" />
       <input type="text" id="cqOpt2" class="input" placeholder="هەڵبژاردەی هەڵەی ٢" style="text-align:right;" />
       <input type="text" id="cqOpt3" class="input" placeholder="هەڵبژاردەی هەڵەی ٣" style="text-align:right;" />
-      <div id="customQStatus" style="font-size:0.8rem; color:var(--emerald); text-align:center; margin-bottom:8px; font-weight:800;"></div>
+      <div id="customQStatus" style="font-size:0.78rem; color:var(--emerald); text-align:center; margin-bottom:8px; font-weight:800;"></div>
       <div style="display:flex; gap:8px;">
         <button class="btn" onclick="toggleModal('customQModal', false); render();">داخستن</button>
         <button class="btn btn-primary" onclick="saveCustomQuestion()">➕ زیادکردن</button>
@@ -751,7 +735,7 @@
 
   <script>
     const KEYS = { SEEN: 'MAJLIS_SEEN_HISTORY', CUSTOM: 'MAJLIS_CUSTOM_QUESTIONS', NAME: 'MAJLIS_PLAYER_NAME', ID: 'MAJLIS_PLAYER_ID', THEME: 'MAJLIS_THEME_MODE' };
-    setTimeout(() => document.getElementById('splashScreen')?.remove(), 2000);
+    setTimeout(() => document.getElementById('splashScreen')?.remove(), 1900);
 
     let wakeLock = null;
     async function requestScreenWakeLock() {
@@ -776,11 +760,11 @@
     }
 
     const QUESTION_VIBES = [
-      { id: 'camping', icon: '⛺', title: 'چادرگە', desc: 'سەیران و دەوری ئاگر', spinBtnLabel: '🎯 تیروپشکی سزا و ئەرکی چادرگە' },
-      { id: 'qiyam', icon: '🌙', title: 'شەوبێداری', desc: 'مانگەشەو و کەشی ئیمانی', spinBtnLabel: '🎯 تیروپشکی ئەرکی شەوبێداری' },
-      { id: 'friends_funny', icon: '😂', title: 'هاوڕێیان و کۆمیدی', desc: 'گەعدە و قسەی خۆش', spinBtnLabel: '🎯 تیروپشکی سزای کۆمیدیی هاوڕێیان' },
-      { id: 'formal', icon: '💼', title: 'دانیشتنە فەرمییەکان', desc: 'کۆبوونەوە و دیوان', spinBtnLabel: '🎯 تیروپشکی ئەرکی دیوانی فەرمی' },
-      { id: 'family', icon: '👨‍👩‍👧‍👦', title: 'دانیشتنی خێزانی', desc: 'دیوەخان و خێزان', spinBtnLabel: '🎯 تیروپشکی خزمەتی مەجلیس' }
+      { id: 'camping', icon: '⛺', title: 'چادرگە' },
+      { id: 'friends_funny', icon: '😂', title: 'هاوڕێیان' },
+      { id: 'qiyam', icon: '🌙', title: 'شەوبێداری' },
+      { id: 'formal', icon: '💼', title: 'فەرمی' },
+      { id: 'family', icon: '👨‍👩‍👧‍👦', title: 'خێزانی' }
     ];
 
     const VIBE_RANK_TITLES = {
@@ -934,7 +918,7 @@
         ]
       }
     };
-        let state = {
+    let state = {
       welcomeTab: 'host',
       role: null,
       screen: 'welcome',
@@ -948,8 +932,8 @@
       questionDuration: 15,
       soundOn: true,
       connecting: false,
-      countdownVal: 10,
-      revealCountdown: 5,
+      countdownVal: 5,
+      revealCountdown: 4,
       timerInterval: null,
       revealInterval: null,
       mqttClient: null,
@@ -969,7 +953,7 @@
       state.welcomeTab = 'join';
       setTimeout(() => {
         if (state.myName.trim() && state.screen === 'welcome') joinHostRoom();
-      }, 2100);
+      }, 2000);
     }
 
     const getPrimaryVibeId = () => state.selectedVibeIds[0] || 'camping';
@@ -977,6 +961,29 @@
 
     function selectSingleVibe(vibeId) {
       state.selectedVibeIds = [vibeId];
+      render();
+    }
+
+    function toggleProjectorMode() {
+      state.isProjector = !state.isProjector;
+      render();
+    }
+
+    function cycleQuestionLimit() {
+      const limits = [6, 8, 10, 14];
+      state.questionLimit = limits[(limits.indexOf(state.questionLimit) + 1) % limits.length];
+      render();
+    }
+
+    function cycleDifficulty() {
+      const diffs = ['ئاسان', 'مامناوەند', 'قورس'];
+      state.difficulty = diffs[(diffs.indexOf(state.difficulty) + 1) % diffs.length];
+      render();
+    }
+
+    function cycleDuration() {
+      const durations = [12, 15, 25];
+      state.questionDuration = durations[(durations.indexOf(state.questionDuration) + 1) % durations.length];
       render();
     }
 
@@ -1011,7 +1018,7 @@
       document.querySelector('.toast-msg')?.remove();
       const t = Object.assign(document.createElement('div'), { className: 'toast-msg', textContent });
       document.body.appendChild(t);
-      setTimeout(() => t.remove(), 3500);
+      setTimeout(() => t.remove(), 3200);
     }
 
     let audioCtx = null;
@@ -1122,11 +1129,15 @@
       };
     }
 
-    function spinVibePenaltyTask() {
+    function generateTaskString() {
       const sorted = [...state.players].sort((a, b) => b.score - a.score);
       const targetPlayer = pickRand(sorted.length > 1 ? sorted.slice(1) : sorted);
       const bank = VIBE_COMEDY_BANK[getPrimaryVibeId()] || VIBE_COMEDY_BANK.friends_funny;
-      state.taskResult = `🎯 بۆ (${targetPlayer ? targetPlayer.name : 'دۆڕاو'}): ${pickRand(bank.tasks)}`;
+      return `بۆ (${targetPlayer ? targetPlayer.name : 'دۆڕاو'}): ${pickRand(bank.tasks)}`;
+    }
+
+    function spinVibePenaltyTask() {
+      state.taskResult = generateTaskString();
       playTone('correct');
       syncAllPlayers();
       render();
@@ -1138,8 +1149,13 @@
       try { state.mqttClient?.end(true); } catch (e) {}
       state.mqttClient = null;
       window.history.replaceState({}, document.title, window.location.pathname);
-      Object.assign(state, { screen: 'welcome', role: null, connecting: false, isProjector: false });
+      Object.assign(state, { screen: 'welcome', role: null, connecting: false });
       render();
+    }
+
+    function updateCountdownDOMOnly() {
+      const el = document.getElementById('preGameCountNum');
+      if (el) el.textContent = state.countdownVal;
     }
 
     function updateTimerUIOnly() {
@@ -1151,8 +1167,8 @@
     function updateRevealCountdownUIOnly() {
       const el = document.getElementById('autoNextBanner');
       if (el) el.textContent = state.qIndex + 1 < state.questions.length
-        ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکەی تر دەست پێ دەکات...`
-        : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکەی تر پیشان دەدرێت...`;
+        ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکە...`
+        : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکە...`;
     }
 
     function render() {
@@ -1180,9 +1196,8 @@
     function renderWelcomeScreen() {
       const tabsHtml = `
         <div class="welcome-tabs">
-          <button class="w-tab ${state.welcomeTab === 'host' ? 'active' : ''}" onclick="state.welcomeTab='host';state.isProjector=false;render();">👑 دروستکردنی مەجلیس</button>
-          <button class="w-tab ${state.welcomeTab === 'projector' ? 'active' : ''}" onclick="state.welcomeTab='projector';state.isProjector=true;render();">🖥️ دروستکردنی یاری</button>
-          <button class="w-tab ${state.welcomeTab === 'join' ? 'active' : ''}" onclick="state.welcomeTab='join';state.isProjector=false;render();">📲 چوونە ژوورەوە</button>
+          <button class="w-tab ${state.welcomeTab === 'host' ? 'active' : ''}" onclick="state.welcomeTab='host';render();">👑 دروستکردنی مەجلیس</button>
+          <button class="w-tab ${state.welcomeTab === 'join' ? 'active' : ''}" onclick="state.welcomeTab='join';render();">📲 چوونە ژوورەوە</button>
         </div>
       `;
 
@@ -1190,7 +1205,7 @@
         return `
           <div class="card">
             ${tabsHtml}
-            <h2>📲 پەیوەستبوون بە مەجلیسی هاوڕێکەت</h2>
+            <h2>📲 پەیوەستبوون بە مەجلیس</h2>
             <p class="sub">ناوی خۆت و کۆدی ژوورەکە بنووسە:</p>
             <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value;localStorage.setItem(KEYS.NAME,this.value);" />
             <input type="text" id="codeInp" class="input" inputmode="numeric" placeholder="کۆدی ٤ ژمارەیی ژوور (بۆ نموونە: 6549)" value="${state.roomCode}" oninput="state.roomCode=normalizeDigits(this.value);" style="letter-spacing:3px;direction:ltr;" />
@@ -1202,66 +1217,62 @@
       }
 
       const pVibe = getPrimaryVibeId();
-      const vibesCardsHtml = QUESTION_VIBES.map(v => `
-        <div class="vibe-card ${pVibe === v.id ? 'active' : ''}" onclick="selectSingleVibe('${v.id}')">
-          <span class="v-ico">${v.icon}</span>
-          <strong>${v.title}</strong>
-          <small>${v.desc}</small>
-        </div>
-      `).join('');
-
-      const topicChipsHtml = PRESET_TOPICS.map(t => `
-        <button class="topic-chip ${state.selectedTopics.includes(t) ? 'active' : ''}" onclick="handleTopicChipClick('${t}')">
-          ${t === 'پرسیارەکانی خۆم (تایبەت)' ? `✍️ پرسیارەکانی خۆم (${customQuestions.length})` : t}
+      const vibesChipsHtml = QUESTION_VIBES.map(v => `
+        <button class="chip-btn ${pVibe === v.id ? 'active' : ''}" onclick="selectSingleVibe('${v.id}')">
+          ${v.icon} ${v.title}
         </button>
       `).join('');
 
-      const settingsHtml = `
-        <div class="settings-stack">
-          <div class="setting-row-inline">
-            <label>ژمارەی پرسیار:</label>
-            <div class="seg-group">
-              ${[6, 8, 10, 14].map(n => `<button class="seg-btn ${state.questionLimit === n ? 'active' : ''}" onclick="state.questionLimit=${n};render();">${n}</button>`).join('')}
-            </div>
-          </div>
-          <div class="setting-row-inline">
-            <label>ئاستی پرسیارەکان:</label>
-            <div class="seg-group">
-              ${['ئاسان', 'مامناوەند', 'قورس'].map(d => `<button class="seg-btn ${state.difficulty === d ? 'active' : ''}" onclick="state.difficulty='${d}';render();">${d}</button>`).join('')}
-            </div>
-          </div>
-          <div class="setting-row-inline">
-            <label>کاتی وەڵام:</label>
-            <div class="seg-group">
-              ${[12, 15, 25].map(s => `<button class="seg-btn ${state.questionDuration === s ? 'active' : ''}" onclick="state.questionDuration=${s};render();">${s} چرکە</button>`).join('')}
-            </div>
-          </div>
+      const visibleTopics = PRESET_TOPICS.filter(t => t !== 'پرسیارەکانی خۆم (تایبەت)' || customQuestions.length > 0);
+      const topicChipsHtml = visibleTopics.map(t => `
+        <button class="chip-btn ${state.selectedTopics.includes(t) ? 'active' : ''}" onclick="handleTopicChipClick('${t}')">
+          ${t === 'پرسیارەکانی خۆم (تایبەت)' ? `✍️ پرسیاری خۆم (${customQuestions.length})` : t}
+        </button>
+      `).join('');
+
+      const topRowHtml = state.isProjector ? `
+        <div class="host-top-row">
+          <button class="proj-toggle-btn active" onclick="toggleProjectorMode()">🖥️ دۆخی داتاشۆ چالاکە (تۆ تەنها سەرپەرشتیاریت) ✕</button>
+        </div>
+      ` : `
+        <div class="host-top-row">
+          <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value;localStorage.setItem(KEYS.NAME,this.value);" />
+          <button class="proj-toggle-btn" onclick="toggleProjectorMode()" title="بۆ داتاشۆ بێ بەشداریکردنی خۆت">🖥️ داتاشۆ</button>
         </div>
       `;
-
-      const isProj = state.welcomeTab === 'projector';
 
       return `
         <div class="card">
           ${tabsHtml}
-          <h2>${isProj ? '🖥️ دروستکردنی یاری (بۆ داتاشۆ)' : '👑 دروستکردنی مەجلیس لەگەڵ هاوڕێیان'}</h2>
-          <p class="sub">${isProj ? 'تۆ تەنها سەرپەرشتیار و بینەر دەبیت لەسەر داتاشۆ، و هاوڕێکانت لە مۆبایلەکانیانەوە یاری دەکەن.' : 'کەشی دانیشتنەکە و بابەتەکان هەڵبژێرە و با دەست پێ بکەین!'}</p>
-          ${!isProj ? `<input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value;localStorage.setItem(KEYS.NAME,this.value);" />` : ''}
-          
+          ${topRowHtml}
+
           <div class="section-box">
-            <div style="text-align:center;"><span class="section-tag">🎭 ١. شێوازی دانیشتنەکە هەڵبژێرە</span></div>
-            <div class="vibe-grid">${vibesCardsHtml}</div>
+            <div class="section-label">🎭 شێوازی دانیشتن</div>
+            <div class="chips-wrap">${vibesChipsHtml}</div>
           </div>
 
           <div class="section-box">
-            <div style="text-align:center;"><span class="section-tag">📚 ٢. بابەتی پرسیارەکان دیاری بکە</span></div>
-            <div class="topic-chips">${topicChipsHtml}</div>
+            <div class="section-label">📚 بابەتی پرسیارەکان</div>
+            <div class="chips-wrap">${topicChipsHtml}</div>
           </div>
 
-          ${settingsHtml}
+          <div class="cycle-grid">
+            <button class="cycle-btn" onclick="cycleQuestionLimit()">
+              <small>ژمارەی پرسیار</small>
+              <strong>${state.questionLimit} پرسیار 🔄</strong>
+            </button>
+            <button class="cycle-btn" onclick="cycleDifficulty()">
+              <small>ئاستی پرسیار</small>
+              <strong>${state.difficulty} 🔄</strong>
+            </button>
+            <button class="cycle-btn" onclick="cycleDuration()">
+              <small>کاتی وەڵام</small>
+              <strong>${state.questionDuration} چرکە 🔄</strong>
+            </button>
+          </div>
 
-          <button class="btn btn-primary" ${state.connecting ? 'disabled' : ''} onclick="${isProj ? 'startProjectorRoom()' : 'startHostRoom()'}">
-            ${state.connecting ? '⏳ خەریکی دروستکردنی ژوورە...' : (isProj ? '🖥️ دروستکردنی یاری بۆ داتاشۆ' : '🚀 دروستکردنی مەجلیس و بارکۆد')}
+          <button class="btn btn-primary" style="margin-bottom:0;" onclick="${state.isProjector ? 'startProjectorRoom()' : 'startHostRoom()'}">
+            ${state.isProjector ? '🖥️ دروستکردنی ژووری داتاشۆ' : '🚀 دروستکردنی مەجلیس و بارکۆد'}
           </button>
         </div>
       `;
@@ -1277,31 +1288,30 @@
               ${(state.role === 'host' || state.role === 'projector_host') && p.id !== state.myId ? `<button class="kick-btn" onclick="kickPlayer('${p.id}')" title="لادانی یاریزان">✕</button>` : ''}
             </div>
           `).join('')
-        : `<p style="font-size:0.82rem;color:var(--muted-main);">هێشتا هیچ یاریزانێک نەهاتووەتە ژوورەوە...</p>`;
+        : `<p style="font-size:0.8rem;color:var(--muted-main);">چاوەڕوانی هاتنەژوورەوەی یاریزانان...</p>`;
 
       return (state.role === 'host' || state.role === 'projector_host') ? `
         <div class="card" style="text-align:center;">
           <h2>📱 بارکۆدی هاتنەژوورەوەی هاوڕێیان</h2>
-          <p class="sub">بابەت: <strong>${getActiveTopicsSummary()}</strong> (${state.difficulty})</p>
+          <p class="sub">${getActiveTopicsSummary()} • ${state.difficulty}</p>
           <div class="qr-wrap" id="qrcode"></div>
-          <div style="font-size:0.82rem;color:var(--muted-main);margin-bottom:4px;font-weight:800;">کۆدی ژوور:</div>
           <div class="pin-boxes">${pinDigitsHtml}</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
             <button class="btn" onclick="copyInvite('${joinUrl}')">📋 کۆپیکردنی لینک</button>
             <button class="btn btn-emerald" onclick="shareInviteWA('${joinUrl}')">📤 بانگهێشتکردن</button>
           </div>
-          <h3>👥 یاریزانانی ئامادەبوو (${state.players.length} کەس):</h3>
+          <h3 style="font-size:0.9rem;">👥 ئامادەبووان (${state.players.length} کەس):</h3>
           <div class="players-wrap">${playersChips}</div>
-          <button class="btn btn-primary" style="margin-top:16px;font-size:1.02rem;" onclick="hostStartCompetition()">
+          <button class="btn btn-primary" style="margin-top:12px;margin-bottom:0;font-size:1rem;" onclick="hostStartCompetition()">
             ▶️ دەستپێکردنی یاری
           </button>
         </div>
       ` : `
         <div class="card" style="text-align:center;">
           <h2>✅ تۆ لە ناو مەجلیسەکەدایت!</h2>
-          <p class="sub">چاوەڕێ بکە تا سەرپەرشتیاری ژوورەکە پێشبڕکێکە دەست پێ دەکات...</p>
+          <p class="sub">چاوەڕێ بکە تا سەرپەرشتیاری ژوورەکە یارییەکە دەست پێ دەکات...</p>
           <div class="pin-boxes">${pinDigitsHtml}</div>
-          <h3>👥 هاوڕێیانی ئامادەبوو (${state.players.length}):</h3>
+          <h3 style="font-size:0.9rem;">👥 هاوڕێیانی ئامادەبوو (${state.players.length}):</h3>
           <div class="players-wrap">${playersChips}</div>
         </div>
       `;
@@ -1310,9 +1320,9 @@
     function renderCountdownScreen() {
       return `
         <div class="card countdown-overlay">
-          <h2>🚀 ئامادەبن! پێشبڕکێ دەست پێ دەکات</h2>
-          <p class="sub">بابەت: <strong>${getActiveTopicsSummary()}</strong> • ئاست: <strong>${state.difficulty}</strong></p>
-          <div class="countdown-num">${state.countdownVal}</div>
+          <h2>🚀 ئامادەبن!</h2>
+          <p class="sub">${getActiveTopicsSummary()} • ${state.difficulty}</p>
+          <div class="countdown-num" id="preGameCountNum">${state.countdownVal}</div>
         </div>
       `;
     }
@@ -1337,8 +1347,10 @@
       }).join('');
 
       const sorted = [...state.players].sort((a, b) => b.score - a.score);
-      const leaderboardHtml = sorted.length
-        ? sorted.map((p, i) => `
+      const leaderboardCardHtml = (state.revealAnswer || isProjHost) && sorted.length ? `
+        <div class="card">
+          <h3 style="margin-bottom:8px;font-size:0.9rem;">📊 ڕیزبەندی خاڵەکان:</h3>
+          ${sorted.map((p, i) => `
             <div class="leader-row ${i === 0 ? 'first' : ''}">
               <span>
                 ${i === 0 ? '👑' : `${i + 1}.`} ${p.name}
@@ -1347,61 +1359,74 @@
               </span>
               <span>${p.score} خاڵ</span>
             </div>
-          `).join('')
-        : `<p style="text-align:center;font-size:0.82rem;color:var(--muted-main);">هیچ یاریزانێک لە لیستەکەدا نییە.</p>`;
+          `).join('')}
+        </div>
+      ` : '';
 
       return `
         <div class="card">
           <div class="quiz-top-meta">
-            <span>پرسیاری ${state.qIndex + 1} لە ${state.questions.length}</span>
-            <span class="source-tag">${vibeObj.icon} ژوور: ${state.roomCode} ${isProjHost ? '(سەرپەرشتیار)' : ''}</span>
+            <span>پرسیاری ${state.qIndex + 1} / ${state.questions.length}</span>
+            <span class="source-tag">${vibeObj.icon} ژوور: ${state.roomCode}</span>
             <span id="liveTimeLabel">⏱️ ${state.timeLeft} چرکە</span>
           </div>
           <div class="timer-track"><div class="timer-fill" id="liveTimeFill" style="width:${pct}%"></div></div>
           <div class="q-banner">${qObj.q}</div>
           <div class="opts-list">${optsHtml}</div>
-          ${isProjHost ? '<p style="text-align:center;font-size:0.78rem;color:var(--muted-main);margin-top:10px;font-weight:800;">🖥️ دۆخی سەرپەرشتیار و داتاشۆ (تەنها یاریزانەکان وەڵام دەدەنەوە)</p>' : ''}
           ${state.revealAnswer ? `
             <div class="next-auto-banner" id="autoNextBanner">
               ${state.qIndex + 1 < state.questions.length
-                ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکەی تر دەست پێ دەکات...`
-                : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکەی تر پیشان دەدرێت...`}
+                ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکە...`
+                : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکە...`}
             </div>
           ` : ''}
         </div>
-        <div class="card"><h3 style="margin-bottom:10px;font-size:0.95rem;">📊 ڕیزبەندی خاڵەکان:</h3>${leaderboardHtml}</div>
+        ${leaderboardCardHtml}
       `;
     }
 
     function renderFinishedScreen() {
       const sorted = [...state.players].sort((a, b) => b.score - a.score), winner = sorted[0];
       const vibeObj = QUESTION_VIBES.find(v => v.id === getPrimaryVibeId()) || QUESTION_VIBES[0];
-      const medals = ['🥇 یەکەم:', '🥈 دووەم:', '🥉 سێیەم:'];
+      const medals = ['🥇', '🥈', '🥉'];
       const isHostOrProj = state.role === 'host' || state.role === 'projector_host';
 
       const ranksHtml = sorted.map((p, i) => `
         <div class="leader-row ${i === 0 ? 'first' : ''}">
-          <span>${medals[i] || `🐢 ${i + 1}.`} ${p.name} <span class="vibe-rank-tag">${getPlayerRankTitle(i, sorted.length)}</span></span>
+          <span>${medals[i] || `${i + 1}.`} ${p.name} <span class="vibe-rank-tag">${getPlayerRankTitle(i, sorted.length)}</span></span>
           <span>${p.score} خاڵ</span>
         </div>
       `).join('');
 
       return `
         <div class="card" style="text-align:center;">
-          <div style="font-size:3.2rem;margin-bottom:2px;">${vibeObj.icon}</div>
-          <h2>پاڵەوانی مەجلیس: ${winner ? winner.name : 'هیچ'}!</h2>
-          <p class="sub">کۆی خاڵی بەدەستهاتوو: <strong>${winner ? winner.score : 0} خاڵ</strong></p>
+          <h2>🏆 پاڵەوانی مەجلیس: ${winner ? winner.name : 'هیچ'} (${winner ? winner.score : 0} خاڵ)</h2>
           <div class="comedy-grid">
-            <div class="comedy-card winner-box"><div class="comedy-head">👑 براوەی مەجلیس:</div><div>"${state.comedyResult.winnerJoke || 'بژی پاڵەوان!'}"</div></div>
-            <div class="comedy-card loser-box"><div class="comedy-head">☕ بڕیاری مەجلیس بۆ دۆڕاوەکان:</div><div>"${state.comedyResult.loserJoke || 'جاری داهاتوو هەوڵ بدەنەوە!'}"</div></div>
-            ${state.taskResult ? `<div class="comedy-card task-box"><div style="font-weight:900;font-size:0.98rem;margin-bottom:4px;">${vibeObj.icon} بڕیاری تیروپشکی مەجلیس:</div><div>${state.taskResult}</div></div>` : ''}
+            <div class="comedy-card winner-box">
+              <div class="comedy-head">
+                <span>👑 براوەی مەجلیس:</span>
+                ${isHostOrProj ? `<button class="mini-icon-btn" onclick="regenerateComedyNow()" title="گۆڕینی قسە">🔄</button>` : ''}
+              </div>
+              <div>"${state.comedyResult.winnerJoke || 'بژی پاڵەوان!'}"</div>
+            </div>
+            <div class="comedy-card loser-box">
+              <div class="comedy-head"><span>☕ بۆ دۆڕاوەکان:</span></div>
+              <div>"${state.comedyResult.loserJoke || 'جاری داهاتوو هەوڵ بدەنەوە!'}"</div>
+            </div>
+            <div class="comedy-card task-box">
+              <div class="comedy-head">
+                <span>🎯 سزای تیروپشک:</span>
+                ${isHostOrProj ? `<button class="mini-icon-btn" onclick="spinVibePenaltyTask()" title="سزایەکی تر">🎲 گۆڕین</button>` : ''}
+              </div>
+              <div>${state.taskResult}</div>
+            </div>
           </div>
-          <div style="text-align:right;margin:16px 0;"><h3 style="font-size:0.95rem;margin-bottom:8px;">📋 ڕیزبەندی و نازناوی یاریزانەکان:</h3>${ranksHtml}</div>
+          <div style="text-align:right;margin:12px 0;">
+            <h3 style="font-size:0.9rem;margin-bottom:6px;">📋 ڕیزبەندی و نازناوەکان:</h3>
+            ${ranksHtml}
+          </div>
           ${isHostOrProj ? `
-            <button class="btn btn-primary" onclick="spinVibePenaltyTask()">${vibeObj.spinBtnLabel}</button>
-            <button class="btn" onclick="regenerateComedyNow()">🎲 گۆڕینی قسەی مەجلیس (شتێکی تر بڵێ!)</button>
-            <button class="btn btn-emerald" onclick="hostStartCompetition()">🔄 خولێکی نوێ لەگەڵ هاوڕێیان</button>
-            <button class="btn" onclick="resetToHome()">🏠 گەڕانەوە بۆ پەڕەی سەرەکی</button>
+            <button class="btn btn-emerald" style="margin-bottom:0;" onclick="hostStartCompetition()">🔄 خولێکی نوێ لەگەڵ هاوڕێیان</button>
           ` : ''}
         </div>
       `;
@@ -1411,7 +1436,7 @@
       const box = document.getElementById('qrcode');
       if (!box) return;
       box.innerHTML = '';
-      new QRCode(box, { text: `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`, width: 185, height: 185, colorDark: "#291a0d", colorLight: "#ffffff" });
+      new QRCode(box, { text: `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`, width: 175, height: 175, colorDark: "#291a0d", colorLight: "#ffffff" });
     }
 
     function copyInvite(url) {
@@ -1491,7 +1516,7 @@
       });
       render();
 
-      const actionTopic = `majlis_ku_v16/room/${state.roomCode}/action`;
+      const actionTopic = `majlis_ku_v17/room/${state.roomCode}/action`;
       connectMqttBroker(client => {
         client.subscribe(actionTopic, { qos: 1 }, () => {
           syncAllPlayers();
@@ -1514,7 +1539,7 @@
       });
       render();
 
-      const actionTopic = `majlis_ku_v16/room/${state.roomCode}/action`;
+      const actionTopic = `majlis_ku_v17/room/${state.roomCode}/action`;
       connectMqttBroker(client => {
         client.subscribe(actionTopic, { qos: 1 }, () => {
           syncAllPlayers();
@@ -1534,7 +1559,7 @@
       Object.assign(state, { role: 'player', isProjector: false, connecting: true });
       render();
 
-      const stateTopic = `majlis_ku_v16/room/${code}/state`, actionTopic = `majlis_ku_v16/room/${code}/action`;
+      const stateTopic = `majlis_ku_v17/room/${code}/state`, actionTopic = `majlis_ku_v17/room/${code}/action`;
       connectMqttBroker(client => {
         let received = false;
         const joinTimeout = setTimeout(() => {
@@ -1574,15 +1599,25 @@
     }
 
     function onPlayerReceiveData(data) {
-      if (data.type === 'TIMER_TICK') { state.timeLeft = data.timeLeft; return updateTimerUIOnly(); }
-      if (data.type === 'REVEAL_TICK') { state.revealCountdown = data.revealCountdown; return updateRevealCountdownUIOnly(); }
+      if (data.type === 'PRE_TICK') {
+        state.countdownVal = data.countdownVal;
+        return updateCountdownDOMOnly();
+      }
+      if (data.type === 'TIMER_TICK') {
+        state.timeLeft = data.timeLeft;
+        return updateTimerUIOnly();
+      }
+      if (data.type === 'REVEAL_TICK') {
+        state.revealCountdown = data.revealCountdown;
+        return updateRevealCountdownUIOnly();
+      }
       if (data.type !== 'SYNC') return;
 
-      const { revealAnswer: prevReveal, screen: prevScreen, qIndex: prevQIndex } = state;
+      const { revealAnswer: prevReveal, qIndex: prevQIndex } = state;
       Object.assign(state, {
         screen: data.screen, countdownVal: data.countdownVal, qIndex: data.qIndex,
         timeLeft: data.timeLeft, questionDuration: data.questionDuration,
-        revealAnswer: data.revealAnswer, revealCountdown: data.revealCountdown || 5,
+        revealAnswer: data.revealAnswer, revealCountdown: data.revealCountdown || 4,
         taskResult: data.taskResult || '', difficulty: data.difficulty || 'مامناوەند'
       });
       if (Array.isArray(data.selectedVibeIds)) state.selectedVibeIds = data.selectedVibeIds;
@@ -1609,7 +1644,7 @@
     function broadcastPayload(payload, retain = false) {
       if ((state.role === 'host' || state.role === 'projector_host') && state.mqttClient && state.roomCode) {
         try {
-          state.mqttClient.publish(`majlis_ku_v16/room/${state.roomCode}/state`, JSON.stringify(payload), { qos: 0, retain });
+          state.mqttClient.publish(`majlis_ku_v17/room/${state.roomCode}/state`, JSON.stringify(payload), { qos: 0, retain });
         } catch (e) {}
       }
     }
@@ -1641,12 +1676,16 @@
 
     function runPreGameCountdown() {
       clearInterval(state.timerInterval); clearInterval(state.revealInterval);
-      Object.assign(state, { screen: 'countdown', countdownVal: 10 });
+      Object.assign(state, { screen: 'countdown', countdownVal: 5 });
       syncAllPlayers(); render(); playTone('tick');
       state.timerInterval = setInterval(() => {
         if (--state.countdownVal <= 0) {
           clearInterval(state.timerInterval); state.screen = 'playing'; beginQuestionCountdown();
-        } else { playTone('tick'); syncAllPlayers(); render(); }
+        } else {
+          playTone('tick');
+          updateCountdownDOMOnly();
+          broadcastPayload({ type: 'PRE_TICK', countdownVal: state.countdownVal }, false);
+        }
       }, 1000);
     }
 
@@ -1673,13 +1712,13 @@
       Object.assign(me, { currentAnswer: optIdx, hasAnswered: true, answerTime: state.timeLeft });
       render();
       if (state.role === 'player' && state.mqttClient && state.roomCode) {
-        state.mqttClient.publish(`majlis_ku_v16/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
+        state.mqttClient.publish(`majlis_ku_v17/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
       }
     }
 
     function revealQuestionResult() {
       clearInterval(state.timerInterval); clearInterval(state.revealInterval);
-      Object.assign(state, { revealAnswer: true, revealCountdown: 5 });
+      Object.assign(state, { revealAnswer: true, revealCountdown: 4 });
       const qObj = state.questions[state.qIndex];
 
       state.players.forEach(p => {
@@ -1710,7 +1749,11 @@
       clearInterval(state.revealInterval);
       if (state.qIndex + 1 < state.questions.length) { state.qIndex++; beginQuestionCountdown(); }
       else {
-        Object.assign(state, { comedyResult: getLocalComedyCommentary(), screen: 'finished' });
+        Object.assign(state, {
+          comedyResult: getLocalComedyCommentary(),
+          taskResult: generateTaskString(),
+          screen: 'finished'
+        });
         syncAllPlayers(); render();
       }
     }
@@ -1743,3 +1786,4 @@
   </script>
 </body>
 </html>
+
