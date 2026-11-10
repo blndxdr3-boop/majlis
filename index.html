@@ -166,6 +166,7 @@
     <div style="display:flex;flex-direction:column;gap:8px;">
       <button class="btn" onclick="toggleThemeMode()">🌓 گۆڕینی دۆخی تاریک / سپی</button>
       <button class="btn" onclick="toggleSound()" id="soundBtnLabel">🔊 دەنگی یاری: چالاکە</button>
+      <button class="btn" onclick="toggleAmbientSound()" id="ambientBtnLabel">🔥 دەنگی سروشت و ئاگر: بێدەنگە</button>
       <button class="btn" onclick="openCustomQModal()">✍️ بەڕێوەبردنی پرسیاری تایبەت</button>
       <button class="btn" onclick="clearAskedHistory();toggleModal('settingsModal',false);">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
     </div>
@@ -460,7 +461,7 @@
       ]
     }
   };
-  let state = {
+    let state = {
     welcomeTab: 'host',
     role: null,
     screen: 'welcome',
@@ -472,6 +473,7 @@
     questionLimit: 6,
     questionDuration: 15,
     soundOn: true,
+    ambientOn: false,
     connecting: false,
     countdownVal: 10,
     revealCountdown: 5,
@@ -504,6 +506,7 @@
     document.body.classList.remove('light-mode');
     localStorage.setItem(KEYS.THEME, 'dark');
     state.selectedVibeIds = [vibeId];
+    playTone('tick');
     render();
   }
 
@@ -537,7 +540,196 @@
     setTimeout(() => t.remove(), 3500);
   }
 
+  let audioCtx = null;
+  let ambientLoopId = null;
+  let ambientBaseNode = null;
+  let ambientGainNode = null;
+
+  function ensureAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function startAmbientAudio() {
+    stopAmbientAudio();
+    if (!state.ambientOn) return;
+    try {
+      const ctx = ensureAudioCtx();
+      const bufferSize = ctx.sampleRate * 2;
+      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      let lastOut = 0.0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        output[i] = (lastOut + (0.02 * white)) / 1.02;
+        lastOut = output[i];
+        output[i] *= 0.15;
+      }
+
+      const whiteNoise = ctx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 240;
+
+      ambientGainNode = ctx.createGain();
+      ambientGainNode.gain.value = 0.08;
+
+      whiteNoise.connect(filter);
+      filter.connect(ambientGainNode);
+      ambientGainNode.connect(ctx.destination);
+      whiteNoise.start();
+      ambientBaseNode = whiteNoise;
+
+      ambientLoopId = setInterval(() => {
+        if (!state.ambientOn || !audioCtx) return;
+        const pVibe = getPrimaryVibeId();
+        const now = audioCtx.currentTime;
+
+        if (pVibe === 'camping' || pVibe === 'family') {
+          if (Math.random() < 0.65) {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(900 + Math.random() * 1600, now);
+            g.gain.setValueAtTime(0.018 * Math.random(), now);
+            g.gain.exponentialRampToValueAtTime(0.0005, now + 0.025 + Math.random() * 0.02);
+            osc.connect(g);
+            g.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.05);
+          }
+        } else if (pVibe === 'qiyam') {
+          if (Math.random() < 0.25) {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(432, now);
+            g.gain.setValueAtTime(0.001, now);
+            g.gain.linearRampToValueAtTime(0.012, now + 0.4);
+            g.gain.exponentialRampToValueAtTime(0.0005, now + 1.8);
+            osc.connect(g);
+            g.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 1.9);
+          }
+        }
+      }, 220);
+    } catch (e) {}
+  }
+
+  function stopAmbientAudio() {
+    if (ambientLoopId) {
+      clearInterval(ambientLoopId);
+      ambientLoopId = null;
+    }
+    if (ambientBaseNode) {
+      try { ambientBaseNode.stop(); ambientBaseNode.disconnect(); } catch (e) {}
+      ambientBaseNode = null;
+    }
+    if (ambientGainNode) {
+      try { ambientGainNode.disconnect(); } catch (e) {}
+      ambientGainNode = null;
+    }
+  }
+
+  function toggleAmbientSound() {
+    state.ambientOn = !state.ambientOn;
+    const btn = document.getElementById('ambientBtnLabel');
+    if (btn) btn.textContent = state.ambientOn ? '🔥 دەنگی سروشت و ئاگر: چالاکە' : '🔥 دەنگی سروشت و ئاگر: بێدەنگە';
+    if (state.ambientOn) {
+      startAmbientAudio();
+      showToast('🔥 دەنگی باکگراوندی سروشت و ئاگر چالاک کرا');
+    } else {
+      stopAmbientAudio();
+      showToast('🔇 دەنگی باکگراوند بێدەنگ کرا');
+    }
+  }
+
+  function playNote(ctx, freq, startTime, duration, type = 'sine', peakGain = 0.12) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startTime);
+    gain.gain.setValueAtTime(0.001, startTime);
+    gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0008, startTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.02);
+  }
+
+  function playTone(type) {
+    if (!state.soundOn) return;
+    try {
+      const ctx = ensureAudioCtx();
+      const now = ctx.currentTime;
+      const vibe = getPrimaryVibeId();
+
+      if (type === 'slot_tick') {
+        const freq = vibe === 'camping' ? 320 : (vibe === 'qiyam' ? 260 : 480);
+        playNote(ctx, freq, now, 0.045, 'triangle', 0.08);
+        return;
+      }
+
+      if (type === 'slot_win') {
+        const notes = vibe === 'camping' ? [392, 493.88, 587.33, 783.99] : [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((f, idx) => playNote(ctx, f, now + idx * 0.09, 0.35, 'triangle', 0.15));
+        return;
+      }
+
+      if (type === 'fanfare') {
+        const fanfareNotes = vibe === 'camping'
+          ? [392, 493.88, 587.33, 783.99, 987.77]
+          : (vibe === 'qiyam'
+              ? [329.63, 392, 493.88, 659.25]
+              : [523.25, 659.25, 783.99, 1046.5]);
+        fanfareNotes.forEach((f, idx) => {
+          playNote(ctx, f, now + idx * 0.12, 0.55, vibe === 'qiyam' ? 'sine' : 'triangle', 0.14);
+        });
+        return;
+      }
+
+      if (type === 'correct') {
+        if (vibe === 'camping') {
+          [392.00, 493.88, 587.33, 783.99].forEach((f, i) => playNote(ctx, f, now + i * 0.08, 0.42, 'triangle', 0.13));
+        } else if (vibe === 'qiyam') {
+          [329.63, 440.00, 523.25].forEach((f, i) => playNote(ctx, f, now + i * 0.11, 0.55, 'sine', 0.10));
+        } else if (vibe === 'friends_funny') {
+          [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => playNote(ctx, f, now + i * 0.07, 0.28, 'sine', 0.15));
+        } else {
+          [440.00, 554.37, 659.25].forEach((f, i) => playNote(ctx, f, now + i * 0.09, 0.35, 'triangle', 0.13));
+        }
+      } else if (type === 'wrong') {
+        if (vibe === 'camping' || vibe === 'qiyam') {
+          playNote(ctx, 180, now, 0.22, 'sine', 0.12);
+          playNote(ctx, 135, now + 0.14, 0.32, 'sine', 0.12);
+        } else if (vibe === 'friends_funny') {
+          [320, 280, 230, 170].forEach((f, i) => playNote(ctx, f, now + i * 0.11, 0.22, 'sawtooth', 0.09));
+        } else {
+          playNote(ctx, 210, now, 0.18, 'triangle', 0.12);
+          playNote(ctx, 160, now + 0.15, 0.26, 'triangle', 0.12);
+        }
+      } else {
+        if (vibe === 'camping') {
+          playNote(ctx, 290, now, 0.05, 'sine', 0.07);
+        } else if (vibe === 'qiyam') {
+          playNote(ctx, 220, now, 0.07, 'sine', 0.05);
+        } else if (vibe === 'friends_funny') {
+          playNote(ctx, 740, now, 0.045, 'triangle', 0.06);
+        } else {
+          playNote(ctx, 580, now, 0.05, 'sine', 0.05);
+        }
+      }
+    } catch (e) {}
+  }
+
   function launchConfetti() {
+    playTone('fanfare');
     const colors = ['#10b981', '#f59e0b', '#c88a4b', '#3b82f6', '#ffffff'];
     for (let i = 0; i < 36; i++) {
       const c = document.createElement('div');
@@ -546,28 +738,6 @@
       document.body.appendChild(c);
       setTimeout(() => c.remove(), 4000);
     }
-  }
-
-  let audioCtx = null;
-  function playTone(type) {
-    if (!state.soundOn) return;
-    try {
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(), now = audioCtx.currentTime;
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      if (type === 'correct') {
-        [523.25, 659.25, 783.99].forEach((f, i) => osc.frequency.setValueAtTime(f, now + i * 0.1));
-        gain.gain.setValueAtTime(0.14, now); osc.start(); osc.stop(now + 0.32);
-      } else if (type === 'wrong') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(200, now); osc.frequency.setValueAtTime(150, now + 0.15);
-        gain.gain.setValueAtTime(0.14, now); osc.start(); osc.stop(now + 0.3);
-      } else {
-        osc.frequency.setValueAtTime(680, now);
-        gain.gain.setValueAtTime(0.04, now); osc.start(); osc.stop(now + 0.05);
-      }
-    } catch (e) {}
   }
 
   function toggleThemeMode() {
@@ -675,7 +845,7 @@
 
     state.slotInterval = setInterval(() => {
       step++;
-      playTone('tick');
+      playTone('slot_tick');
 
       if (step < 10) {
         const randP = poolPlayers[step % poolPlayers.length] || finalPlayer;
@@ -704,7 +874,7 @@
           target: finalPlayer.name,
           task: finalTask
         };
-        playTone('correct');
+        playTone('slot_win');
         syncAllPlayers();
         render();
         return;
@@ -808,7 +978,7 @@
       <div class="card">
         ${tabsHtml}
         <h2>${vibeObj.icon} مەجلیس: ${vibeObj.title}</h2>
-        <p class="sub">شێوازی دانیشتنەکە هەڵبژێرە بۆ گۆڕینی تەواوی کەشی شاشەکە و دوگمەکان!</p>
+        <p class="sub">شێوازی دانیشتنەکە هەڵبژێرە بۆ گۆڕینی تەواوی کەشی شاشەکە و دەنگەکان!</p>
         ${nameInput}
         <div class="section-box">
           <div style="text-align:center;"><span class="section-tag">🎭 ١. شێوازی دانیشتنەکە هەڵبژێرە</span></div>
@@ -1076,7 +1246,7 @@
     if (data.type === 'REVEAL_TICK') { state.revealCountdown = data.revealCountdown; return updateRevealCountdownUIOnly(); }
     if (data.type === 'SLOT_TICK') {
       state.taskData = data.taskData || { spinning: false, target: '', task: '' };
-      playTone('tick');
+      playTone('slot_tick');
       return updateSlotUIOnly();
     }
     if (data.type !== 'SYNC') return;
@@ -1109,7 +1279,7 @@
       playTone(me && qObj && me.currentAnswer === qObj.ans ? 'correct' : 'wrong');
     }
     if (prevSpinning && !state.taskData.spinning && state.taskData.task) {
-      playTone('correct');
+      playTone('slot_win');
     }
     if (prevScreen !== 'finished' && state.screen === 'finished') launchConfetti();
     render();
@@ -1177,6 +1347,7 @@
     const me = state.players.find(p => p.id === state.myId);
     if (!me || state.revealAnswer) return;
     Object.assign(me, { currentAnswer: optIdx, hasAnswered: true, answerTime: state.timeLeft });
+    playTone('tick');
     render();
     if (state.role === 'player' && state.mqttClient && state.roomCode) {
       state.mqttClient.publish(`majlis_ku_v14/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
@@ -1219,6 +1390,7 @@
 
   function regenerateComedyNow() {
     state.comedyResult = getLocalComedyCommentary();
+    playTone('tick');
     syncAllPlayers(); render();
   }
 
