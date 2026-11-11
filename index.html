@@ -89,6 +89,7 @@
     .btn:disabled { opacity: 0.55; pointer-events: none; }
     .btn-primary { background: var(--accent); color: #fff; border: none; box-shadow: 0 6px 18px var(--accent-glow); }
     .btn-emerald { background: var(--emerald); border: none; color: #fff; }
+    .btn-danger-outline { border-color: rgba(239, 68, 68, 0.4); color: var(--danger); }
 
     .section-box, .cycle-btn, .q-banner, .next-auto-banner, .comedy-card, .about-info-box { background: var(--bg-card); color: var(--text-card); border-radius: 14px; }
     .section-box { border: 1.5px solid var(--border); padding: 10px; margin-bottom: 10px; }
@@ -160,7 +161,7 @@
   </div>
 
   <header>
-    <div class="brand" onclick="if(state.role!=='player')resetToHome()">
+    <div class="brand" onclick="if(state.role!=='player')confirmResetToHome()">
       <div class="brand-icon" id="headerBrandIcon">🎲</div>
       <div class="brand-title">مەجلیس</div>
     </div>
@@ -175,9 +176,11 @@
       <div style="display:flex;flex-direction:column;gap:7px;">
         <button class="btn" onclick="toggleThemeMode()">🌓 گۆڕینی دۆخی شەو / ڕۆژ</button>
         <button class="btn" onclick="toggleSound()" id="soundBtnLabel">🔊 دەنگی یاری: چالاکە</button>
+        <button class="btn" onclick="toggleVibrate()" id="vibrateBtnLabel">📳 لەرینەوەی مۆبایل: چالاکە</button>
         <button class="btn" onclick="openCustomQModal()">✍️ زیادکردنی پرسیاری تایبەت</button>
         <button class="btn" onclick="clearAskedHistory();toggleModal('settingsModal',false);">🔄 سفرکردنەوەی مێژووی پرسیارەکان</button>
         <button class="btn" onclick="toggleModal('settingsModal',false);toggleModal('aboutModal',true);">ℹ️ دەربارە</button>
+        <button class="btn btn-danger-outline" id="exitRoomMenuBtn" style="display:none;" onclick="toggleModal('settingsModal',false);resetToHome();">🚪 داخستنی ژوور و گەڕانەوە</button>
       </div>
       <button class="btn btn-primary" style="margin-top:10px;margin-bottom:0;" onclick="toggleModal('settingsModal',false)">داخستن</button>
     </div>
@@ -212,7 +215,15 @@
   </div>
 
   <script>
-    const KEYS = { SEEN: 'MAJLIS_SEEN_HISTORY', CUSTOM: 'MAJLIS_CUSTOM_QUESTIONS', NAME: 'MAJLIS_PLAYER_NAME', ID: 'MAJLIS_PLAYER_ID', THEME: 'MAJLIS_THEME_MODE' };
+    const KEYS = {
+      SEEN: 'MAJLIS_SEEN_HISTORY',
+      CUSTOM: 'MAJLIS_CUSTOM_QUESTIONS',
+      NAME: 'MAJLIS_PLAYER_NAME',
+      ID: 'MAJLIS_PLAYER_ID',
+      THEME: 'MAJLIS_THEME_MODE',
+      VIBRATE: 'MAJLIS_VIBRATE_MODE',
+      SESSION: 'MAJLIS_ACTIVE_SESSION_V18'
+    };
     setTimeout(() => document.getElementById('splashScreen')?.remove(), 1900);
 
     let wakeLock = null;
@@ -359,24 +370,70 @@
       myName: localStorage.getItem(KEYS.NAME) || '', roomCode: '',
       vibeId: 'camping', selectedTopics: [PRESET_TOPICS[0]],
       difficulty: 'مامناوەند', questionLimit: 6, questionDuration: 15,
-      soundOn: true, connecting: false, countdownVal: 5, revealCountdown: 4,
+      soundOn: true, vibrateOn: localStorage.getItem(KEYS.VIBRATE) !== 'off',
+      connecting: false, countdownVal: 5, revealCountdown: 4,
       timerInterval: null, revealInterval: null, mqttClient: null,
       players: [], questions: [], qIndex: 0, timeLeft: 15,
       revealAnswer: false, comedyResult: { winnerJoke: '', loserJoke: '' },
       taskResult: '', isProjector: false
     };
 
-    const urlRoom = new URLSearchParams(window.location.search).get('room');
-    if (urlRoom) {
-      state.roomCode = normalizeDigits(urlRoom);
-      state.welcomeTab = 'join';
-      setTimeout(() => { if (state.myName.trim() && state.screen === 'welcome') joinHostRoom(); }, 2000);
-    }
+    setText('vibrateBtnLabel', state.vibrateOn ? '📳 لەرینەوەی مۆبایل: چالاکە' : '📴 لەرینەوەی مۆبایل: ناچالاکە');
 
     const isHostRole = () => state.role === 'host' || state.role === 'projector_host';
     const getActiveTopicsSummary = () => state.selectedTopics.join(' + ');
 
+    function vibrateDevice(pattern) {
+      if (!state.vibrateOn) return;
+      try { navigator.vibrate?.(pattern); } catch (e) {}
+    }
+
+    function toggleVibrate() {
+      state.vibrateOn = !state.vibrateOn;
+      localStorage.setItem(KEYS.VIBRATE, state.vibrateOn ? 'on' : 'off');
+      setText('vibrateBtnLabel', state.vibrateOn ? '📳 لەرینەوەی مۆبایل: چالاکە' : '📴 لەرینەوەی مۆبایل: ناچالاکە');
+      if (state.vibrateOn) vibrateDevice(40);
+    }
+
+    function saveSessionState() {
+      if (state.screen === 'welcome' || !state.role || !state.roomCode) {
+        localStorage.removeItem(KEYS.SESSION);
+        return;
+      }
+      const snap = {
+        ts: Date.now(),
+        role: state.role,
+        screen: state.screen,
+        roomCode: state.roomCode,
+        vibeId: state.vibeId,
+        selectedTopics: state.selectedTopics,
+        difficulty: state.difficulty,
+        questionLimit: state.questionLimit,
+        questionDuration: state.questionDuration,
+        countdownVal: state.countdownVal,
+        revealCountdown: state.revealCountdown,
+        players: state.players,
+        questions: state.questions,
+        qIndex: state.qIndex,
+        timeLeft: state.timeLeft,
+        revealAnswer: state.revealAnswer,
+        comedyResult: state.comedyResult,
+        taskResult: state.taskResult,
+        isProjector: state.isProjector
+      };
+      try { localStorage.setItem(KEYS.SESSION, JSON.stringify(snap)); } catch (e) {}
+    }
+
+    window.addEventListener('beforeunload', (e) => {
+      if (state.screen !== 'welcome' && state.role) {
+        saveSessionState();
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
     function cycleSetting(key, list) {
+      vibrateDevice(25);
       state[key] = list[(list.indexOf(state[key]) + 1) % list.length];
       render();
     }
@@ -439,6 +496,7 @@
     }
 
     function handleTopicChipClick(topic) {
+      vibrateDevice(20);
       const idx = state.selectedTopics.indexOf(topic);
       if (idx > -1) { if (state.selectedTopics.length > 1) state.selectedTopics.splice(idx, 1); }
       else state.selectedTopics.push(topic);
@@ -488,14 +546,21 @@
     }
 
     function spinVibePenaltyTask() {
+      vibrateDevice(40);
       state.taskResult = generateTaskString();
       playTone('correct');
       syncAllPlayers();
       render();
     }
 
+    function confirmResetToHome() {
+      if (state.screen === 'welcome') return;
+      resetToHome();
+    }
+
     function resetToHome() {
       clearInterval(state.timerInterval); clearInterval(state.revealInterval);
+      localStorage.removeItem(KEYS.SESSION);
       try { state.mqttClient?.end(true); } catch (e) {}
       state.mqttClient = null;
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -519,6 +584,9 @@
       const vibeObj = QUESTION_VIBES.find(v => v.id === state.vibeId) || QUESTION_VIBES[0];
       setText('headerBrandIcon', vibeObj.icon);
 
+      const exitBtn = document.getElementById('exitRoomMenuBtn');
+      if (exitBtn) exitBtn.style.display = (isHostRole() && state.screen !== 'welcome') ? 'flex' : 'none';
+
       const headerMenu = document.getElementById('headerMenuContainer');
       if (headerMenu) {
         const hideMenu = state.role === 'player' || (state.screen === 'welcome' && state.welcomeTab === 'join');
@@ -529,6 +597,7 @@
       const box = document.getElementById('appContainer');
       if (box && views[state.screen]) box.innerHTML = views[state.screen]();
       if (state.screen === 'lobby' && isHostRole()) setTimeout(drawQRCode, 50);
+      saveSessionState();
     }
 
     function renderWelcomeScreen() {
@@ -555,7 +624,7 @@
       }
 
       const vibesChipsHtml = QUESTION_VIBES.map(v => `
-        <button class="chip-btn ${state.vibeId === v.id ? 'active' : ''}" onclick="state.vibeId='${v.id}';render();">${v.icon} ${v.title}</button>
+        <button class="chip-btn ${state.vibeId === v.id ? 'active' : ''}" onclick="vibrateDevice(20);state.vibeId='${v.id}';render();">${v.icon} ${v.title}</button>
       `).join('');
 
       const visibleTopics = PRESET_TOPICS.filter(t => t !== 'پرسیارەکانی خۆم (تایبەت)' || customQuestions.length > 0);
@@ -566,10 +635,10 @@
       `).join('');
 
       const topRowHtml = state.isProjector
-        ? `<div class="host-top-row"><button class="proj-toggle-btn active" onclick="state.isProjector=false;render();">🖥️ دۆخی داتاشۆ چالاکە (تۆ تەنها سەرپەرشتیاریت) ✕</button></div>`
+        ? `<div class="host-top-row"><button class="proj-toggle-btn active" onclick="vibrateDevice(25);state.isProjector=false;render();">🖥️ دۆخی داتاشۆ چالاکە (تۆ تەنها سەرپەرشتیاریت) ✕</button></div>`
         : `<div class="host-top-row">
              <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value;localStorage.setItem(KEYS.NAME,this.value);" />
-             <button class="proj-toggle-btn" onclick="state.isProjector=true;render();" title="بۆ داتاشۆ بێ بەشداریکردنی خۆت">🖥️ داتاشۆ</button>
+             <button class="proj-toggle-btn" onclick="vibrateDevice(25);state.isProjector=true;render();" title="بۆ داتاشۆ بێ بەشداریکردنی خۆت">🖥️ داتاشۆ</button>
            </div>`;
 
       return `
@@ -744,11 +813,13 @@
     }
 
     function copyInvite(url) {
+      vibrateDevice(30);
       navigator.clipboard.writeText(url);
       showToast('📋 لینکی مەجلیس کۆپی کرا!');
     }
 
     function shareInviteWA(url) {
+      vibrateDevice(30);
       const msg = `🎲 وەرنە ناو پێشبڕکێی مەجلیس! کۆدی ژوور: (${state.roomCode})\nکلیک لەم لینکە بکەن:\n${url}`;
       if (navigator.share) navigator.share({ title: 'مەجلیس', text: msg, url }).catch(() => {});
       else window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
@@ -786,11 +857,22 @@
       tryConnect();
     }
 
+    function bindHostMqttChannel() {
+      const actionTopic = `majlis_ku_v17/room/${state.roomCode}/action`;
+      connectMqttBroker(client => {
+        client.subscribe(actionTopic, { qos: 1 }, syncAllPlayers);
+        client.on('message', (t, msg) => {
+          if (t === actionTopic) try { onHostReceiveData(JSON.parse(msg.toString())); } catch (e) {}
+        });
+      });
+    }
+
     function startRoom() {
       const isProj = state.isProjector;
       const name = (state.myName || '').trim();
       if (!isProj && !name) return showToast('⚠️ تکایە سەرەتا ناوی خۆت بنووسە!');
       if (!isProj) localStorage.setItem(KEYS.NAME, name);
+      vibrateDevice(40);
       requestScreenWakeLock();
 
       Object.assign(state, {
@@ -801,23 +883,17 @@
         screen: 'lobby'
       });
       render();
-
-      const actionTopic = `majlis_ku_v17/room/${state.roomCode}/action`;
-      connectMqttBroker(client => {
-        client.subscribe(actionTopic, { qos: 1 }, syncAllPlayers);
-        client.on('message', (t, msg) => {
-          if (t === actionTopic) try { onHostReceiveData(JSON.parse(msg.toString())); } catch (e) {}
-        });
-      });
+      bindHostMqttChannel();
     }
 
-    function joinHostRoom() {
+    function joinHostRoom(isSilentReconnect = false) {
       const name = (state.myName || '').trim(), code = normalizeDigits(state.roomCode);
       state.roomCode = code;
       if (!name || !code) return showToast('⚠️ تکایە ناوی خۆت و کۆدی ژوورەکە بنووسە!');
       localStorage.setItem(KEYS.NAME, name);
+      if (!isSilentReconnect) vibrateDevice(40);
       requestScreenWakeLock();
-      Object.assign(state, { role: 'player', isProjector: false, connecting: true });
+      Object.assign(state, { role: 'player', isProjector: false, connecting: !isSilentReconnect });
       render();
 
       const stateTopic = `majlis_ku_v17/room/${code}/state`, actionTopic = `majlis_ku_v17/room/${code}/action`;
@@ -855,14 +931,33 @@
         syncAllPlayers(); render();
       } else if (data.type === 'ANSWER') {
         const p = state.players.find(x => x.id === data.id);
-        if (p && !state.revealAnswer) Object.assign(p, { currentAnswer: data.ansIdx, hasAnswered: true, answerTime: state.timeLeft });
+        if (p && !state.revealAnswer) {
+          Object.assign(p, { currentAnswer: data.ansIdx, hasAnswered: true, answerTime: state.timeLeft });
+          saveSessionState();
+        }
       }
     }
 
     function onPlayerReceiveData(data) {
-      if (data.type === 'PRE_TICK') { state.countdownVal = data.countdownVal; return setText('preGameCountNum', state.countdownVal); }
-      if (data.type === 'TIMER_TICK') { state.timeLeft = data.timeLeft; return updateTimerUI(); }
-      if (data.type === 'REVEAL_TICK') { state.revealCountdown = data.revealCountdown; return updateRevealUI(); }
+      if (data.type === 'PRE_TICK') {
+        state.countdownVal = data.countdownVal;
+        saveSessionState();
+        return setText('preGameCountNum', state.countdownVal);
+      }
+      if (data.type === 'TIMER_TICK') {
+        state.timeLeft = data.timeLeft;
+        if (state.timeLeft <= 3 && state.timeLeft > 0) {
+          playTone('tick');
+          vibrateDevice(70);
+        }
+        saveSessionState();
+        return updateTimerUI();
+      }
+      if (data.type === 'REVEAL_TICK') {
+        state.revealCountdown = data.revealCountdown;
+        saveSessionState();
+        return updateRevealUI();
+      }
       if (data.type !== 'SYNC') return;
 
       const { revealAnswer: prevReveal, qIndex: prevQIndex } = state;
@@ -888,7 +983,9 @@
       }
       if (!prevReveal && state.revealAnswer && state.screen === 'playing') {
         const me = state.players.find(p => p.id === state.myId), qObj = state.questions[state.qIndex];
-        playTone(me && qObj && me.currentAnswer === qObj.ans ? 'correct' : 'wrong');
+        const isCorrect = me && qObj && me.currentAnswer === qObj.ans;
+        playTone(isCorrect ? 'correct' : 'wrong');
+        vibrateDevice(isCorrect ? [80, 50, 80] : 180);
       }
       render();
     }
@@ -901,6 +998,7 @@
 
     function syncAllPlayers() {
       if (!isHostRole()) return;
+      saveSessionState();
       const qObj = state.questions[state.qIndex];
       broadcastPayload({
         type: 'SYNC', screen: state.screen, countdownVal: state.countdownVal,
@@ -914,37 +1012,45 @@
     }
 
     function hostStartCompetition() {
+      vibrateDevice(40);
       requestScreenWakeLock();
       Object.assign(state, { taskResult: '', questions: getLocalQuestions(state.selectedTopics, state.questionLimit, state.difficulty), qIndex: 0 });
       state.players.forEach(p => Object.assign(p, { score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null }));
-      runPreGameCountdown();
+      runPreGameCountdown(5);
     }
 
-    function runPreGameCountdown() {
+    function runPreGameCountdown(startVal = 5) {
       clearInterval(state.timerInterval); clearInterval(state.revealInterval);
-      Object.assign(state, { screen: 'countdown', countdownVal: 5 });
+      Object.assign(state, { screen: 'countdown', countdownVal: startVal });
       syncAllPlayers(); render(); playTone('tick');
       state.timerInterval = setInterval(() => {
         if (--state.countdownVal <= 0) {
-          clearInterval(state.timerInterval); state.screen = 'playing'; beginQuestionCountdown();
+          clearInterval(state.timerInterval); state.screen = 'playing'; beginQuestionCountdown(false);
         } else {
           playTone('tick'); setText('preGameCountNum', state.countdownVal);
+          saveSessionState();
           broadcastPayload({ type: 'PRE_TICK', countdownVal: state.countdownVal }, false);
         }
       }, 1000);
     }
 
-    function beginQuestionCountdown() {
+    function beginQuestionCountdown(isResume = false) {
       clearInterval(state.timerInterval); clearInterval(state.revealInterval);
-      Object.assign(state, { timeLeft: state.questionDuration, revealAnswer: false });
-      state.players.forEach(p => Object.assign(p, { hasAnswered: false, currentAnswer: null, answerTime: 0, lastGain: 0 }));
+      if (!isResume) {
+        Object.assign(state, { timeLeft: state.questionDuration, revealAnswer: false });
+        state.players.forEach(p => Object.assign(p, { hasAnswered: false, currentAnswer: null, answerTime: 0, lastGain: 0 }));
+      }
       syncAllPlayers(); render();
       state.timerInterval = setInterval(() => {
         state.timeLeft--;
-        if (state.timeLeft <= 3 && state.timeLeft > 0) playTone('tick');
+        if (state.timeLeft <= 3 && state.timeLeft > 0) {
+          playTone('tick');
+          vibrateDevice(70);
+        }
         if (state.timeLeft <= 0) revealQuestionResult();
         else {
           updateTimerUI();
+          saveSessionState();
           if (isHostRole()) broadcastPayload({ type: 'TIMER_TICK', timeLeft: state.timeLeft }, false);
         }
       }, 1000);
@@ -954,11 +1060,26 @@
       if (state.role === 'projector_host') return;
       const me = state.players.find(p => p.id === state.myId);
       if (!me || state.revealAnswer) return;
+      vibrateDevice(35);
       Object.assign(me, { currentAnswer: optIdx, hasAnswered: true, answerTime: state.timeLeft });
       render();
       if (state.role === 'player' && state.mqttClient && state.roomCode) {
         state.mqttClient.publish(`majlis_ku_v17/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
       }
+    }
+
+    function startHostRevealInterval() {
+      clearInterval(state.revealInterval);
+      state.revealInterval = setInterval(() => {
+        if (--state.revealCountdown <= 0) {
+          clearInterval(state.revealInterval);
+          advanceToNextQuestion();
+        } else {
+          updateRevealUI();
+          saveSessionState();
+          broadcastPayload({ type: 'REVEAL_TICK', revealCountdown: state.revealCountdown }, false);
+        }
+      }, 1000);
     }
 
     function revealQuestionResult() {
@@ -975,28 +1096,31 @@
       });
 
       const me = state.players.find(p => p.id === state.myId);
-      if (me) playTone(me.currentAnswer === qObj.ans ? 'correct' : 'wrong');
-      else if (state.role === 'projector_host') playTone('correct');
+      if (me) {
+        const isCorrect = me.currentAnswer === qObj.ans;
+        playTone(isCorrect ? 'correct' : 'wrong');
+        vibrateDevice(isCorrect ? [80, 50, 80] : 180);
+      } else if (state.role === 'projector_host') {
+        playTone('correct');
+      }
       syncAllPlayers(); render();
 
-      if (isHostRole()) {
-        state.revealInterval = setInterval(() => {
-          if (--state.revealCountdown <= 0) { clearInterval(state.revealInterval); advanceToNextQuestion(); }
-          else { updateRevealUI(); broadcastPayload({ type: 'REVEAL_TICK', revealCountdown: state.revealCountdown }, false); }
-        }, 1000);
-      }
+      if (isHostRole()) startHostRevealInterval();
     }
 
     function advanceToNextQuestion() {
       clearInterval(state.revealInterval);
-      if (state.qIndex + 1 < state.questions.length) { state.qIndex++; beginQuestionCountdown(); }
-      else {
+      if (state.qIndex + 1 < state.questions.length) {
+        state.qIndex++;
+        beginQuestionCountdown(false);
+      } else {
         Object.assign(state, { comedyResult: getLocalComedyCommentary(), taskResult: generateTaskString(), screen: 'finished' });
         syncAllPlayers(); render();
       }
     }
 
     function regenerateComedyNow() {
+      vibrateDevice(30);
       state.comedyResult = getLocalComedyCommentary();
       syncAllPlayers(); render();
     }
@@ -1020,7 +1144,64 @@
       if (!state.selectedTopics.includes('پرسیارەکانی خۆم (تایبەت)')) state.selectedTopics.push('پرسیارەکانی خۆم (تایبەت)');
     }
 
-    render();
+    function initializeOrRestoreSession() {
+      const urlRoom = new URLSearchParams(window.location.search).get('room');
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(KEYS.SESSION) || 'null'); } catch (e) {}
+
+      const isSavedValid = saved && saved.roomCode && saved.screen !== 'welcome' && (Date.now() - (saved.ts || 0) < 7200000);
+      const isDifferentUrlRoom = urlRoom && (!isSavedValid || normalizeDigits(urlRoom) !== saved.roomCode);
+
+      if (isDifferentUrlRoom) {
+        state.roomCode = normalizeDigits(urlRoom);
+        state.welcomeTab = 'join';
+        render();
+        setTimeout(() => { if (state.myName.trim() && state.screen === 'welcome') joinHostRoom(); }, 2000);
+        return;
+      }
+
+      if (isSavedValid) {
+        Object.assign(state, {
+          role: saved.role,
+          screen: saved.screen,
+          roomCode: saved.roomCode,
+          vibeId: saved.vibeId || 'camping',
+          selectedTopics: saved.selectedTopics || [PRESET_TOPICS[0]],
+          difficulty: saved.difficulty || 'مامناوەند',
+          questionLimit: saved.questionLimit || 6,
+          questionDuration: saved.questionDuration || 15,
+          countdownVal: saved.countdownVal || 3,
+          revealCountdown: saved.revealCountdown || 3,
+          players: saved.players || [],
+          questions: saved.questions || [],
+          qIndex: saved.qIndex || 0,
+          timeLeft: saved.timeLeft || 10,
+          revealAnswer: !!saved.revealAnswer,
+          comedyResult: saved.comedyResult || { winnerJoke: '', loserJoke: '' },
+          taskResult: saved.taskResult || '',
+          isProjector: !!saved.isProjector
+        });
+        render();
+        requestScreenWakeLock();
+
+        if (isHostRole()) {
+          bindHostMqttChannel();
+          if (state.screen === 'countdown') runPreGameCountdown(Math.max(1, state.countdownVal));
+          else if (state.screen === 'playing') {
+            if (state.revealAnswer) startHostRevealInterval();
+            else beginQuestionCountdown(true);
+          }
+          showToast('🔄 ژوور و خاڵەکان وەک خۆیان گەڕێندرانەوە!');
+        } else if (state.role === 'player') {
+          joinHostRoom(true);
+        }
+        return;
+      }
+
+      render();
+    }
+
+    initializeOrRestoreSession();
   </script>
 </body>
 </html>
