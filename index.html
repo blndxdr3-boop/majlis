@@ -479,3 +479,699 @@
         ]
       }
     };
+    let state = {
+      welcomeTab: 'host', role: null, screen: 'welcome', myId: persistentId,
+      myName: localStorage.getItem(KEYS.NAME) || '', roomCode: '',
+      vibeId: 'camping', selectedTopics: [PRESET_TOPICS[0]],
+      difficulty: 'مامناوەند', questionLimit: 6, questionDuration: 15,
+      soundOn: true, connecting: false, countdownVal: 5, revealCountdown: 4,
+      timerInterval: null, revealInterval: null, mqttClient: null,
+      players: [], questions: [], qIndex: 0, timeLeft: 15,
+      isPaused: false, revealAnswer: false,
+      comedyResult: { winnerJoke: '', loserJoke: '' },
+      taskResult: '', isProjector: false
+    };
+
+    const urlRoom = new URLSearchParams(window.location.search).get('room');
+    if (urlRoom) {
+      state.roomCode = normalizeDigits(urlRoom);
+      state.welcomeTab = 'join';
+      setTimeout(() => { if (state.myName.trim() && state.screen === 'welcome') joinHostRoom(); }, 2000);
+    }
+
+    const isHostRole = () => state.role === 'host' || state.role === 'projector_host';
+    const isProjectorRole = () => state.role === 'projector_host';
+    const getActiveTopicsSummary = () => state.selectedTopics.join(' + ');
+
+    function cycleSetting(key, list) {
+      state[key] = list[(list.indexOf(state[key]) + 1) % list.length];
+      render();
+    }
+
+    function getPlayerRankTitle(rankIndex, total) {
+      const t = VIBE_RANK_TITLES[state.vibeId] || VIBE_RANK_TITLES.friends_funny;
+      return rankIndex === 0 ? t.first : (total > 1 && rankIndex === total - 1) ? t.last : (total > 2 && rankIndex === total - 2) ? t.secondLast : t.mid;
+    }
+
+    function showToast(textContent) {
+      document.querySelector('.toast-msg')?.remove();
+      const t = Object.assign(document.createElement('div'), { className: 'toast-msg', textContent });
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3200);
+    }
+
+    let audioCtx = null;
+    function playTone(type) {
+      if (!state.soundOn) return;
+      try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(), now = audioCtx.currentTime;
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        if (type === 'correct') {
+          [523.25, 659.25, 783.99].forEach((f, i) => osc.frequency.setValueAtTime(f, now + i * 0.1));
+          gain.gain.setValueAtTime(0.14, now); osc.start(); osc.stop(now + 0.32);
+        } else if (type === 'wrong') {
+          osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.setValueAtTime(150, now + 0.15);
+          gain.gain.setValueAtTime(0.14, now); osc.start(); osc.stop(now + 0.3);
+        } else {
+          osc.frequency.setValueAtTime(680, now); gain.gain.setValueAtTime(0.04, now); osc.start(); osc.stop(now + 0.05);
+        }
+      } catch (e) {}
+    }
+
+    function toggleThemeMode() {
+      const isLight = document.body.classList.toggle('light-mode');
+      localStorage.setItem(KEYS.THEME, isLight ? 'light' : 'dark');
+      showToast(isLight ? '☀️ دۆخی ڕۆژ چالاک کرا' : '🌙 دۆخی شەو چالاک کرا');
+    }
+
+    function toggleSound() {
+      state.soundOn = !state.soundOn;
+      setText('soundBtnLabel', state.soundOn ? '🔊 دەنگی یاری: چالاکە' : '🔇 دەنگی یاری: بێدەنگە');
+    }
+
+    function markQuestionSeen(qText) {
+      if (!seenQuestions.includes(qText)) {
+        seenQuestions.push(qText);
+        if (seenQuestions.length > 500) seenQuestions.shift();
+        try { localStorage.setItem(KEYS.SEEN, JSON.stringify(seenQuestions)); } catch (e) {}
+      }
+    }
+
+    function handleTopicChipClick(topic) {
+      const idx = state.selectedTopics.indexOf(topic);
+      if (idx > -1) { if (state.selectedTopics.length > 1) state.selectedTopics.splice(idx, 1); }
+      else state.selectedTopics.push(topic);
+      render();
+    }
+
+    function getLocalQuestions(topicsList, count, difficulty) {
+      let pool = [];
+      topicsList.forEach(t => pool.push(...(t === 'پرسیارەکانی خۆم (تایبەت)' ? customQuestions : (QUESTION_BANK[t] || []))));
+      if (!pool.length) Object.values(QUESTION_BANK).forEach(arr => pool.push(...arr));
+
+      let unseen = pool.filter(i => !seenQuestions.includes(i.q));
+      if (unseen.length < count) {
+        const poolTexts = pool.map(x => x.q);
+        seenQuestions = seenQuestions.filter(q => !poolTexts.includes(q));
+        try { localStorage.setItem(KEYS.SEEN, JSON.stringify(seenQuestions)); } catch (e) {}
+        unseen = [...pool];
+      }
+
+      return unseen
+        .sort((a, b) => ((b.diff === difficulty ? 1 : 0) - (a.diff === difficulty ? 1 : 0)) || (Math.random() - 0.5))
+        .slice(0, count)
+        .map(item => {
+          const correctText = item.opts[item.ans ?? 0], opts = [...item.opts].sort(() => Math.random() - 0.5);
+          markQuestionSeen(item.q);
+          return { q: item.q, opts, ans: opts.indexOf(correctText) };
+        });
+    }
+
+    function getLocalComedyCommentary() {
+      const sorted = [...state.players].sort((a, b) => b.score - a.score);
+      const winner = sorted[0] || { name: 'پاڵەوان', score: 0 };
+      const bank = VIBE_COMEDY_BANK[state.vibeId] || VIBE_COMEDY_BANK.friends_funny;
+      return {
+        winnerJoke: pickRand(bank.win).replace('{winner}', winner.name),
+        loserJoke: state.players.length <= 1
+          ? `چونکە بە تەنها یاریت کرد (${winner.name})، هەم براوەیت و هەم دۆڕاو! دەبێت خۆت چایەک بۆ خۆت تێبکەیت و دەستخۆشی لە خۆت بکەیت!`
+          : pickRand(bank.lose).replace('{losers}', sorted.slice(1).map(p => p.name).join(' و '))
+      };
+    }
+
+    function generateTaskString() {
+      const sorted = [...state.players].sort((a, b) => b.score - a.score);
+      const target = pickRand(sorted.length > 1 ? sorted.slice(1) : sorted);
+      const bank = VIBE_COMEDY_BANK[state.vibeId] || VIBE_COMEDY_BANK.friends_funny;
+      return `بۆ (${target ? target.name : 'دۆڕاو'}): ${pickRand(bank.tasks)}`;
+    }
+
+    function spinVibePenaltyTask() {
+      if (!isProjectorRole()) return;
+      state.taskResult = generateTaskString();
+      playTone('correct');
+      syncAllPlayers();
+      render();
+    }
+
+    function regenerateComedyNow() {
+      if (!isProjectorRole()) return;
+      state.comedyResult = getLocalComedyCommentary();
+      syncAllPlayers();
+      render();
+    }
+
+    function togglePauseTimer() {
+      if (!isProjectorRole() || state.revealAnswer) return;
+      state.isPaused = !state.isPaused;
+      broadcastPayload({ type: 'PAUSE_STATE', isPaused: state.isPaused, timeLeft: state.timeLeft }, false);
+      render();
+    }
+
+    function resetToHome() {
+      clearInterval(state.timerInterval); clearInterval(state.revealInterval);
+      try { state.mqttClient?.end(true); } catch (e) {}
+      state.mqttClient = null;
+      window.history.replaceState({}, document.title, window.location.pathname);
+      Object.assign(state, { screen: 'welcome', role: null, connecting: false, isPaused: false });
+      render();
+    }
+
+    function updateTimerUI() {
+      setText('liveTimeLabel', state.isPaused ? `⏸️ وەستاوە (${state.timeLeft} چرکە)` : `⏱️ ${state.timeLeft} چرکە`);
+      const fill = document.getElementById('liveTimeFill');
+      if (fill) fill.style.width = `${Math.max(0, (state.timeLeft / state.questionDuration) * 100)}%`;
+    }
+
+    function updateRevealUI() {
+      setText('autoNextBanner', state.qIndex + 1 < state.questions.length
+        ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکە...`
+        : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکە...`);
+    }
+
+    function render() {
+      const vibeObj = QUESTION_VIBES.find(v => v.id === state.vibeId) || QUESTION_VIBES[0];
+      setText('headerBrandIcon', vibeObj.icon);
+
+      const headerMenu = document.getElementById('headerMenuContainer');
+      if (headerMenu) {
+        const hideMenu = state.role === 'player' || (state.screen === 'welcome' && state.welcomeTab === 'join');
+        headerMenu.innerHTML = hideMenu ? '' : `<button class="menu-lines-btn" onclick="toggleModal('settingsModal',true)" title="لیستی سەرەکی"><span></span><span></span><span></span></button>`;
+      }
+
+      const views = { welcome: renderWelcomeScreen, lobby: renderLobbyScreen, countdown: renderCountdownScreen, playing: renderPlayingScreen, finished: renderFinishedScreen };
+      const box = document.getElementById('appContainer');
+      if (box && views[state.screen]) box.innerHTML = views[state.screen]();
+      if (state.screen === 'lobby' && isHostRole()) setTimeout(drawQRCode, 50);
+    }
+
+    function renderWelcomeScreen() {
+      const tabsHtml = `
+        <div class="welcome-tabs">
+          <button class="w-tab ${state.welcomeTab === 'host' ? 'active' : ''}" onclick="state.welcomeTab='host';render();">👑 دروستکردنی مەجلیس</button>
+          <button class="w-tab ${state.welcomeTab === 'join' ? 'active' : ''}" onclick="state.welcomeTab='join';render();">📲 چوونە ژوورەوە</button>
+          <button class="w-tab ${state.welcomeTab === 'history' ? 'active' : ''}" onclick="state.welcomeTab='history';render();">📜 مێژووی یارییەکان</button>
+        </div>
+      `;
+
+      if (state.welcomeTab === 'history') {
+        return `
+          <div class="card" style="text-align:center;">
+            ${tabsHtml}
+            <h2>📜 مێژووی یارییەکان</h2>
+            <p class="sub" style="margin-bottom:0;">ئەم بەشە ئامادەیە بۆ زیادکردنی زانیارییەکان...</p>
+          </div>
+        `;
+      }
+
+      if (state.welcomeTab === 'join') {
+        return `
+          <div class="card">
+            ${tabsHtml}
+            <h2>📲 پەیوەستبوون بە مەجلیس</h2>
+            <p class="sub">ناوی خۆت و کۆدی ژوورەکە بنووسە:</p>
+            <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value;localStorage.setItem(KEYS.NAME,this.value);" />
+            <input type="text" id="codeInp" class="input" inputmode="numeric" placeholder="کۆدی ٤ ژمارەیی ژوور (بۆ نموونە: 6549)" value="${state.roomCode}" oninput="state.roomCode=normalizeDigits(this.value);" style="letter-spacing:3px;direction:ltr;" />
+            <button class="btn btn-emerald" ${state.connecting ? 'disabled' : ''} onclick="joinHostRoom()">
+              ${state.connecting ? '⏳ خەریکی پەیوەستبوونە...' : '🔗 چوونە ناو یارییەکە'}
+            </button>
+          </div>
+        `;
+      }
+
+      const vibesChipsHtml = QUESTION_VIBES.map(v => `
+        <button class="chip-btn ${state.vibeId === v.id ? 'active' : ''}" onclick="state.vibeId='${v.id}';render();">${v.icon} ${v.title}</button>
+      `).join('');
+
+      const visibleTopics = PRESET_TOPICS.filter(t => t !== 'پرسیارەکانی خۆم (تایبەت)' || customQuestions.length > 0);
+      const topicChipsHtml = visibleTopics.map(t => `
+        <button class="chip-btn ${state.selectedTopics.includes(t) ? 'active' : ''}" onclick="handleTopicChipClick('${t}')">
+          ${t === 'پرسیارەکانی خۆم (تایبەت)' ? `✍️ پرسیاری خۆم (${customQuestions.length})` : t}
+        </button>
+      `).join('');
+
+      const topRowHtml = state.isProjector
+        ? `<div class="host-top-row"><button class="proj-toggle-btn active" onclick="state.isProjector=false;render();">🖥️ دۆخی داتاشۆ چالاکە (تۆ تەنها سەرپەرشتیاریت) ✕</button></div>`
+        : `<div class="host-top-row">
+             <input type="text" id="nameInp" class="input" placeholder="ناوی خۆت بنووسە..." value="${state.myName}" oninput="state.myName=this.value;localStorage.setItem(KEYS.NAME,this.value);" />
+             <button class="proj-toggle-btn" onclick="state.isProjector=true;render();" title="بۆ داتاشۆ بێ بەشداریکردنی خۆت">🖥️ داتاشۆ</button>
+           </div>`;
+
+      return `
+        <div class="card">
+          ${tabsHtml}
+          ${topRowHtml}
+          <div class="section-box">
+            <div class="section-label">🎭 شێوازی دانیشتن</div>
+            <div class="chips-wrap">${vibesChipsHtml}</div>
+          </div>
+          <div class="section-box">
+            <div class="section-label">📚 بابەتی پرسیارەکان</div>
+            <div class="chips-wrap">${topicChipsHtml}</div>
+          </div>
+          <div class="cycle-grid">
+            <button class="cycle-btn" onclick="cycleSetting('questionLimit',[6,8,10,14])"><small>ژمارەی پرسیار</small><strong>${state.questionLimit} پرسیار 🔄</strong></button>
+            <button class="cycle-btn" onclick="cycleSetting('difficulty',['ئاسان','مامناوەند','قورس'])"><small>ئاستی پرسیار</small><strong>${state.difficulty} 🔄</strong></button>
+            <button class="cycle-btn" onclick="cycleSetting('questionDuration',[12,15,25])"><small>کاتی وەڵام</small><strong>${state.questionDuration} چرکە 🔄</strong></button>
+          </div>
+          <button class="btn btn-primary" style="margin-bottom:0;" onclick="startRoom()">
+            ${state.isProjector ? '🖥️ دروستکردنی ژووری داتاشۆ' : '🚀 دروستکردنی مەجلیس و بارکۆد'}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderLobbyScreen() {
+      const joinUrl = `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`;
+      const pinDigitsHtml = String(state.roomCode).split('').map(d => `<div class="pin-digit">${d}</div>`).join('');
+      const playersChips = state.players.length
+        ? state.players.map(p => `
+            <div class="p-badge">
+              <span>👤 ${p.name}</span>
+              ${isHostRole() && p.id !== state.myId ? `<button class="kick-btn" onclick="kickPlayer('${p.id}')" title="لادانی یاریزان">✕</button>` : ''}
+            </div>
+          `).join('')
+        : `<p style="font-size:0.8rem;color:var(--muted-main);">چاوەڕوانی هاتنەژوورەوەی یاریزانان...</p>`;
+
+      return isHostRole() ? `
+        <div class="card" style="text-align:center;">
+          <h2>📱 بارکۆدی هاتنەژوورەوەی هاوڕێیان</h2>
+          <p class="sub">${getActiveTopicsSummary()} • ${state.difficulty}</p>
+          <div class="qr-wrap" id="qrcode"></div>
+          <div class="pin-boxes">${pinDigitsHtml}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            <button class="btn" onclick="copyInvite('${joinUrl}')">📋 کۆپیکردنی لینک</button>
+            <button class="btn btn-emerald" onclick="shareInviteWA('${joinUrl}')">📤 بانگهێشتکردن</button>
+          </div>
+          <h3 style="font-size:0.9rem;">👥 ئامادەبووان (${state.players.length} کەس):</h3>
+          <div class="players-wrap">${playersChips}</div>
+          <button class="btn btn-primary" style="margin-top:12px;margin-bottom:0;font-size:1rem;" onclick="hostStartCompetition()">▶️ دەستپێکردنی یاری</button>
+        </div>
+      ` : `
+        <div class="card" style="text-align:center;">
+          <h2>✅ تۆ لە ناو مەجلیسەکەدایت!</h2>
+          <p class="sub">چاوەڕێ بکە تا سەرپەرشتیاری ژوورەکە یارییەکە دەست پێ دەکات...</p>
+          <div class="pin-boxes">${pinDigitsHtml}</div>
+          <h3 style="font-size:0.9rem;">👥 هاوڕێیانی ئامادەبوو (${state.players.length}):</h3>
+          <div class="players-wrap">${playersChips}</div>
+        </div>
+      `;
+    }
+
+    function renderCountdownScreen() {
+      return `
+        <div class="card countdown-overlay">
+          <h2>🚀 ئامادەبن!</h2>
+          <p class="sub">${getActiveTopicsSummary()} • ${state.difficulty}</p>
+          <div class="countdown-num" id="preGameCountNum">${state.countdownVal}</div>
+        </div>
+      `;
+    }
+
+    function renderPlayingScreen() {
+      const qObj = state.questions[state.qIndex] || { q: '...', opts: ['', '', '', ''], ans: null };
+      const myAns = state.players.find(p => p.id === state.myId)?.currentAnswer ?? null;
+      const pct = Math.max(0, (state.timeLeft / state.questionDuration) * 100);
+      const vibeObj = QUESTION_VIBES.find(v => v.id === state.vibeId) || QUESTION_VIBES[0];
+      const isProjHost = isProjectorRole();
+
+      const optsHtml = qObj.opts.map((opt, idx) => {
+        const cls = 'opt-card' + (state.revealAnswer ? (idx === qObj.ans ? ' correct' : (myAns === idx ? ' wrong' : '')) : (myAns === idx ? ' selected' : ''));
+        const icon = state.revealAnswer ? (idx === qObj.ans ? '✅' : (myAns === idx ? '❌' : '')) : '';
+        return `
+          <button class="${cls}" ${state.revealAnswer || isProjHost ? 'disabled' : ''} onclick="submitPlayerAnswer(${idx})">
+            <div class="opt-right"><span class="opt-num">${idx + 1}</span><span>${opt}</span></div>
+            <span>${icon}</span>
+          </button>
+        `;
+      }).join('');
+
+      const sorted = [...state.players].sort((a, b) => b.score - a.score);
+      const leaderboardCardHtml = (state.revealAnswer || isProjHost) && sorted.length ? `
+        <div class="card">
+          <h3 style="margin-bottom:8px;font-size:0.9rem;">📊 ڕیزبەندی خاڵەکان:</h3>
+          ${sorted.map((p, i) => `
+            <div class="leader-row ${i === 0 ? 'first' : ''}">
+              <span>
+                ${i === 0 ? '👑' : `${i + 1}.`} ${p.name}
+                ${p.streak >= 2 ? `<small style="color:var(--amber);">🔥x${p.streak}</small>` : ''}
+                ${state.revealAnswer && p.lastGain > 0 ? `<span class="gain-badge">+${p.lastGain}</span>` : ''}
+              </span>
+              <span style="color:var(--amber);">${p.score} خاڵ</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : '';
+
+      return `
+        <div class="card">
+          <div class="quiz-top-meta">
+            <span>پرسیاری ${state.qIndex + 1} / ${state.questions.length}</span>
+            <span class="source-tag">${vibeObj.icon} ژوور: ${state.roomCode}</span>
+            <span id="liveTimeLabel" style="color:var(--amber);">${state.isPaused ? `⏸️ وەستاوە (${state.timeLeft} چرکە)` : `⏱️ ${state.timeLeft} چرکە`}</span>
+          </div>
+          <div class="timer-track"><div class="timer-fill" id="liveTimeFill" style="width:${pct}%"></div></div>
+          <div class="q-banner">${qObj.q}</div>
+          <div class="opts-list">${optsHtml}</div>
+          ${isProjHost && !state.revealAnswer ? `
+            <button class="btn ${state.isPaused ? 'btn-emerald' : 'btn-amber'}" style="margin-top:12px;margin-bottom:0;" onclick="togglePauseTimer()">
+              ${state.isPaused ? '▶️ دەستپێکردنەوەی کات' : '⏸️ ڕاگرتنی کات'}
+            </button>
+          ` : ''}
+          ${state.revealAnswer ? `<div class="next-auto-banner" id="autoNextBanner">${state.qIndex + 1 < state.questions.length ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکە...` : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکە...`}</div>` : ''}
+        </div>
+        ${leaderboardCardHtml}
+      `;
+    }
+
+    function renderFinishedScreen() {
+      const sorted = [...state.players].sort((a, b) => b.score - a.score), winner = sorted[0];
+      const medals = ['🥇', '🥈', '🥉'];
+      const isProjHost = isProjectorRole();
+
+      const ranksHtml = sorted.map((p, i) => `
+        <div class="leader-row ${i === 0 ? 'first' : ''}">
+          <span>${medals[i] || `${i + 1}.`} ${p.name} <span class="vibe-rank-tag">${getPlayerRankTitle(i, sorted.length)}</span></span>
+          <span style="color:var(--amber);">${p.score} خاڵ</span>
+        </div>
+      `).join('');
+
+      return `
+        <div class="card" style="text-align:center;">
+          <h2>🏆 پاڵەوانی مەجلیس: ${winner ? winner.name : 'هیچ'} (${winner ? winner.score : 0} خاڵ)</h2>
+          <div class="comedy-grid">
+            <div class="comedy-card winner-box">
+              <div class="comedy-head">
+                <span>👑 براوەی مەجلیس:</span>
+                ${isProjHost ? `<button class="mini-icon-btn" onclick="regenerateComedyNow()" title="گۆڕینی قسە">🔄 گۆڕینی قسە</button>` : ''}
+              </div>
+              <div>"${state.comedyResult.winnerJoke || 'بژی پاڵەوان!'}"</div>
+            </div>
+            <div class="comedy-card loser-box">
+              <div class="comedy-head"><span>☕ بۆ دۆڕاوەکان:</span></div>
+              <div>"${state.comedyResult.loserJoke || 'جاری داهاتوو هەوڵ بدەنەوە!'}"</div>
+            </div>
+            <div class="comedy-card task-box">
+              <div class="comedy-head">
+                <span>🎯 سزای تیروپشک:</span>
+                ${isProjHost ? `<button class="mini-icon-btn" onclick="spinVibePenaltyTask()" title="سزایەکی تر">🎲 گۆڕینی سزا</button>` : ''}
+              </div>
+              <div>${state.taskResult}</div>
+            </div>
+          </div>
+          <div style="text-align:right;margin:12px 0;">
+            <h3 style="font-size:0.9rem;margin-bottom:6px;">📋 ڕیزبەندی و نازناوەکان:</h3>
+            ${ranksHtml}
+          </div>
+          ${isHostRole() ? `<button class="btn btn-emerald" style="margin-bottom:0;" onclick="hostStartCompetition()">🔄 خولێکی نوێ لەگەڵ هاوڕێیان</button>` : ''}
+        </div>
+      `;
+    }
+
+    function drawQRCode() {
+      const box = document.getElementById('qrcode');
+      if (!box) return;
+      box.innerHTML = '';
+      new QRCode(box, { text: `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`, width: 175, height: 175, colorDark: "#0f172a", colorLight: "#ffffff" });
+    }
+
+    function copyInvite(url) {
+      navigator.clipboard.writeText(url);
+      showToast('📋 لینکی مەجلیس کۆپی کرا!');
+    }
+
+    function shareInviteWA(url) {
+      const msg = `🎲 وەرنە ناو پێشبڕکێی مەجلیس! کۆدی ژوور: (${state.roomCode})\nکلیک لەم لینکە بکەن:\n${url}`;
+      if (navigator.share) navigator.share({ title: 'مەجلیس', text: msg, url }).catch(() => {});
+      else window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function kickPlayer(playerId) {
+      state.players = state.players.filter(p => p.id !== playerId);
+      syncAllPlayers(); render();
+    }
+
+    function connectMqttBroker(onConnected) {
+      try { state.mqttClient?.end(true); } catch (e) {}
+      const brokers = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt'];
+      let bIdx = 0, connected = false;
+
+      function tryConnect() {
+        const client = mqtt.connect(brokers[bIdx % brokers.length], {
+          clientId: 'majlis_' + state.myId + '_' + Math.random().toString(16).slice(2, 6),
+          clean: true, connectTimeout: 4500, reconnectPeriod: 2000
+        });
+        state.mqttClient = client;
+
+        const failTimer = setTimeout(() => {
+          if (!connected) {
+            try { client.end(true); } catch (e) {}
+            if (++bIdx < brokers.length) tryConnect();
+            else if (isHostRole()) onConnected(client);
+          }
+        }, 4600);
+
+        client.on('connect', () => {
+          if (!connected) { connected = true; clearTimeout(failTimer); onConnected(client); }
+        });
+      }
+      tryConnect();
+    }
+
+    function startRoom() {
+      const isProj = state.isProjector;
+      const name = (state.myName || '').trim();
+      if (!isProj && !name) return showToast('⚠️ تکایە سەرەتا ناوی خۆت بنووسە!');
+      if (!isProj) localStorage.setItem(KEYS.NAME, name);
+      requestScreenWakeLock();
+
+      Object.assign(state, {
+        role: isProj ? 'projector_host' : 'host',
+        connecting: false,
+        roomCode: String(Math.floor(1000 + Math.random() * 9000)),
+        players: isProj ? [] : [{ id: state.myId, name: state.myName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 }],
+        screen: 'lobby'
+      });
+      render();
+
+      const actionTopic = `majlis_ku_v18/room/${state.roomCode}/action`;
+      connectMqttBroker(client => {
+        client.subscribe(actionTopic, { qos: 1 }, syncAllPlayers);
+        client.on('message', (t, msg) => {
+          if (t === actionTopic) try { onHostReceiveData(JSON.parse(msg.toString())); } catch (e) {}
+        });
+      });
+    }
+
+    function joinHostRoom() {
+      const name = (state.myName || '').trim(), code = normalizeDigits(state.roomCode);
+      state.roomCode = code;
+      if (!name || !code) return showToast('⚠️ تکایە ناوی خۆت و کۆدی ژوورەکە بنووسە!');
+      localStorage.setItem(KEYS.NAME, name);
+      requestScreenWakeLock();
+      Object.assign(state, { role: 'player', isProjector: false, connecting: true });
+      render();
+
+      const stateTopic = `majlis_ku_v18/room/${code}/state`, actionTopic = `majlis_ku_v18/room/${code}/action`;
+      connectMqttBroker(client => {
+        let received = false;
+        const joinTimeout = setTimeout(() => {
+          if (!received && state.connecting) {
+            state.connecting = false;
+            showToast('⚠️ ئەم کۆدی ژوورە نەدۆزرایەوە! دڵنیابە لە کۆدەکە.');
+            render();
+          }
+        }, 7500);
+
+        const pubJoin = () => client.publish(actionTopic, JSON.stringify({ type: 'JOIN', id: state.myId, name: state.myName }), { qos: 1 });
+        client.subscribe(stateTopic, { qos: 1 }, pubJoin);
+        client.on('message', (t, msg) => {
+          if (t === stateTopic) try {
+            const data = JSON.parse(msg.toString());
+            received = true; clearTimeout(joinTimeout); state.connecting = false;
+            onPlayerReceiveData(data);
+            if (data.players && !data.players.some(p => p.id === state.myId)) pubJoin();
+          } catch (e) {}
+        });
+      });
+    }
+
+    function onHostReceiveData(data) {
+      if (data.type === 'JOIN') {
+        const existing = state.players.find(p => p.id === data.id);
+        if (existing) existing.name = data.name;
+        else {
+          const cleanName = state.players.some(p => p.name === data.name && p.id !== data.id) ? `${data.name} (${state.players.length + 1})` : data.name;
+          state.players.push({ id: data.id, name: cleanName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 });
+        }
+        syncAllPlayers(); render();
+      } else if (data.type === 'ANSWER') {
+        const p = state.players.find(x => x.id === data.id);
+        if (p && !state.revealAnswer) Object.assign(p, { currentAnswer: data.ansIdx, hasAnswered: true, answerTime: state.timeLeft });
+      }
+    }
+
+    function onPlayerReceiveData(data) {
+      if (data.type === 'PRE_TICK') { state.countdownVal = data.countdownVal; return setText('preGameCountNum', state.countdownVal); }
+      if (data.type === 'TIMER_TICK') { state.timeLeft = data.timeLeft; return updateTimerUI(); }
+      if (data.type === 'PAUSE_STATE') { state.isPaused = data.isPaused; state.timeLeft = data.timeLeft; return updateTimerUI(); }
+      if (data.type === 'REVEAL_TICK') { state.revealCountdown = data.revealCountdown; return updateRevealUI(); }
+      if (data.type !== 'SYNC') return;
+
+      const { revealAnswer: prevReveal, qIndex: prevQIndex } = state;
+      Object.assign(state, {
+        screen: data.screen, countdownVal: data.countdownVal, qIndex: data.qIndex,
+        timeLeft: data.timeLeft, questionDuration: data.questionDuration,
+        isPaused: Boolean(data.isPaused), revealAnswer: data.revealAnswer,
+        revealCountdown: data.revealCountdown || 4, taskResult: data.taskResult || '',
+        difficulty: data.difficulty || 'مامناوەند', vibeId: data.vibeId || 'camping'
+      });
+      if (data.comedyResult) state.comedyResult = data.comedyResult;
+
+      const myOld = state.players.find(p => p.id === state.myId);
+      const keepMyChoice = !data.revealAnswer && prevQIndex === data.qIndex && myOld;
+      state.players = data.players.map(p => (p.id === state.myId && keepMyChoice) ? { ...p, currentAnswer: myOld.currentAnswer, hasAnswered: myOld.hasAnswered } : p);
+
+      if (!state.players.some(p => p.id === state.myId)) {
+        state.players.push({ id: state.myId, name: state.myName, score: 0, lastGain: 0, streak: 0, hasAnswered: keepMyChoice ? myOld.hasAnswered : false, currentAnswer: keepMyChoice ? myOld.currentAnswer : null });
+      }
+      if (data.currentQuestion) {
+        state.questions = new Array(data.totalQuestions).fill(null);
+        state.questions[state.qIndex] = data.currentQuestion;
+      }
+      if (!prevReveal && state.revealAnswer && state.screen === 'playing') {
+        const me = state.players.find(p => p.id === state.myId), qObj = state.questions[state.qIndex];
+        playTone(me && qObj && me.currentAnswer === qObj.ans ? 'correct' : 'wrong');
+      }
+      render();
+    }
+
+    function broadcastPayload(payload, retain = false) {
+      if (isHostRole() && state.mqttClient && state.roomCode) {
+        try { state.mqttClient.publish(`majlis_ku_v18/room/${state.roomCode}/state`, JSON.stringify(payload), { qos: 0, retain }); } catch (e) {}
+      }
+    }
+
+    function syncAllPlayers() {
+      if (!isHostRole()) return;
+      const qObj = state.questions[state.qIndex];
+      broadcastPayload({
+        type: 'SYNC', screen: state.screen, countdownVal: state.countdownVal,
+        vibeId: state.vibeId, difficulty: state.difficulty, isPaused: state.isPaused,
+        players: state.players.map(p => ({ id: p.id, name: p.name, score: p.score, lastGain: state.revealAnswer ? p.lastGain : 0, streak: p.streak, hasAnswered: false, currentAnswer: state.revealAnswer ? p.currentAnswer : null })),
+        currentQuestion: qObj ? { q: qObj.q, opts: qObj.opts, ans: state.revealAnswer ? qObj.ans : null } : null,
+        totalQuestions: state.questions.length, qIndex: state.qIndex, timeLeft: state.timeLeft,
+        questionDuration: state.questionDuration, revealAnswer: state.revealAnswer,
+        revealCountdown: state.revealCountdown, comedyResult: state.comedyResult, taskResult: state.taskResult
+      }, true);
+    }
+
+    function hostStartCompetition() {
+      requestScreenWakeLock();
+      Object.assign(state, { taskResult: '', isPaused: false, questions: getLocalQuestions(state.selectedTopics, state.questionLimit, state.difficulty), qIndex: 0 });
+      state.players.forEach(p => Object.assign(p, { score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null }));
+      runPreGameCountdown();
+    }
+
+    function runPreGameCountdown() {
+      clearInterval(state.timerInterval); clearInterval(state.revealInterval);
+      Object.assign(state, { screen: 'countdown', countdownVal: 5 });
+      syncAllPlayers(); render(); playTone('tick');
+      state.timerInterval = setInterval(() => {
+        if (--state.countdownVal <= 0) {
+          clearInterval(state.timerInterval); state.screen = 'playing'; beginQuestionCountdown();
+        } else {
+          playTone('tick'); setText('preGameCountNum', state.countdownVal);
+          broadcastPayload({ type: 'PRE_TICK', countdownVal: state.countdownVal }, false);
+        }
+      }, 1000);
+    }
+
+    function beginQuestionCountdown() {
+      clearInterval(state.timerInterval); clearInterval(state.revealInterval);
+      Object.assign(state, { timeLeft: state.questionDuration, revealAnswer: false, isPaused: false });
+      state.players.forEach(p => Object.assign(p, { hasAnswered: false, currentAnswer: null, answerTime: 0, lastGain: 0 }));
+      syncAllPlayers(); render();
+      state.timerInterval = setInterval(() => {
+        if (state.isPaused) return;
+        state.timeLeft--;
+        if (state.timeLeft <= 3 && state.timeLeft > 0) playTone('tick');
+        if (state.timeLeft <= 0) revealQuestionResult();
+        else {
+          updateTimerUI();
+          if (isHostRole()) broadcastPayload({ type: 'TIMER_TICK', timeLeft: state.timeLeft }, false);
+        }
+      }, 1000);
+    }
+
+    function submitPlayerAnswer(optIdx) {
+      if (isProjectorRole()) return;
+      const me = state.players.find(p => p.id === state.myId);
+      if (!me || state.revealAnswer) return;
+      Object.assign(me, { currentAnswer: optIdx, hasAnswered: true, answerTime: state.timeLeft });
+      render();
+      if (state.role === 'player' && state.mqttClient && state.roomCode) {
+        state.mqttClient.publish(`majlis_ku_v18/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
+      }
+    }
+
+    function revealQuestionResult() {
+      clearInterval(state.timerInterval); clearInterval(state.revealInterval);
+      Object.assign(state, { revealAnswer: true, revealCountdown: 4, isPaused: false });
+      const qObj = state.questions[state.qIndex];
+
+      state.players.forEach(p => {
+        if (p.currentAnswer === qObj.ans) {
+          p.streak = (p.streak || 0) + 1;
+          p.lastGain = 100 + Math.round((p.answerTime / state.questionDuration) * 60) + (p.streak >= 2 ? 25 : 0);
+          p.score += p.lastGain;
+        } else { p.streak = 0; p.lastGain = 0; }
+      });
+
+      const me = state.players.find(p => p.id === state.myId);
+      if (me) playTone(me.currentAnswer === qObj.ans ? 'correct' : 'wrong');
+      else if (isProjectorRole()) playTone('correct');
+      syncAllPlayers(); render();
+
+      if (isHostRole()) {
+        state.revealInterval = setInterval(() => {
+          if (--state.revealCountdown <= 0) { clearInterval(state.revealInterval); advanceToNextQuestion(); }
+          else { updateRevealUI(); broadcastPayload({ type: 'REVEAL_TICK', revealCountdown: state.revealCountdown }, false); }
+        }, 1000);
+      }
+    }
+
+    function advanceToNextQuestion() {
+      clearInterval(state.revealInterval);
+      if (state.qIndex + 1 < state.questions.length) { state.qIndex++; beginQuestionCountdown(); }
+      else {
+        Object.assign(state, { comedyResult: getLocalComedyCommentary(), taskResult: generateTaskString(), screen: 'finished' });
+        syncAllPlayers(); render();
+      }
+    }
+
+    function openCustomQModal() {
+      toggleModal('settingsModal', false);
+      setText('customQStatus', `کۆی پرسیارە تایبەتەکانت: ${customQuestions.length} پرسیار`);
+      toggleModal('customQModal', true);
+    }
+
+    function saveCustomQuestion() {
+      const ids = ['cqText', 'cqOpt0', 'cqOpt1', 'cqOpt2', 'cqOpt3'];
+      const [q, o0, o1, o2, o3] = ids.map(id => document.getElementById(id).value.trim());
+      if (!q || !o0 || !o1 || !o2 || !o3) return showToast('⚠️ تکایە پرسیارەکە و هەر ٤ هەڵبژاردەکە پڕ بکەرەوە!');
+
+      const opts = [o0, o1, o2, o3].sort(() => Math.random() - 0.5);
+      customQuestions.push({ q, opts, ans: opts.indexOf(o0), diff: state.difficulty });
+      localStorage.setItem(KEYS.CUSTOM, JSON.stringify(customQuestions));
+      ids.forEach(id => document.getElementById(id).value = '');
+      setText('customQStatus', `✅ زیادکرا! کۆی پرسیارە تایبەتەکانت: ${customQuestions.length}`);
+      if (!state.selectedTopics.includes('پرسیارەکانی خۆم (تایبەت)')) state.selectedTopics.push('پرسیارەکانی خۆم (تایبەت)');
+    }
+
+    render();
+  </script>
+</body>
+</html>
