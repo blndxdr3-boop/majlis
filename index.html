@@ -134,25 +134,38 @@
 
     .leader-row { padding: 10px 12px; border-radius: 11px; background: var(--bg-card); color: var(--text-card); border: 1.5px solid var(--border); margin-bottom: 7px; font-weight: 800; font-size: 0.86rem; gap: 6px; flex-wrap: wrap; transition: 0.25s; }
     .leader-row.first { border: 2px solid var(--amber); }
-    .vibe-rank-tag { font-size: 0.7rem; padding: 2px 7px; border-radius: 50px; background: var(--bg-elevated); color: var(--text-card); margin-right: 5px; }
+    .vibe-rank-tag { font-size: 0.72rem; padding: 3px 9px; border-radius: 50px; background: var(--bg-elevated); color: var(--text-card); margin-right: 5px; border: 1px solid var(--border); }
 
-    .podium-wrap { display: grid; grid-template-columns: repeat(3, 1fr); align-items: end; gap: 8px; margin: 16px 0 18px; padding-top: 10px; }
+    /* Podium & Vibrant Titles */
+    .podium-wrap { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin: 18px 0 20px; padding-top: 8px; }
     .podium-col { display: flex; flex-direction: column; align-items: center; text-align: center; }
-    .podium-medal { font-size: 1.7rem; margin-bottom: 2px; }
-    .podium-name { font-size: 0.82rem; font-weight: 900; color: var(--text-main); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px; }
-    .podium-role { font-size: 0.65rem; font-weight: 800; color: var(--muted-main); margin-bottom: 6px; line-height: 1.2; }
-    .podium-pillar { width: 100%; border-radius: 14px 14px 8px 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 10px 4px; font-weight: 900; border: 2px solid var(--border); background: var(--bg-card); color: var(--text-card); }
-    .podium-1 .podium-pillar { height: 115px; background: linear-gradient(180deg, rgba(245, 158, 11, 0.28), var(--bg-card)); border-color: var(--amber); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.22); }
-    .podium-2 .podium-pillar { height: 88px; background: linear-gradient(180deg, rgba(148, 163, 184, 0.22), var(--bg-card)); border-color: #94a3b8; }
-    .podium-3 .podium-pillar { height: 72px; background: linear-gradient(180deg, rgba(217, 119, 6, 0.2), var(--bg-card)); border-color: #d97706; }
-    .podium-rank-num { font-size: 1.25rem; line-height: 1; margin-bottom: 4px; }
-    .podium-pts { font-size: 0.75rem; color: var(--amber); font-weight: 900; }
+    .podium-col-1 { width: 36%; }
+    .podium-col-2, .podium-col-3 { width: 31%; }
+    .podium-crown { font-size: 2.1rem; line-height: 1; margin-bottom: 4px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+    .podium-name { font-size: 0.92rem; font-weight: 900; color: var(--text-main); width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 5px; }
+    .podium-title-badge { display: inline-block; font-size: 0.74rem; font-weight: 900; padding: 4px 10px; border-radius: 50px; margin-bottom: 8px; line-height: 1.3; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+    .badge-rank-1 { background: linear-gradient(135deg, #f59e0b, #d97706); border: 1.5px solid #fde68a; font-size: 0.78rem; padding: 5px 12px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
+    .badge-rank-2 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: 1.5px solid #bfdbfe; }
+    .badge-rank-3 { background: linear-gradient(135deg, #8b5cf6, #6d28d9); border: 1.5px solid #ddd6fe; }
+    .podium-pillar { width: 100%; border-radius: 14px 14px 8px 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 10px; font-weight: 900; }
+    .pillar-1 { height: 118px; background: linear-gradient(180deg, rgba(245,158,11,0.32), var(--bg-card)); border: 2px solid var(--amber); box-shadow: 0 6px 20px rgba(245,158,11,0.22); }
+    .pillar-2 { height: 92px; background: linear-gradient(180deg, rgba(59,130,246,0.25), var(--bg-card)); border: 2px solid #3b82f6; }
+    .pillar-3 { height: 76px; background: linear-gradient(180deg, rgba(139,92,246,0.25), var(--bg-card)); border: 2px solid var(--accent); }
+    .podium-num { font-size: 1.5rem; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .podium-score { font-size: 0.78rem; color: var(--amber); font-weight: 900; }
+
+    /* Spinning Wheel */
+    .wheel-section { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 16px; padding: 14px 12px; margin: 14px 0; text-align: center; }
+    .wheel-container { position: relative; width: 230px; height: 230px; margin: 12px auto; display: flex; align-items: center; justify-content: center; }
+    .wheel-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 20; font-size: 1.7rem; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)); pointer-events: none; }
+    .wheel-rotor { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--accent); box-shadow: 0 8px 25px rgba(0,0,0,0.35), 0 0 18px var(--accent-glow); transition: transform 3.2s cubic-bezier(0.15, 0.88, 0.22, 1); overflow: hidden; }
+    .wheel-center-dot { position: absolute; width: 34px; height: 34px; border-radius: 50%; background: var(--bg-surface); border: 3px solid var(--amber); z-index: 15; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; box-shadow: 0 3px 8px rgba(0,0,0,0.4); }
 
     .comedy-grid { margin: 12px 0; text-align: right; }
     .comedy-card { padding: 12px 14px; line-height: 1.6; font-size: 0.88rem; font-weight: 700; }
     .comedy-card.winner-box { border: 2px solid var(--emerald); }
     .comedy-card.loser-box { border: 2px solid var(--accent); }
-    .comedy-card.task-box { border: 2px dashed var(--amber); }
+    .comedy-card.task-box { border: 2px dashed var(--amber); margin-top: 10px; text-align: center; background: rgba(245, 158, 11, 0.1); }
     .comedy-head { gap: 8px; font-weight: 900; font-size: 0.88rem; margin-bottom: 4px; }
     .mini-icon-btn { background: var(--bg-elevated); color: var(--text-card); border: 1px solid var(--accent); border-radius: 8px; padding: 2px 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; }
 
@@ -246,11 +259,11 @@
     const Q = (q, opts, diff) => ({ q, opts, ans: 0, diff });
 
     const QUESTION_VIBES = [
-      { id: 'camping', icon: '⛺', title: 'چادرگە' },
-      { id: 'friends_funny', icon: '😂', title: 'هاوڕێیان' },
-      { id: 'qiyam', icon: '🌙', title: 'شەوبێداری' },
-      { id: 'formal', icon: '💼', title: 'فەرمی' },
-      { id: 'family', icon: '👨‍👩‍👧‍👦', title: 'خێزانی' }
+      { id: 'camping', icon: '⛺', title: 'چادرگە', spinLabel: '🎯 دیاریکردنی سزای چادرگە' },
+      { id: 'friends_funny', icon: '😂', title: 'هاوڕێیان', spinLabel: '🎯 دیاریکردنی سزای هاوڕێیان' },
+      { id: 'qiyam', icon: '🌙', title: 'شەوبێداری', spinLabel: '🎯 دیاریکردنی ئەرکی شەوبێداری' },
+      { id: 'formal', icon: '💼', title: 'فەرمی', spinLabel: '🎯 دیاریکردنی ئەرکی دیوانی فەرمی' },
+      { id: 'family', icon: '👨‍👩‍👧‍👦', title: 'خێزانی', spinLabel: '🎯 دیاریکردنی خزمەتی مەجلیسی خێزانی' }
     ];
 
     const VIBE_RANK_TITLES = {
@@ -541,7 +554,7 @@
         ]
       }
     };
-        let state = {
+    let state = {
       welcomeTab: 'host', role: null, screen: 'welcome', myId: persistentId,
       myName: localStorage.getItem(KEYS.NAME) || '', roomCode: '',
       vibeId: 'camping', selectedTopics: [PRESET_TOPICS[0]],
@@ -551,7 +564,8 @@
       players: [], questions: [], qIndex: 0, timeLeft: 15,
       isPaused: false, revealAnswer: false,
       comedyResult: { winnerJoke: '', loserJoke: '' },
-      taskResult: '', isProjector: false
+      taskResult: '', spunPlayerName: '', spunTask: '', isSpinning: false,
+      isProjector: false
     };
 
     const urlRoom = new URLSearchParams(window.location.search).get('room');
@@ -663,19 +677,38 @@
       };
     }
 
-    function generateTaskString() {
-      const sorted = [...state.players].sort((a, b) => b.score - a.score);
-      const target = pickRand(sorted.length > 1 ? sorted.slice(1) : sorted);
-      const bank = VIBE_COMEDY_BANK[state.vibeId] || VIBE_COMEDY_BANK.friends_funny;
-      return `بۆ (${target ? target.name : 'دۆڕاو'}): ${pickRand(bank.tasks)}`;
-    }
-
     function spinVibePenaltyTask() {
-      if (!isHostRole()) return;
-      state.taskResult = generateTaskString();
-      playTone('correct');
+      if (!isHostRole() || state.isSpinning) return;
+      const sorted = [...state.players].sort((a, b) => b.score - a.score);
+      const losers = sorted.length > 1 ? sorted.slice(1) : sorted; // یەکەم دەبەخشرێت لە سزا
+      const target = pickRand(losers) || { name: 'دۆڕاو' };
+      const bank = VIBE_COMEDY_BANK[state.vibeId] || VIBE_COMEDY_BANK.friends_funny;
+      const task = pickRand(bank.tasks);
+
+      state.isSpinning = true;
+      state.spunPlayerName = '';
+      state.spunTask = '';
+      state.taskResult = ''; 
       syncAllPlayers();
       render();
+      playTone('tick');
+
+      let spinTicks = 0;
+      let spinInterval = setInterval(() => {
+        spinTicks++;
+        if (spinTicks % 2 === 0) playTone('tick');
+      }, 200);
+
+      setTimeout(() => {
+        clearInterval(spinInterval);
+        state.isSpinning = false;
+        state.spunPlayerName = `👤 بۆ یاریزان: ${target.name}`;
+        state.spunTask = task;
+        state.taskResult = `${state.spunPlayerName} - ${task}`;
+        playTone('correct');
+        syncAllPlayers();
+        render();
+      }, 3000);
     }
 
     function regenerateComedyNow() {
@@ -702,7 +735,7 @@
     }
 
     function updateTimerUI() {
-      setText('liveTimeLabel', state.isPaused ? `⏸️ وەستاوە (${state.timeLeft} چرکە)` : `⏱️ ${state.timeLeft} چرکە`);
+      setText('liveTimeLabel', state.isPaused ? `⏸️ وەستاوە (${state.timeLeft})` : `⏱️ ${state.timeLeft} چرکە`);
       const fill = document.getElementById('liveTimeFill');
       if (fill) fill.style.width = `${Math.max(0, (state.timeLeft / state.questionDuration) * 100)}%`;
     }
@@ -743,7 +776,7 @@
           <div class="card" style="text-align:center;">
             ${tabsHtml}
             <h2>📜 مێژووی یارییەکان</h2>
-            <p class="sub" style="margin-bottom:0;">ئەم بەشە ئامادەیە بۆ زیادکردنی زانیارییەکان...</p>
+            <p class="sub" style="margin-bottom:0;">لەم بەشەدا لە داهاتوودا ئاماری یارییەکانت دەردەکەوێت...</p>
           </div>
         `;
       }
@@ -863,7 +896,7 @@
         const cls = 'opt-card' + (state.revealAnswer ? (idx === qObj.ans ? ' correct' : (myAns === idx ? ' wrong' : '')) : (myAns === idx ? ' selected' : ''));
         const icon = state.revealAnswer ? (idx === qObj.ans ? '✅' : (myAns === idx ? '❌' : '')) : '';
         return `
-          <button class="${cls}" ${state.revealAnswer || isProjHost ? 'disabled' : ''} onclick="submitPlayerAnswer(${idx})">
+          <button class="${cls}" ${state.revealAnswer || isProjHost || state.isPaused ? 'disabled' : ''} onclick="submitPlayerAnswer(${idx})">
             <div class="opt-right"><span class="opt-num">${idx + 1}</span><span>${opt}</span></div>
             <span>${icon}</span>
           </button>
@@ -872,8 +905,8 @@
 
       const sorted = [...state.players].sort((a, b) => b.score - a.score);
       const leaderboardCardHtml = sorted.length ? `
-        <div class="card">
-          <h3 style="margin-bottom:8px;font-size:0.9rem;">📊 ڕیزبەندی خاڵەکان:</h3>
+        <div class="card" style="margin-top:12px;">
+          <h3 style="margin-bottom:8px;font-size:0.9rem;">📊 ڕیزبەندی بەردەوام:</h3>
           ${sorted.map((p, i) => `
             <div class="leader-row ${i === 0 ? 'first' : ''}">
               <span>
@@ -892,7 +925,7 @@
           <div class="quiz-top-meta">
             <span>پرسیاری ${state.qIndex + 1} / ${state.questions.length}</span>
             <span class="source-tag">${vibeObj.icon} ژوور: ${state.roomCode}</span>
-            <span id="liveTimeLabel" style="color:var(--amber);">${state.isPaused ? `⏸️ وەستاوە (${state.timeLeft} چرکە)` : `⏱️ ${state.timeLeft} چرکە`}</span>
+            <span id="liveTimeLabel" style="color:var(--amber);">${state.isPaused ? `⏸️ وەستاوە (${state.timeLeft})` : `⏱️ ${state.timeLeft} چرکە`}</span>
           </div>
           <div class="timer-track"><div class="timer-fill" id="liveTimeFill" style="width:${pct}%"></div></div>
           <div class="q-banner">${qObj.q}</div>
@@ -914,33 +947,39 @@
       const vibeObj = QUESTION_VIBES.find(v => v.id === state.vibeId) || QUESTION_VIBES[0];
       const isHostOrProj = isHostRole();
 
-      let podiumHtml = '<div style="display:flex; align-items:flex-end; justify-content:center; gap:8px; margin:24px 0 18px;">';
+      let podiumHtml = '<div class="podium-wrap">';
       if (p2) {
-        podiumHtml += `<div style="display:flex; flex-direction:column; align-items:center; width:30%;">
-          <div style="font-size:1.8rem; margin-bottom:2px;">🥈</div>
-          <div style="font-size:0.8rem; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center;">${p2.name}</div>
-          <div style="font-size:0.6rem; color:var(--muted-main); margin-bottom:6px;">${getPlayerRankTitle(1, sorted.length)}</div>
-          <div style="width:100%; height:90px; background:linear-gradient(180deg, rgba(148,163,184,0.22), var(--bg-card)); border:2px solid #94a3b8; border-radius:12px 12px 8px 8px; display:flex; flex-direction:column; align-items:center; padding-top:10px;">
-            <span style="font-size:1.4rem; font-weight:900;">2</span><span style="font-size:0.75rem; color:var(--amber); font-weight:900;">${p2.score}</span>
-          </div></div>`;
+        podiumHtml += `
+          <div class="podium-col podium-col-2">
+            <div class="podium-crown">🥈</div>
+            <div class="podium-title-badge badge-rank-2">${getPlayerRankTitle(1, sorted.length)}</div>
+            <div class="podium-name">${p2.name}</div>
+            <div class="podium-pillar pillar-2">
+              <span class="podium-num">2</span><span class="podium-score">${p2.score}</span>
+            </div>
+          </div>`;
       }
       if (p1) {
-        podiumHtml += `<div style="display:flex; flex-direction:column; align-items:center; width:34%;">
-          <div style="font-size:2.2rem; margin-bottom:2px;">👑</div>
-          <div style="font-size:0.85rem; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center;">${p1.name}</div>
-          <div style="font-size:0.65rem; color:var(--muted-main); margin-bottom:6px;">${getPlayerRankTitle(0, sorted.length)}</div>
-          <div style="width:100%; height:120px; background:linear-gradient(180deg, rgba(245,158,11,0.28), var(--bg-card)); border:2px solid var(--amber); border-radius:12px 12px 8px 8px; box-shadow:0 4px 15px rgba(245,158,11,0.2); display:flex; flex-direction:column; align-items:center; padding-top:10px;">
-            <span style="font-size:1.6rem; font-weight:900;">1</span><span style="font-size:0.8rem; color:var(--amber); font-weight:900;">${p1.score}</span>
-          </div></div>`;
+        podiumHtml += `
+          <div class="podium-col podium-col-1">
+            <div class="podium-crown">👑</div>
+            <div class="podium-title-badge badge-rank-1">${getPlayerRankTitle(0, sorted.length)}</div>
+            <div class="podium-name">${p1.name}</div>
+            <div class="podium-pillar pillar-1">
+              <span class="podium-num">1</span><span class="podium-score">${p1.score}</span>
+            </div>
+          </div>`;
       }
       if (p3) {
-        podiumHtml += `<div style="display:flex; flex-direction:column; align-items:center; width:30%;">
-          <div style="font-size:1.6rem; margin-bottom:2px;">🥉</div>
-          <div style="font-size:0.8rem; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center;">${p3.name}</div>
-          <div style="font-size:0.6rem; color:var(--muted-main); margin-bottom:6px;">${getPlayerRankTitle(2, sorted.length)}</div>
-          <div style="width:100%; height:75px; background:linear-gradient(180deg, rgba(217,119,6,0.2), var(--bg-card)); border:2px solid #d97706; border-radius:12px 12px 8px 8px; display:flex; flex-direction:column; align-items:center; padding-top:10px;">
-            <span style="font-size:1.3rem; font-weight:900;">3</span><span style="font-size:0.75rem; color:var(--amber); font-weight:900;">${p3.score}</span>
-          </div></div>`;
+        podiumHtml += `
+          <div class="podium-col podium-col-3">
+            <div class="podium-crown">🥉</div>
+            <div class="podium-title-badge badge-rank-3">${getPlayerRankTitle(2, sorted.length)}</div>
+            <div class="podium-name">${p3.name}</div>
+            <div class="podium-pillar pillar-3">
+              <span class="podium-num">3</span><span class="podium-score">${p3.score}</span>
+            </div>
+          </div>`;
       }
       podiumHtml += '</div>';
 
@@ -951,14 +990,54 @@
         </div>
       `).join('');
 
+      let wheelHtml = '';
+      if (state.isSpinning) {
+        wheelHtml = `
+          <div class="wheel-section">
+            <h3 style="margin-bottom:12px; color:var(--accent);">${vibeObj.spinLabel}</h3>
+            <div class="wheel-container">
+              <div class="wheel-pointer">👇</div>
+              <div class="wheel-center-dot">🎲</div>
+              <div class="wheel-rotor" style="background:conic-gradient(var(--accent) 0deg 90deg, var(--bg-surface) 90deg 180deg, var(--emerald) 180deg 270deg, var(--amber) 270deg 360deg); transform: rotate(3200deg);"></div>
+            </div>
+            <p style="margin-top:12px;font-weight:900;color:var(--amber);">چەرخەکە دەسووڕێتەوە...</p>
+          </div>
+        `;
+      } else if (state.taskResult) {
+        wheelHtml = `
+          <div class="comedy-card task-box">
+            <div class="comedy-head">
+              <span>🎯 سزای تیروپشک:</span>
+              ${isHostOrProj ? `<button class="mini-icon-btn" onclick="spinVibePenaltyTask()" title="سزایەکی تر">🎲 گۆڕینی سزا</button>` : ''}
+            </div>
+            <div style="font-size:1.15rem; color:var(--amber); font-weight:900; margin:6px 0;">${state.spunPlayerName}</div>
+            <div style="font-size:0.95rem;">${state.spunTask}</div>
+          </div>
+        `;
+      } else if (isHostOrProj) {
+        wheelHtml = `
+          <div class="wheel-section" style="cursor:pointer;" onclick="spinVibePenaltyTask()">
+            <h3 style="margin-bottom:12px; color:var(--accent);">${vibeObj.spinLabel}</h3>
+            <div class="wheel-container" style="width:150px; height:150px;">
+              <div class="wheel-pointer" style="font-size:1.3rem;">👇</div>
+              <div class="wheel-center-dot" style="width:26px; height:26px; font-size:0.8rem;">🎲</div>
+              <div class="wheel-rotor" style="background:conic-gradient(var(--accent) 0deg 90deg, var(--bg-surface) 90deg 180deg, var(--emerald) 180deg 270deg, var(--amber) 270deg 360deg);"></div>
+            </div>
+            <button class="btn btn-primary" style="width:auto; margin:14px auto 0; padding:8px 24px; border-radius:50px;">بەسووڕێنە!</button>
+          </div>
+        `;
+      }
+
       return `
         <div class="card" style="text-align:center;">
+          <h2 style="font-size:1.4rem; margin-bottom:4px; color:var(--emerald);">🏆 پاڵەوانی مەجلیس</h2>
           ${podiumHtml}
+          
           <div class="comedy-grid">
             <div class="comedy-card winner-box">
               <div class="comedy-head">
-                <span>👑 براوەی مەجلیس:</span>
-                ${isHostOrProj ? `<button class="mini-icon-btn" onclick="regenerateComedyNow()" title="گۆڕینی قسە">🔄 گۆڕینی قسە</button>` : ''}
+                <span>👑 قسەی مەجلیس بۆ براوە:</span>
+                ${isHostOrProj ? `<button class="mini-icon-btn" onclick="regenerateComedyNow()" title="گۆڕینی قسە">🔄 گۆڕین</button>` : ''}
               </div>
               <div>"${state.comedyResult.winnerJoke || 'بژی پاڵەوان!'}"</div>
             </div>
@@ -966,16 +1045,11 @@
               <div class="comedy-head"><span>☕ بۆ دۆڕاوەکان:</span></div>
               <div>"${state.comedyResult.loserJoke || 'جاری داهاتوو هەوڵ بدەنەوە!'}"</div>
             </div>
-            <div class="comedy-card task-box">
-              <div class="comedy-head">
-                <span>🎯 سزای تیروپشک:</span>
-                ${isHostOrProj ? `<button class="mini-icon-btn" onclick="spinVibePenaltyTask()" title="سزایەکی تر">🎲 گۆڕینی سزا</button>` : ''}
-              </div>
-              <div>${state.taskResult}</div>
-            </div>
+            ${wheelHtml}
           </div>
-          ${remainingRanks ? `<div style="text-align:right;margin:12px 0;"><h3 style="font-size:0.9rem;margin-bottom:6px;">📋 ڕیزبەندییەکانی تر:</h3>${remainingRanks}</div>` : ''}
-          ${isHostOrProj ? `<button class="btn btn-emerald" style="margin-bottom:0;" onclick="hostStartCompetition()">🔄 خولێکی نوێ لەگەڵ هاوڕێیان</button>` : ''}
+
+          ${remainingRanks ? `<div style="text-align:right;margin:16px 0;"><h3 style="font-size:0.95rem;margin-bottom:8px;">📋 ڕیزبەندییەکانی تر:</h3>${remainingRanks}</div>` : ''}
+          ${isHostOrProj ? `<button class="btn btn-emerald" style="margin-top:14px; margin-bottom:0;" onclick="hostStartCompetition()">🔄 خولێکی نوێ لەگەڵ هاوڕێیان</button>` : ''}
         </div>
       `;
     }
@@ -1046,7 +1120,7 @@
       });
       render();
 
-      const actionTopic = `majlis_ku_v18/room/${state.roomCode}/action`;
+      const actionTopic = `majlis_ku_v19/room/${state.roomCode}/action`;
       connectMqttBroker(client => {
         client.subscribe(actionTopic, { qos: 1 }, syncAllPlayers);
         client.on('message', (t, msg) => {
@@ -1064,7 +1138,7 @@
       Object.assign(state, { role: 'player', isProjector: false, connecting: true });
       render();
 
-      const stateTopic = `majlis_ku_v18/room/${code}/state`, actionTopic = `majlis_ku_v18/room/${code}/action`;
+      const stateTopic = `majlis_ku_v19/room/${code}/state`, actionTopic = `majlis_ku_v19/room/${code}/action`;
       connectMqttBroker(client => {
         let received = false;
         const joinTimeout = setTimeout(() => {
@@ -1116,7 +1190,8 @@
         timeLeft: data.timeLeft, questionDuration: data.questionDuration,
         isPaused: Boolean(data.isPaused), revealAnswer: data.revealAnswer,
         revealCountdown: data.revealCountdown || 4, taskResult: data.taskResult || '',
-        difficulty: data.difficulty || 'مامناوەند', vibeId: data.vibeId || 'camping'
+        difficulty: data.difficulty || 'مامناوەند', vibeId: data.vibeId || 'camping',
+        isSpinning: Boolean(data.isSpinning), spunPlayerName: data.spunPlayerName || '', spunTask: data.spunTask || ''
       });
       if (data.comedyResult) state.comedyResult = data.comedyResult;
 
@@ -1140,7 +1215,7 @@
 
     function broadcastPayload(payload, retain = false) {
       if (isHostRole() && state.mqttClient && state.roomCode) {
-        try { state.mqttClient.publish(`majlis_ku_v18/room/${state.roomCode}/state`, JSON.stringify(payload), { qos: 0, retain }); } catch (e) {}
+        try { state.mqttClient.publish(`majlis_ku_v19/room/${state.roomCode}/state`, JSON.stringify(payload), { qos: 0, retain }); } catch (e) {}
       }
     }
 
@@ -1150,6 +1225,7 @@
       broadcastPayload({
         type: 'SYNC', screen: state.screen, countdownVal: state.countdownVal,
         vibeId: state.vibeId, difficulty: state.difficulty, isPaused: state.isPaused,
+        isSpinning: state.isSpinning, spunPlayerName: state.spunPlayerName, spunTask: state.spunTask,
         players: state.players.map(p => ({ id: p.id, name: p.name, score: p.score, lastGain: state.revealAnswer ? p.lastGain : 0, streak: p.streak, hasAnswered: false, currentAnswer: state.revealAnswer ? p.currentAnswer : null })),
         currentQuestion: qObj ? { q: qObj.q, opts: qObj.opts, ans: state.revealAnswer ? qObj.ans : null } : null,
         totalQuestions: state.questions.length, qIndex: state.qIndex, timeLeft: state.timeLeft,
@@ -1160,7 +1236,7 @@
 
     function hostStartCompetition() {
       requestScreenWakeLock();
-      Object.assign(state, { taskResult: '', isPaused: false, questions: getLocalQuestions(state.selectedTopics, state.questionLimit, state.difficulty), qIndex: 0 });
+      Object.assign(state, { taskResult: '', isPaused: false, isSpinning: false, questions: getLocalQuestions(state.selectedTopics, state.questionLimit, state.difficulty), qIndex: 0 });
       state.players.forEach(p => Object.assign(p, { score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null }));
       runPreGameCountdown();
     }
@@ -1199,11 +1275,11 @@
     function submitPlayerAnswer(optIdx) {
       if (isProjectorRole()) return;
       const me = state.players.find(p => p.id === state.myId);
-      if (!me || state.revealAnswer) return;
+      if (!me || state.revealAnswer || state.isPaused) return;
       Object.assign(me, { currentAnswer: optIdx, hasAnswered: true, answerTime: state.timeLeft });
       render();
       if (state.role === 'player' && state.mqttClient && state.roomCode) {
-        state.mqttClient.publish(`majlis_ku_v18/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
+        state.mqttClient.publish(`majlis_ku_v19/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
       }
     }
 
@@ -1237,7 +1313,7 @@
       clearInterval(state.revealInterval);
       if (state.qIndex + 1 < state.questions.length) { state.qIndex++; beginQuestionCountdown(); }
       else {
-        Object.assign(state, { comedyResult: getLocalComedyCommentary(), taskResult: generateTaskString(), screen: 'finished' });
+        Object.assign(state, { comedyResult: getLocalComedyCommentary(), screen: 'finished' });
         syncAllPlayers(); render();
       }
     }
