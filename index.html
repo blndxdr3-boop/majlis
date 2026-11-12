@@ -541,36 +541,7 @@
         ]
       }
     };
-      family: {
-        win: [
-          'پیرۆزە تاجی سەری خێزان {winner}! سەربەرزی بنەماڵە و مەجلیسەکەیت، جێگەی شانازیی هەمووانیت!',
-          'ماشەڵڵا لە زیرەکیی {winner}! شیرینی و باشترین میوەی ناو سینی مەجلیسەکە پێشکەشی تۆ بێت!',
-          'ئافەرین گوڵی ماڵەوە {winner}! دڵی گەورە و بچووکی خێزانەکەت خۆش کرد بەم بردنەوە جوانەت!',
-          'دەستخۆش ئازیزی مەجلیس {winner}! ئەمشەو لە سەرووی دیوانەکەوە دابنیشە و با هەمووان خزمەتت بکەن!',
-          'بژی {winner}! ئەم کۆبوونەوە خێزانییە بە بردنەوەی تۆ هێندەی تر شیرین و ڕازاوە بوو!'
-        ],
-        lose: [
-          'ئازیزان ({losers})، دیارە خەیاڵتان لای میوانداری و قسەی خۆشی خزمان بووە، هێنان و بردنی سینی چایەکە لەسەر ئێوەیە!',
-          'بۆ ({losers}): هەوڵێکی جوان بوو، بەڵام لە خوارەوەی لیستەکە مانەوە؛ پاککردن و دابەشکردنی میوەکان لەسەر ئێوەیە!',
-          'دیارە ({losers}) سەرقاڵی خواردنی چەرەزات و شیرینییەکە بوون بۆیە فریای دوگمەکان نەکەوتن!',
-          'ئاگاداری بۆ ({losers}): ئەمشەو کۆنترۆڵی تەلەڤزیۆن و سینی چایەکە لە لای ئێوە دەبێت بۆ خزمەتی براوە!',
-          'بۆ خۆشەویستان ({losers}): کۆکردنەوەی پیاڵە و قاپە میوەکان دوای تەواوبوونی دانیشتنەکە ئەرکی فەرمیی ئێوەیە!'
-        ],
-        tasks: [
-          '🫖 هێنان و گێڕانی سینی چا و ئاو بەسەر هەموو ئەندامانی خێزان و میوانەکاندا!',
-          '🍎 پاککردن و قاشکردنی میوە و پێشکەشکردنی بە گەورەکانی مەجلیس و براوەی یارییەکە!',
-          '🤲 ماچکردنی دەستی گەورەی مەجلیسەکە و داواکردنی دوعای خێر!',
-          '📜 گێڕانەوەی بەسەرهاتێکی خۆشی سەردەمی منداڵی یان یادگارییەکی شیرینی ناو خێزانەکە!',
-          '🍬 دابەشکردنی شیرینی و چکلێت و چەرەزات بەسەر ئامادەبووانی دانیشتنەکەدا!',
-          '🧹 کۆکردنەوەی پیاڵە و قاپە بەتاڵەکانی بەردەم میوانەکان و بردنەوەیان بۆ چێشتخانە!',
-          '📸 گرتنی وێنەیەکی خێزانیی جوان کە هەموو دانیشتووانی مەجلیسەکە تێیدا دەرکەون!',
-          '🌺 وتنی قسەیەکی خۆش و سوپاسگوزاری بۆ خانەخوێ یان ئامادەکاری میواندارییەکە!',
-          '🛋️ چاککردنی سەرین و پشتییەکانی دانیشتن بۆ گەورەکان و براوەی یەکەمی مەجلیس!',
-          '🗣️ وتنی ٣ پەندی پێشینانی ڕەسەنی کوردی لەسەر خزمایەتی و ڕێز و میوانداری!'
-        ]
-      }
-    };
-    let state = {
+        let state = {
       welcomeTab: 'host', role: null, screen: 'welcome', myId: persistentId,
       myName: localStorage.getItem(KEYS.NAME) || '', roomCode: '',
       vibeId: 'camping', selectedTopics: [PRESET_TOPICS[0]],
@@ -700,7 +671,7 @@
     }
 
     function spinVibePenaltyTask() {
-      if (!isProjectorRole()) return;
+      if (!isHostRole()) return;
       state.taskResult = generateTaskString();
       playTone('correct');
       syncAllPlayers();
@@ -708,7 +679,7 @@
     }
 
     function regenerateComedyNow() {
-      if (!isProjectorRole()) return;
+      if (!isHostRole()) return;
       state.comedyResult = getLocalComedyCommentary();
       syncAllPlayers();
       render();
@@ -900,7 +871,7 @@
       }).join('');
 
       const sorted = [...state.players].sort((a, b) => b.score - a.score);
-      const leaderboardCardHtml = (state.revealAnswer || isProjHost) && sorted.length ? `
+      const leaderboardCardHtml = sorted.length ? `
         <div class="card">
           <h3 style="margin-bottom:8px;font-size:0.9rem;">📊 ڕیزبەندی خاڵەکان:</h3>
           ${sorted.map((p, i) => `
@@ -938,25 +909,56 @@
     }
 
     function renderFinishedScreen() {
-      const sorted = [...state.players].sort((a, b) => b.score - a.score), winner = sorted[0];
-      const medals = ['🥇', '🥈', '🥉'];
-      const isProjHost = isProjectorRole();
+      const sorted = [...state.players].sort((a, b) => b.score - a.score);
+      const p1 = sorted[0], p2 = sorted[1], p3 = sorted[2];
+      const vibeObj = QUESTION_VIBES.find(v => v.id === state.vibeId) || QUESTION_VIBES[0];
+      const isHostOrProj = isHostRole();
 
-      const ranksHtml = sorted.map((p, i) => `
-        <div class="leader-row ${i === 0 ? 'first' : ''}">
-          <span>${medals[i] || `${i + 1}.`} ${p.name} <span class="vibe-rank-tag">${getPlayerRankTitle(i, sorted.length)}</span></span>
+      let podiumHtml = '<div style="display:flex; align-items:flex-end; justify-content:center; gap:8px; margin:24px 0 18px;">';
+      if (p2) {
+        podiumHtml += `<div style="display:flex; flex-direction:column; align-items:center; width:30%;">
+          <div style="font-size:1.8rem; margin-bottom:2px;">🥈</div>
+          <div style="font-size:0.8rem; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center;">${p2.name}</div>
+          <div style="font-size:0.6rem; color:var(--muted-main); margin-bottom:6px;">${getPlayerRankTitle(1, sorted.length)}</div>
+          <div style="width:100%; height:90px; background:linear-gradient(180deg, rgba(148,163,184,0.22), var(--bg-card)); border:2px solid #94a3b8; border-radius:12px 12px 8px 8px; display:flex; flex-direction:column; align-items:center; padding-top:10px;">
+            <span style="font-size:1.4rem; font-weight:900;">2</span><span style="font-size:0.75rem; color:var(--amber); font-weight:900;">${p2.score}</span>
+          </div></div>`;
+      }
+      if (p1) {
+        podiumHtml += `<div style="display:flex; flex-direction:column; align-items:center; width:34%;">
+          <div style="font-size:2.2rem; margin-bottom:2px;">👑</div>
+          <div style="font-size:0.85rem; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center;">${p1.name}</div>
+          <div style="font-size:0.65rem; color:var(--muted-main); margin-bottom:6px;">${getPlayerRankTitle(0, sorted.length)}</div>
+          <div style="width:100%; height:120px; background:linear-gradient(180deg, rgba(245,158,11,0.28), var(--bg-card)); border:2px solid var(--amber); border-radius:12px 12px 8px 8px; box-shadow:0 4px 15px rgba(245,158,11,0.2); display:flex; flex-direction:column; align-items:center; padding-top:10px;">
+            <span style="font-size:1.6rem; font-weight:900;">1</span><span style="font-size:0.8rem; color:var(--amber); font-weight:900;">${p1.score}</span>
+          </div></div>`;
+      }
+      if (p3) {
+        podiumHtml += `<div style="display:flex; flex-direction:column; align-items:center; width:30%;">
+          <div style="font-size:1.6rem; margin-bottom:2px;">🥉</div>
+          <div style="font-size:0.8rem; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center;">${p3.name}</div>
+          <div style="font-size:0.6rem; color:var(--muted-main); margin-bottom:6px;">${getPlayerRankTitle(2, sorted.length)}</div>
+          <div style="width:100%; height:75px; background:linear-gradient(180deg, rgba(217,119,6,0.2), var(--bg-card)); border:2px solid #d97706; border-radius:12px 12px 8px 8px; display:flex; flex-direction:column; align-items:center; padding-top:10px;">
+            <span style="font-size:1.3rem; font-weight:900;">3</span><span style="font-size:0.75rem; color:var(--amber); font-weight:900;">${p3.score}</span>
+          </div></div>`;
+      }
+      podiumHtml += '</div>';
+
+      const remainingRanks = sorted.slice(3).map((p, i) => `
+        <div class="leader-row">
+          <span>🐢 ${i + 4}. ${p.name} <span class="vibe-rank-tag">${getPlayerRankTitle(i+3, sorted.length)}</span></span>
           <span style="color:var(--amber);">${p.score} خاڵ</span>
         </div>
       `).join('');
 
       return `
         <div class="card" style="text-align:center;">
-          <h2>🏆 پاڵەوانی مەجلیس: ${winner ? winner.name : 'هیچ'} (${winner ? winner.score : 0} خاڵ)</h2>
+          ${podiumHtml}
           <div class="comedy-grid">
             <div class="comedy-card winner-box">
               <div class="comedy-head">
                 <span>👑 براوەی مەجلیس:</span>
-                ${isProjHost ? `<button class="mini-icon-btn" onclick="regenerateComedyNow()" title="گۆڕینی قسە">🔄 گۆڕینی قسە</button>` : ''}
+                ${isHostOrProj ? `<button class="mini-icon-btn" onclick="regenerateComedyNow()" title="گۆڕینی قسە">🔄 گۆڕینی قسە</button>` : ''}
               </div>
               <div>"${state.comedyResult.winnerJoke || 'بژی پاڵەوان!'}"</div>
             </div>
@@ -967,16 +969,13 @@
             <div class="comedy-card task-box">
               <div class="comedy-head">
                 <span>🎯 سزای تیروپشک:</span>
-                ${isProjHost ? `<button class="mini-icon-btn" onclick="spinVibePenaltyTask()" title="سزایەکی تر">🎲 گۆڕینی سزا</button>` : ''}
+                ${isHostOrProj ? `<button class="mini-icon-btn" onclick="spinVibePenaltyTask()" title="سزایەکی تر">🎲 گۆڕینی سزا</button>` : ''}
               </div>
               <div>${state.taskResult}</div>
             </div>
           </div>
-          <div style="text-align:right;margin:12px 0;">
-            <h3 style="font-size:0.9rem;margin-bottom:6px;">📋 ڕیزبەندی و نازناوەکان:</h3>
-            ${ranksHtml}
-          </div>
-          ${isHostRole() ? `<button class="btn btn-emerald" style="margin-bottom:0;" onclick="hostStartCompetition()">🔄 خولێکی نوێ لەگەڵ هاوڕێیان</button>` : ''}
+          ${remainingRanks ? `<div style="text-align:right;margin:12px 0;"><h3 style="font-size:0.9rem;margin-bottom:6px;">📋 ڕیزبەندییەکانی تر:</h3>${remainingRanks}</div>` : ''}
+          ${isHostOrProj ? `<button class="btn btn-emerald" style="margin-bottom:0;" onclick="hostStartCompetition()">🔄 خولێکی نوێ لەگەڵ هاوڕێیان</button>` : ''}
         </div>
       `;
     }
