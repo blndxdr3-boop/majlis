@@ -567,25 +567,24 @@
         ]
       }
     };
-    let state = {
+        let state = {
       welcomeTab: 'host', role: null, screen: 'welcome', myId: persistentId,
       myName: localStorage.getItem(KEYS.NAME) || '', roomCode: '',
       vibeId: 'camping', selectedTopics: [PRESET_TOPICS[0]],
       difficulty: 'مامناوەند', questionLimit: 6, questionDuration: 15,
       soundOn: true, connecting: false, countdownVal: 5, revealCountdown: 4,
-      timerInterval: null, revealInterval: null, mqttClient: null,
+      timerInterval: null, revealInterval: null, bounceInterval: null, mqttClient: null,
       players: [], questions: [], qIndex: 0, timeLeft: 15,
       isPaused: false, revealAnswer: false,
       comedyResult: { winnerJoke: '', loserJoke: '' },
-      taskResult: '', spunPlayerName: '', spunTask: '', isSpinning: false,
-      isProjector: false
+      taskResult: '', spunPlayerName: '', spunTask: '', isSpinning: false, bouncingName: '',
+      isProjector: false, historySavedForRound: false
     };
 
     const urlRoom = new URLSearchParams(window.location.search).get('room');
     if (urlRoom) {
       state.roomCode = normalizeDigits(urlRoom);
       state.welcomeTab = 'join';
-      setTimeout(() => { if (state.myName.trim() && state.screen === 'welcome') joinHostRoom(); }, 2000);
     }
 
     const isHostRole = () => state.role === 'host' || state.role === 'projector_host';
@@ -690,10 +689,33 @@
       };
     }
 
+    function getLosersList() {
+      const sorted = [...state.players].sort((a, b) => b.score - a.score);
+      return sorted.length > 1 ? sorted.slice(1) : sorted;
+    }
+
+    function startLocalBounceEffect() {
+      clearInterval(state.bounceInterval);
+      const losers = getLosersList();
+      if (!losers.length) return;
+      let i = 0;
+      state.bouncingName = losers[0].name;
+      state.bounceInterval = setInterval(() => {
+        i = (i + 1) % losers.length;
+        state.bouncingName = losers[i].name;
+        setText('bouncingNameEl', `🎲 ${state.bouncingName}`);
+        playTone('tick');
+      }, 130);
+    }
+
+    function stopLocalBounceEffect() {
+      clearInterval(state.bounceInterval);
+      state.bounceInterval = null;
+    }
+
     function spinVibePenaltyTask() {
       if (!isHostRole() || state.isSpinning) return;
-      const sorted = [...state.players].sort((a, b) => b.score - a.score);
-      const losers = sorted.length > 1 ? sorted.slice(1) : sorted; // یەکەم دەبەخشرێت لە سزا
+      const losers = getLosersList();
       const target = pickRand(losers) || { name: 'دۆڕاو' };
       const bank = VIBE_COMEDY_BANK[state.vibeId] || VIBE_COMEDY_BANK.friends_funny;
       const task = pickRand(bank.tasks);
@@ -701,33 +723,57 @@
       state.isSpinning = true;
       state.spunPlayerName = '';
       state.spunTask = '';
-      state.taskResult = ''; 
+      state.taskResult = '';
       syncAllPlayers();
       render();
-      playTone('tick');
-
-      let spinTicks = 0;
-      let spinInterval = setInterval(() => {
-        spinTicks++;
-        if (spinTicks % 2 === 0) playTone('tick');
-      }, 200);
+      startLocalBounceEffect();
 
       setTimeout(() => {
-        clearInterval(spinInterval);
+        stopLocalBounceEffect();
         state.isSpinning = false;
-        state.spunPlayerName = `👤 بۆ یاریزان: ${target.name}`;
+        state.spunPlayerName = `🎯 قوربانیی تیروپشک: ${target.name}`;
         state.spunTask = task;
         state.taskResult = `${state.spunPlayerName} - ${task}`;
         playTone('correct');
         syncAllPlayers();
         render();
-      }, 3000);
+      }, 2600);
     }
 
     function regenerateComedyNow() {
       if (!isHostRole()) return;
       state.comedyResult = getLocalComedyCommentary();
       syncAllPlayers();
+      render();
+    }
+
+    function saveCurrentGameToHistory() {
+      if (state.historySavedForRound || !state.players.length) return;
+      state.historySavedForRound = true;
+      const sorted = [...state.players].sort((a, b) => b.score - a.score);
+      const winner = sorted[0];
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} - ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+      const vibeObj = QUESTION_VIBES.find(v => v.id === state.vibeId) || QUESTION_VIBES[0];
+
+      const record = {
+        id: Date.now(),
+        date: dateStr,
+        vibe: `${vibeObj.icon} ${vibeObj.title}`,
+        winnerName: winner ? winner.name : 'بێ براوە',
+        winnerScore: winner ? winner.score : 0,
+        players: sorted.map(p => ({ name: p.name, score: p.score }))
+      };
+
+      gameHistory.unshift(record);
+      if (gameHistory.length > 50) gameHistory.pop();
+      try { localStorage.setItem(KEYS.HISTORY, JSON.stringify(gameHistory)); } catch (e) {}
+    }
+
+    function clearGameHistory() {
+      gameHistory = [];
+      localStorage.removeItem(KEYS.HISTORY);
+      showToast('🗑️ مێژووی یارییەکان سڕایەوە');
       render();
     }
 
@@ -739,11 +785,13 @@
     }
 
     function resetToHome() {
-      clearInterval(state.timerInterval); clearInterval(state.revealInterval);
+      clearInterval(state.timerInterval);
+      clearInterval(state.revealInterval);
+      stopLocalBounceEffect();
       try { state.mqttClient?.end(true); } catch (e) {}
       state.mqttClient = null;
       window.history.replaceState({}, document.title, window.location.pathname);
-      Object.assign(state, { screen: 'welcome', role: null, connecting: false, isPaused: false });
+      Object.assign(state, { screen: 'welcome', role: null, connecting: false, isPaused: false, isSpinning: false });
       render();
     }
 
@@ -785,11 +833,28 @@
       `;
 
       if (state.welcomeTab === 'history') {
+        const historyItemsHtml = gameHistory.length
+          ? gameHistory.map(h => `
+              <div class="history-card">
+                <div class="history-top">
+                  <span>${h.vibe}</span>
+                  <span style="direction:ltr;">📅 ${h.date}</span>
+                </div>
+                <div class="history-winner">🏆 پاڵەوان: ${h.winnerName} (${h.winnerScore} خاڵ)</div>
+                <div class="history-players">
+                  ${(h.players || []).map((p, idx) => `<span class="history-p-tag">${idx + 1}. ${p.name} (${p.score})</span>`).join('')}
+                </div>
+              </div>
+            `).join('')
+          : `<p class="sub" style="margin:20px 0;">هێشتا هیچ یارییەک تۆمار نەکراوە.</p>`;
+
         return `
           <div class="card" style="text-align:center;">
             ${tabsHtml}
-            <h2>📜 مێژووی یارییەکان</h2>
-            <p class="sub" style="margin-bottom:0;">لەم بەشەدا لە داهاتوودا ئاماری یارییەکانت دەردەکەوێت...</p>
+            <h2>📜 مێژووی یارییەکان (${gameHistory.length})</h2>
+            <p class="sub">ئەنجامی کۆتا یارییەکانی مەجلیس بە کات و ناوی یاریزانانەوە:</p>
+            <div style="margin-top:10px;">${historyItemsHtml}</div>
+            ${gameHistory.length ? `<button class="btn btn-danger" style="margin-top:10px;margin-bottom:0;" onclick="clearGameHistory()">🗑️ سڕینەوەی مێژووی یارییەکان</button>` : ''}
           </div>
         `;
       }
@@ -924,7 +989,6 @@
             <div class="leader-row ${i === 0 ? 'first' : ''}">
               <span>
                 ${i === 0 ? '👑' : `${i + 1}.`} ${p.name}
-                ${p.streak >= 2 ? `<small style="color:var(--amber);">🔥x${p.streak}</small>` : ''}
                 ${state.revealAnswer && p.lastGain > 0 ? `<span class="gain-badge">+${p.lastGain}</span>` : ''}
               </span>
               <span style="color:var(--amber);">${p.score} خاڵ</span>
@@ -959,6 +1023,7 @@
       const p1 = sorted[0], p2 = sorted[1], p3 = sorted[2];
       const vibeObj = QUESTION_VIBES.find(v => v.id === state.vibeId) || QUESTION_VIBES[0];
       const isHostOrProj = isHostRole();
+      const losers = getLosersList();
 
       let podiumHtml = '<div class="podium-wrap">';
       if (p2) {
@@ -998,59 +1063,51 @@
 
       const remainingRanks = sorted.slice(3).map((p, i) => `
         <div class="leader-row">
-          <span>🐢 ${i + 4}. ${p.name} <span class="vibe-rank-tag">${getPlayerRankTitle(i+3, sorted.length)}</span></span>
+          <span>🐢 ${i + 4}. ${p.name} <span class="vibe-rank-tag">${getPlayerRankTitle(i + 3, sorted.length)}</span></span>
           <span style="color:var(--amber);">${p.score} خاڵ</span>
         </div>
       `).join('');
 
-      let wheelHtml = '';
+      let lotteryHtml = '';
       if (state.isSpinning) {
-        wheelHtml = `
-          <div class="wheel-section">
-            <h3 style="margin-bottom:12px; color:var(--accent);">${vibeObj.spinLabel}</h3>
-            <div class="wheel-container">
-              <div class="wheel-pointer">👇</div>
-              <div class="wheel-center-dot">🎲</div>
-              <div class="wheel-rotor" style="background:conic-gradient(var(--accent) 0deg 90deg, var(--bg-surface) 90deg 180deg, var(--emerald) 180deg 270deg, var(--amber) 270deg 360deg); transform: rotate(3200deg);"></div>
-            </div>
-            <p style="margin-top:12px;font-weight:900;color:var(--amber);">چەرخەکە دەسووڕێتەوە...</p>
+        lotteryHtml = `
+          <div class="lottery-box">
+            <div style="font-size:0.85rem;font-weight:800;color:var(--muted-card);">⏳ تیروپشک لە نێوان دۆڕاوەکاندا دەکرێت...</div>
+            <div class="bouncing-name-pill" id="bouncingNameEl">🎲 ${state.bouncingName || (losers[0]?.name ?? '...')}</div>
           </div>
         `;
       } else if (state.taskResult) {
-        wheelHtml = `
+        lotteryHtml = `
           <div class="comedy-card task-box">
             <div class="comedy-head">
-              <span>🎯 سزای تیروپشک:</span>
-              ${isHostOrProj ? `<button class="mini-icon-btn" onclick="spinVibePenaltyTask()" title="سزایەکی تر">🎲 گۆڕینی سزا</button>` : ''}
+              <span>${vibeObj.spinLabel}:</span>
+              ${isHostOrProj ? `<button class="mini-icon-btn" onclick="spinVibePenaltyTask()">🎲 دووبارەکردنەوە</button>` : ''}
             </div>
-            <div style="font-size:1.15rem; color:var(--amber); font-weight:900; margin:6px 0;">${state.spunPlayerName}</div>
-            <div style="font-size:0.95rem;">${state.spunTask}</div>
+            <div style="font-size:1.12rem;color:var(--amber);font-weight:900;margin:6px 0;">${state.spunPlayerName}</div>
+            <div style="font-size:0.94rem;">${state.spunTask}</div>
           </div>
         `;
       } else if (isHostOrProj) {
-        wheelHtml = `
-          <div class="wheel-section" style="cursor:pointer;" onclick="spinVibePenaltyTask()">
-            <h3 style="margin-bottom:12px; color:var(--accent);">${vibeObj.spinLabel}</h3>
-            <div class="wheel-container" style="width:150px; height:150px;">
-              <div class="wheel-pointer" style="font-size:1.3rem;">👇</div>
-              <div class="wheel-center-dot" style="width:26px; height:26px; font-size:0.8rem;">🎲</div>
-              <div class="wheel-rotor" style="background:conic-gradient(var(--accent) 0deg 90deg, var(--bg-surface) 90deg 180deg, var(--emerald) 180deg 270deg, var(--amber) 270deg 360deg);"></div>
+        lotteryHtml = `
+          <div class="lottery-box">
+            <div style="font-size:0.8rem;color:var(--muted-card);margin-bottom:8px;">ناوی دۆڕاوەکان بۆ تیروپشک (براوەی یەکەم بەخشراوە):</div>
+            <div class="chips-wrap" style="margin-bottom:12px;">
+              ${losers.map(p => `<span class="p-badge">👤 ${p.name}</span>`).join('')}
             </div>
-            <button class="btn btn-primary" style="width:auto; margin:14px auto 0; padding:8px 24px; border-radius:50px;">بەسووڕێنە!</button>
+            <button class="btn btn-primary" style="margin-bottom:0;" onclick="spinVibePenaltyTask()">${vibeObj.spinLabel}</button>
           </div>
         `;
       }
 
       return `
         <div class="card" style="text-align:center;">
-          <h2 style="font-size:1.4rem; margin-bottom:4px; color:var(--emerald);">🏆 پاڵەوانی مەجلیس</h2>
+          <h2 style="font-size:1.35rem;margin-bottom:4px;color:var(--emerald);">🏆 پاڵەوانی مەجلیس</h2>
           ${podiumHtml}
-          
           <div class="comedy-grid">
             <div class="comedy-card winner-box">
               <div class="comedy-head">
                 <span>👑 قسەی مەجلیس بۆ براوە:</span>
-                ${isHostOrProj ? `<button class="mini-icon-btn" onclick="regenerateComedyNow()" title="گۆڕینی قسە">🔄 گۆڕین</button>` : ''}
+                ${isHostOrProj ? `<button class="mini-icon-btn" onclick="regenerateComedyNow()">🔄 گۆڕین</button>` : ''}
               </div>
               <div>"${state.comedyResult.winnerJoke || 'بژی پاڵەوان!'}"</div>
             </div>
@@ -1058,11 +1115,10 @@
               <div class="comedy-head"><span>☕ بۆ دۆڕاوەکان:</span></div>
               <div>"${state.comedyResult.loserJoke || 'جاری داهاتوو هەوڵ بدەنەوە!'}"</div>
             </div>
-            ${wheelHtml}
+            ${lotteryHtml}
           </div>
-
           ${remainingRanks ? `<div style="text-align:right;margin:16px 0;"><h3 style="font-size:0.95rem;margin-bottom:8px;">📋 ڕیزبەندییەکانی تر:</h3>${remainingRanks}</div>` : ''}
-          ${isHostOrProj ? `<button class="btn btn-emerald" style="margin-top:14px; margin-bottom:0;" onclick="hostStartCompetition()">🔄 خولێکی نوێ لەگەڵ هاوڕێیان</button>` : ''}
+          ${isHostOrProj ? `<button class="btn btn-emerald" style="margin-top:14px;margin-bottom:0;" onclick="hostStartCompetition()">🔄 خولێکی نوێ لەگەڵ هاوڕێیان</button>` : ''}
         </div>
       `;
     }
@@ -1119,6 +1175,8 @@
 
     function startRoom() {
       const isProj = state.isProjector;
+      const nameEl = document.getElementById('nameInp');
+      if (nameEl) state.myName = nameEl.value.trim();
       const name = (state.myName || '').trim();
       if (!isProj && !name) return showToast('⚠️ تکایە سەرەتا ناوی خۆت بنووسە!');
       if (!isProj) localStorage.setItem(KEYS.NAME, name);
@@ -1128,12 +1186,12 @@
         role: isProj ? 'projector_host' : 'host',
         connecting: false,
         roomCode: String(Math.floor(1000 + Math.random() * 9000)),
-        players: isProj ? [] : [{ id: state.myId, name: state.myName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 }],
+        players: isProj ? [] : [{ id: state.myId, name: state.myName, score: 0, lastGain: 0, hasAnswered: false, currentAnswer: null }],
         screen: 'lobby'
       });
       render();
 
-      const actionTopic = `majlis_ku_v19/room/${state.roomCode}/action`;
+      const actionTopic = `majlis_ku_v20/room/${state.roomCode}/action`;
       connectMqttBroker(client => {
         client.subscribe(actionTopic, { qos: 1 }, syncAllPlayers);
         client.on('message', (t, msg) => {
@@ -1143,6 +1201,11 @@
     }
 
     function joinHostRoom() {
+      const nameEl = document.getElementById('nameInp');
+      const codeEl = document.getElementById('codeInp');
+      if (nameEl) state.myName = nameEl.value.trim();
+      if (codeEl) state.roomCode = normalizeDigits(codeEl.value);
+
       const name = (state.myName || '').trim(), code = normalizeDigits(state.roomCode);
       state.roomCode = code;
       if (!name || !code) return showToast('⚠️ تکایە ناوی خۆت و کۆدی ژوورەکە بنووسە!');
@@ -1151,7 +1214,7 @@
       Object.assign(state, { role: 'player', isProjector: false, connecting: true });
       render();
 
-      const stateTopic = `majlis_ku_v19/room/${code}/state`, actionTopic = `majlis_ku_v19/room/${code}/action`;
+      const stateTopic = `majlis_ku_v20/room/${code}/state`, actionTopic = `majlis_ku_v20/room/${code}/action`;
       connectMqttBroker(client => {
         let received = false;
         const joinTimeout = setTimeout(() => {
@@ -1163,7 +1226,10 @@
         }, 7500);
 
         const pubJoin = () => client.publish(actionTopic, JSON.stringify({ type: 'JOIN', id: state.myId, name: state.myName }), { qos: 1 });
-        client.subscribe(stateTopic, { qos: 1 }, pubJoin);
+        client.subscribe(stateTopic, { qos: 1 }, () => {
+          pubJoin();
+          setTimeout(() => { if (!received) pubJoin(); }, 1800);
+        });
         client.on('message', (t, msg) => {
           if (t === stateTopic) try {
             const data = JSON.parse(msg.toString());
@@ -1181,12 +1247,12 @@
         if (existing) existing.name = data.name;
         else {
           const cleanName = state.players.some(p => p.name === data.name && p.id !== data.id) ? `${data.name} (${state.players.length + 1})` : data.name;
-          state.players.push({ id: data.id, name: cleanName, score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null, answerTime: 0 });
+          state.players.push({ id: data.id, name: cleanName, score: 0, lastGain: 0, hasAnswered: false, currentAnswer: null });
         }
         syncAllPlayers(); render();
       } else if (data.type === 'ANSWER') {
         const p = state.players.find(x => x.id === data.id);
-        if (p && !state.revealAnswer) Object.assign(p, { currentAnswer: data.ansIdx, hasAnswered: true, answerTime: state.timeLeft });
+        if (p && !state.revealAnswer) Object.assign(p, { currentAnswer: data.ansIdx, hasAnswered: true });
       }
     }
 
@@ -1197,7 +1263,7 @@
       if (data.type === 'REVEAL_TICK') { state.revealCountdown = data.revealCountdown; return updateRevealUI(); }
       if (data.type !== 'SYNC') return;
 
-      const { revealAnswer: prevReveal, qIndex: prevQIndex } = state;
+      const { revealAnswer: prevReveal, qIndex: prevQIndex, isSpinning: prevSpin, screen: prevScreen } = state;
       Object.assign(state, {
         screen: data.screen, countdownVal: data.countdownVal, qIndex: data.qIndex,
         timeLeft: data.timeLeft, questionDuration: data.questionDuration,
@@ -1213,7 +1279,7 @@
       state.players = data.players.map(p => (p.id === state.myId && keepMyChoice) ? { ...p, currentAnswer: myOld.currentAnswer, hasAnswered: myOld.hasAnswered } : p);
 
       if (!state.players.some(p => p.id === state.myId)) {
-        state.players.push({ id: state.myId, name: state.myName, score: 0, lastGain: 0, streak: 0, hasAnswered: keepMyChoice ? myOld.hasAnswered : false, currentAnswer: keepMyChoice ? myOld.currentAnswer : null });
+        state.players.push({ id: state.myId, name: state.myName, score: 0, lastGain: 0, hasAnswered: keepMyChoice ? myOld.hasAnswered : false, currentAnswer: keepMyChoice ? myOld.currentAnswer : null });
       }
       if (data.currentQuestion) {
         state.questions = new Array(data.totalQuestions).fill(null);
@@ -1223,12 +1289,18 @@
         const me = state.players.find(p => p.id === state.myId), qObj = state.questions[state.qIndex];
         playTone(me && qObj && me.currentAnswer === qObj.ans ? 'correct' : 'wrong');
       }
+      if (state.screen === 'countdown') state.historySavedForRound = false;
+      if (prevScreen !== 'finished' && state.screen === 'finished') saveCurrentGameToHistory();
+
       render();
+
+      if (!prevSpin && state.isSpinning) startLocalBounceEffect();
+      else if (prevSpin && !state.isSpinning) { stopLocalBounceEffect(); playTone('correct'); }
     }
 
     function broadcastPayload(payload, retain = false) {
       if (isHostRole() && state.mqttClient && state.roomCode) {
-        try { state.mqttClient.publish(`majlis_ku_v19/room/${state.roomCode}/state`, JSON.stringify(payload), { qos: 0, retain }); } catch (e) {}
+        try { state.mqttClient.publish(`majlis_ku_v20/room/${state.roomCode}/state`, JSON.stringify(payload), { qos: 0, retain }); } catch (e) {}
       }
     }
 
@@ -1239,7 +1311,7 @@
         type: 'SYNC', screen: state.screen, countdownVal: state.countdownVal,
         vibeId: state.vibeId, difficulty: state.difficulty, isPaused: state.isPaused,
         isSpinning: state.isSpinning, spunPlayerName: state.spunPlayerName, spunTask: state.spunTask,
-        players: state.players.map(p => ({ id: p.id, name: p.name, score: p.score, lastGain: state.revealAnswer ? p.lastGain : 0, streak: p.streak, hasAnswered: false, currentAnswer: state.revealAnswer ? p.currentAnswer : null })),
+        players: state.players.map(p => ({ id: p.id, name: p.name, score: p.score, lastGain: state.revealAnswer ? p.lastGain : 0, hasAnswered: false, currentAnswer: state.revealAnswer ? p.currentAnswer : null })),
         currentQuestion: qObj ? { q: qObj.q, opts: qObj.opts, ans: state.revealAnswer ? qObj.ans : null } : null,
         totalQuestions: state.questions.length, qIndex: state.qIndex, timeLeft: state.timeLeft,
         questionDuration: state.questionDuration, revealAnswer: state.revealAnswer,
@@ -1249,8 +1321,14 @@
 
     function hostStartCompetition() {
       requestScreenWakeLock();
-      Object.assign(state, { taskResult: '', isPaused: false, isSpinning: false, questions: getLocalQuestions(state.selectedTopics, state.questionLimit, state.difficulty), qIndex: 0 });
-      state.players.forEach(p => Object.assign(p, { score: 0, lastGain: 0, streak: 0, hasAnswered: false, currentAnswer: null }));
+      stopLocalBounceEffect();
+      Object.assign(state, {
+        taskResult: '', spunPlayerName: '', spunTask: '', isPaused: false, isSpinning: false,
+        historySavedForRound: false,
+        questions: getLocalQuestions(state.selectedTopics, state.questionLimit, state.difficulty),
+        qIndex: 0
+      });
+      state.players.forEach(p => Object.assign(p, { score: 0, lastGain: 0, hasAnswered: false, currentAnswer: null }));
       runPreGameCountdown();
     }
 
@@ -1271,7 +1349,7 @@
     function beginQuestionCountdown() {
       clearInterval(state.timerInterval); clearInterval(state.revealInterval);
       Object.assign(state, { timeLeft: state.questionDuration, revealAnswer: false, isPaused: false });
-      state.players.forEach(p => Object.assign(p, { hasAnswered: false, currentAnswer: null, answerTime: 0, lastGain: 0 }));
+      state.players.forEach(p => Object.assign(p, { hasAnswered: false, currentAnswer: null, lastGain: 0 }));
       syncAllPlayers(); render();
       state.timerInterval = setInterval(() => {
         if (state.isPaused) return;
@@ -1289,10 +1367,10 @@
       if (isProjectorRole()) return;
       const me = state.players.find(p => p.id === state.myId);
       if (!me || state.revealAnswer || state.isPaused) return;
-      Object.assign(me, { currentAnswer: optIdx, hasAnswered: true, answerTime: state.timeLeft });
+      Object.assign(me, { currentAnswer: optIdx, hasAnswered: true });
       render();
       if (state.role === 'player' && state.mqttClient && state.roomCode) {
-        state.mqttClient.publish(`majlis_ku_v19/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
+        state.mqttClient.publish(`majlis_ku_v20/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
       }
     }
 
@@ -1303,10 +1381,11 @@
 
       state.players.forEach(p => {
         if (p.currentAnswer === qObj.ans) {
-          p.streak = (p.streak || 0) + 1;
-          p.lastGain = 100 + Math.round((p.answerTime / state.questionDuration) * 60) + (p.streak >= 2 ? 25 : 0);
-          p.score += p.lastGain;
-        } else { p.streak = 0; p.lastGain = 0; }
+          p.lastGain = 100;
+          p.score += 100;
+        } else {
+          p.lastGain = 0;
+        }
       });
 
       const me = state.players.find(p => p.id === state.myId);
@@ -1327,6 +1406,7 @@
       if (state.qIndex + 1 < state.questions.length) { state.qIndex++; beginQuestionCountdown(); }
       else {
         Object.assign(state, { comedyResult: getLocalComedyCommentary(), screen: 'finished' });
+        saveCurrentGameToHistory();
         syncAllPlayers(); render();
       }
     }
