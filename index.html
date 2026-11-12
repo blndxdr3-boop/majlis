@@ -90,6 +90,7 @@
     .btn-primary { background: var(--accent); color: #fff; border: none; box-shadow: 0 6px 18px var(--accent-glow); }
     .btn-emerald { background: var(--emerald); border: none; color: #fff; }
     .btn-amber { background: var(--amber); border: none; color: #fff; }
+    .btn-danger { background: var(--danger); border: none; color: #fff; }
 
     .section-box, .cycle-btn, .q-banner, .next-auto-banner, .comedy-card, .about-info-box { background: var(--bg-card); color: var(--text-card); border-radius: 14px; }
     .section-box { border: 1.5px solid var(--border); padding: 10px; margin-bottom: 10px; }
@@ -154,12 +155,17 @@
     .podium-num { font-size: 1.5rem; font-weight: 900; line-height: 1; margin-bottom: 4px; }
     .podium-score { font-size: 0.78rem; color: var(--amber); font-weight: 900; }
 
-    /* Spinning Wheel */
-    .wheel-section { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 16px; padding: 14px 12px; margin: 14px 0; text-align: center; }
-    .wheel-container { position: relative; width: 230px; height: 230px; margin: 12px auto; display: flex; align-items: center; justify-content: center; }
-    .wheel-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 20; font-size: 1.7rem; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)); pointer-events: none; }
-    .wheel-rotor { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--accent); box-shadow: 0 8px 25px rgba(0,0,0,0.35), 0 0 18px var(--accent-glow); transition: transform 3.2s cubic-bezier(0.15, 0.88, 0.22, 1); overflow: hidden; }
-    .wheel-center-dot { position: absolute; width: 34px; height: 34px; border-radius: 50%; background: var(--bg-surface); border: 3px solid var(--amber); z-index: 15; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; box-shadow: 0 3px 8px rgba(0,0,0,0.4); }
+    /* Bouncing Name Lottery */
+    .lottery-box { background: var(--bg-card); border: 2px dashed var(--accent); border-radius: 16px; padding: 16px 12px; margin-top: 10px; text-align: center; }
+    .bouncing-name-pill { display: inline-block; margin: 12px auto; padding: 12px 28px; border-radius: 50px; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: #fff; font-size: 1.25rem; font-weight: 900; box-shadow: 0 8px 25px var(--accent-glow); animation: bouncePulse 0.28s infinite alternate; }
+    @keyframes bouncePulse { from { transform: translateY(-6px) scale(0.95); } to { transform: translateY(6px) scale(1.06); } }
+
+    /* History Cards */
+    .history-card { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; text-align: right; }
+    .history-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 8px; font-size: 0.75rem; color: var(--muted-card); font-weight: 700; }
+    .history-winner { font-size: 0.92rem; font-weight: 900; color: var(--emerald); margin-bottom: 6px; }
+    .history-players { display: flex; flex-wrap: wrap; gap: 5px; }
+    .history-p-tag { background: var(--bg-elevated); color: var(--text-card); font-size: 0.73rem; font-weight: 800; padding: 3px 9px; border-radius: 50px; }
 
     .comedy-grid { margin: 12px 0; text-align: right; }
     .comedy-card { padding: 12px 14px; line-height: 1.6; font-size: 0.88rem; font-weight: 700; }
@@ -237,7 +243,14 @@
   </div>
 
   <script>
-    const KEYS = { SEEN: 'MAJLIS_SEEN_HISTORY', CUSTOM: 'MAJLIS_CUSTOM_QUESTIONS', NAME: 'MAJLIS_PLAYER_NAME', ID: 'MAJLIS_PLAYER_ID', THEME: 'MAJLIS_THEME_MODE' };
+    const KEYS = {
+      SEEN: 'MAJLIS_SEEN_HISTORY',
+      CUSTOM: 'MAJLIS_CUSTOM_QUESTIONS',
+      NAME: 'MAJLIS_PLAYER_NAME',
+      ID: 'MAJLIS_PLAYER_ID',
+      THEME: 'MAJLIS_THEME_MODE',
+      HISTORY: 'MAJLIS_GAME_HISTORY'
+    };
     setTimeout(() => document.getElementById('splashScreen')?.remove(), 1900);
 
     let wakeLock = null;
@@ -249,7 +262,7 @@
     localStorage.setItem(KEYS.ID, persistentId);
 
     const loadJSON = k => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
-    let customQuestions = loadJSON(KEYS.CUSTOM), seenQuestions = loadJSON(KEYS.SEEN);
+    let customQuestions = loadJSON(KEYS.CUSTOM), seenQuestions = loadJSON(KEYS.SEEN), gameHistory = loadJSON(KEYS.HISTORY);
     if (localStorage.getItem(KEYS.THEME) === 'light') document.body.classList.add('light-mode');
 
     const normalizeDigits = s => String(s || '').replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632).replace(/[۰-۹]/g, d => d.charCodeAt(0) - 1776).trim().toUpperCase();
