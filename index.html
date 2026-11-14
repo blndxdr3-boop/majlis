@@ -2239,5 +2239,383 @@
 
     render();
   </script>
+    <!-- ===== پینەی زیرەک (Smart Patch) بۆ دیوەخان ===== -->
+  <style>
+    /* ١. ستایلی تایبەت بە گەورەکردنی دۆخی داتاشۆ */
+    body.projector-mode main { max-width: 1200px; padding: 18px 28px 60px; }
+    body.projector-mode .card { padding: 22px 26px; }
+    body.projector-mode h2 { font-size: 1.55rem; }
+    body.projector-mode .q-banner { font-size: 1.55rem; padding: 26px 22px; line-height: 1.65; }
+    body.projector-mode .opts-list { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    body.projector-mode .opt-card { font-size: 1.18rem; padding: 18px 20px; }
+    body.projector-mode .opt-num { width: 36px; height: 36px; font-size: 1.05rem; }
+    body.projector-mode .quiz-top-meta { font-size: 1.05rem; margin-bottom: 12px; }
+    body.projector-mode .leader-row { font-size: 1.05rem; padding: 13px 16px; }
+
+    @media (min-width: 920px) {
+      body.projector-mode .playing-grid-wrap {
+        display: grid;
+        grid-template-columns: 1.65fr 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+      body.projector-mode .playing-grid-wrap .card { margin-top: 0 !important; }
+    }
+
+    /* ٢. ستایلی شریتی ژمارەی وەڵامدەران و دۆخی گەیشتن */
+    .ans-counter-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+      background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 9px 13px; margin-top: 11px; font-size: 0.82rem; font-weight: 800;
+    }
+    .ans-pill-done { font-size: 0.7rem; padding: 2px 8px; border-radius: 50px; background: rgba(16, 185, 129, 0.16); color: var(--emerald); border: 1px solid var(--emerald); margin-right: 6px; }
+    .ans-pill-wait { font-size: 0.7rem; padding: 2px 8px; border-radius: 50px; background: var(--bg-elevated); color: var(--muted-card); margin-right: 6px; }
+
+    /* ٣. ستایلی لیستی پرسیارە تایبەتەکان */
+    .cq-list-wrap { margin-top: 14px; border-top: 1.5px solid var(--border); padding-top: 12px; max-height: 240px; overflow-y: auto; }
+    .cq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; text-align: right; }
+    .cq-item-q { font-size: 0.84rem; font-weight: 900; margin-bottom: 4px; color: var(--text-card); }
+    .cq-item-ans { font-size: 0.75rem; color: var(--emerald); font-weight: 800; margin-bottom: 8px; }
+    .cq-item-actions { display: flex; gap: 6px; justify-content: flex-end; }
+    .cq-btn-sm { padding: 4px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 800; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-card); cursor: pointer; }
+    .cq-btn-del { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: var(--danger); }
+  </style>
+
+  <script>
+    window.editingCustomIdx = null;
+    window.ansRetryTimer = null;
+
+    // نوێکردنەوەی فەنکشنی render بۆ چالاککردنی قەبارەی داتاشۆ
+    const _origRender = render;
+    render = function() {
+      const isProjActive = Boolean(state.isProjector || state.role === 'projector_host');
+      document.body.classList.toggle('projector-mode', isProjActive);
+      _origRender();
+    };
+
+    // ناردنی دۆخی وەڵامدانەوەی یاریزانان لەگەڵ SYNC
+    syncAllPlayers = function() {
+      if (!isHostRole()) return;
+      const qObj = state.questions[state.qIndex];
+      broadcastPayload({
+        type: 'SYNC', screen: state.screen, countdownVal: state.countdownVal,
+        vibeId: state.vibeId, difficulty: state.difficulty, isPaused: state.isPaused,
+        isSpinning: state.isSpinning, spunPlayerName: state.spunPlayerName, spunTask: state.spunTask,
+        players: state.players.map(p => ({
+          id: p.id, name: p.name, score: p.score,
+          lastGain: state.revealAnswer ? p.lastGain : 0,
+          hasAnswered: Boolean(p.hasAnswered),
+          currentAnswer: state.revealAnswer ? p.currentAnswer : null
+        })),
+        currentQuestion: qObj ? { q: qObj.q, opts: qObj.opts, ans: state.revealAnswer ? qObj.ans : null } : null,
+        totalQuestions: state.questions.length, qIndex: state.qIndex, timeLeft: state.timeLeft,
+        questionDuration: state.questionDuration, revealAnswer: state.revealAnswer,
+        revealCountdown: state.revealCountdown, comedyResult: state.comedyResult, taskResult: state.taskResult
+      }, true);
+    };
+
+    // وەرگرتنی وەڵام لەلایەن سەرپەرشتیار و ناردنەوەی تەئکیدکردنەوە دەستبەجێ
+    onHostReceiveData = function(data) {
+      if (data.type === 'JOIN') {
+        const existing = state.players.find(p => p.id === data.id);
+        if (existing) existing.name = data.name;
+        else {
+          const cleanName = state.players.some(p => p.name === data.name && p.id !== data.id) ? `${data.name} (${state.players.length + 1})` : data.name;
+          state.players.push({ id: data.id, name: cleanName, score: 0, lastGain: 0, hasAnswered: false, currentAnswer: null, ansConfirmed: false });
+        }
+        syncAllPlayers(); render();
+      } else if (data.type === 'ANSWER') {
+        const p = state.players.find(x => x.id === data.id);
+        if (p && !state.revealAnswer) {
+          Object.assign(p, { currentAnswer: data.ansIdx, hasAnswered: true, ansConfirmed: true });
+          syncAllPlayers();
+          render();
+        }
+      }
+    };
+
+    // ناردنی وەڵامی یاریزان لەگەڵ دووبارە ناردنەوەی خۆکار لە کاتی خاویی ئینتەرنێت
+    submitPlayerAnswer = function(optIdx) {
+      if (isProjectorRole()) return;
+      const me = state.players.find(p => p.id === state.myId);
+      if (!me || state.revealAnswer || state.isPaused) return;
+
+      clearInterval(window.ansRetryTimer);
+      Object.assign(me, {
+        currentAnswer: optIdx,
+        hasAnswered: true,
+        ansConfirmed: isHostRole()
+      });
+
+      if (isHostRole()) {
+        syncAllPlayers();
+        render();
+        return;
+      }
+
+      render();
+      const sendPacket = () => {
+        if (state.mqttClient && state.roomCode && !state.revealAnswer) {
+          state.mqttClient.publish(`diwaxan_ku_v1/room/${state.roomCode}/action`, JSON.stringify({ type: 'ANSWER', id: state.myId, ansIdx: optIdx }), { qos: 1 });
+        }
+      };
+      sendPacket();
+
+      let retries = 0;
+      window.ansRetryTimer = setInterval(() => {
+        const currentMe = state.players.find(p => p.id === state.myId);
+        if (!currentMe || currentMe.ansConfirmed || state.revealAnswer || ++retries > 4) {
+          clearInterval(window.ansRetryTimer);
+        } else {
+          sendPacket();
+        }
+      }, 1500);
+    };
+
+    // وەرگرتنی تەئکیدکردنەوەی گەیشتنی وەڵام لەلایەن مۆبایلی یاریزانەوە
+    onPlayerReceiveData = function(data) {
+      if (data.type === 'PRE_TICK') { state.countdownVal = data.countdownVal; return setText('preGameCountNum', state.countdownVal); }
+      if (data.type === 'TIMER_TICK') { state.timeLeft = data.timeLeft; return updateTimerUI(); }
+      if (data.type === 'PAUSE_STATE') { state.isPaused = data.isPaused; state.timeLeft = data.timeLeft; return updateTimerUI(); }
+      if (data.type === 'REVEAL_TICK') { state.revealCountdown = data.revealCountdown; return updateRevealUI(); }
+      if (data.type !== 'SYNC') return;
+
+      const { revealAnswer: prevReveal, qIndex: prevQIndex, isSpinning: prevSpin, screen: prevScreen } = state;
+      if (prevQIndex !== data.qIndex || data.revealAnswer) clearInterval(window.ansRetryTimer);
+
+      Object.assign(state, {
+        screen: data.screen, countdownVal: data.countdownVal, qIndex: data.qIndex,
+        timeLeft: data.timeLeft, questionDuration: data.questionDuration,
+        isPaused: Boolean(data.isPaused), revealAnswer: data.revealAnswer,
+        revealCountdown: data.revealCountdown || 4, taskResult: data.taskResult || '',
+        difficulty: data.difficulty || 'مامناوەند', vibeId: data.vibeId || 'camping',
+        isSpinning: Boolean(data.isSpinning), spunPlayerName: data.spunPlayerName || '', spunTask: data.spunTask || ''
+      });
+      if (data.comedyResult) state.comedyResult = data.comedyResult;
+
+      const myOld = state.players.find(p => p.id === state.myId);
+      const keepMyChoice = !data.revealAnswer && prevQIndex === data.qIndex && myOld && myOld.hasAnswered;
+
+      state.players = data.players.map(p => {
+        if (p.id === state.myId && keepMyChoice) {
+          const confirmedByHost = Boolean(p.hasAnswered);
+          if (confirmedByHost) clearInterval(window.ansRetryTimer);
+          return {
+            ...p,
+            currentAnswer: myOld.currentAnswer,
+            hasAnswered: true,
+            ansConfirmed: confirmedByHost || Boolean(myOld.ansConfirmed)
+          };
+        }
+        return p;
+      });
+
+      if (!state.players.some(p => p.id === state.myId)) {
+        state.players.push({ id: state.myId, name: state.myName, score: 0, lastGain: 0, hasAnswered: keepMyChoice, currentAnswer: keepMyChoice ? myOld.currentAnswer : null, ansConfirmed: false });
+      }
+      if (data.currentQuestion) {
+        state.questions = new Array(data.totalQuestions).fill(null);
+        state.questions[state.qIndex] = data.currentQuestion;
+      }
+      if (!prevReveal && state.revealAnswer && state.screen === 'playing') {
+        const me = state.players.find(p => p.id === state.myId), qObj = state.questions[state.qIndex];
+        playTone(me && qObj && me.currentAnswer === qObj.ans ? 'correct' : 'wrong');
+      }
+      if (state.screen === 'countdown') state.historySavedForRound = false;
+      if (prevScreen !== 'finished' && state.screen === 'finished') saveCurrentGameToHistory();
+
+      render();
+
+      if (!prevSpin && state.isSpinning) startLocalBounceEffect();
+      else if (prevSpin && !state.isSpinning) { stopLocalBounceEffect(); playTone('correct'); }
+    };
+
+    // شاشەی یاریکردن بە ژمێرەری وەڵامدەران و دۆخی گەیشتنەوە
+    renderPlayingScreen = function() {
+      const qObj = state.questions[state.qIndex] || { q: '...', opts: ['', '', '', ''], ans: null };
+      const me = state.players.find(p => p.id === state.myId);
+      const myAns = me?.currentAnswer ?? null;
+      const pct = Math.max(0, (state.timeLeft / state.questionDuration) * 100);
+      const vibeObj = QUESTION_VIBES.find(v => v.id === state.vibeId) || QUESTION_VIBES[0];
+      const isProjHost = isProjectorRole();
+
+      const answeredCount = state.players.filter(p => p.hasAnswered).length;
+      const totalPlayers = state.players.length;
+
+      let deliveryBadgeHtml = '';
+      if (!isProjHost && me && me.hasAnswered && !state.revealAnswer) {
+        deliveryBadgeHtml = me.ansConfirmed
+          ? `<span style="color:var(--emerald);">✅ وەڵامەکەت گەیشت</span>`
+          : `<span style="color:var(--amber);">⏳ دەگاتە سەرپەرشتیار...</span>`;
+      } else if (!state.revealAnswer) {
+        deliveryBadgeHtml = answeredCount === totalPlayers && totalPlayers > 0
+          ? `<span style="color:var(--emerald);">🎉 هەمووان وەڵامیان دایەوە!</span>`
+          : `<span style="color:var(--muted-card);">⏳ چاوەڕوانی ئەوانی تر...</span>`;
+      }
+
+      const optsHtml = qObj.opts.map((opt, idx) => {
+        const cls = 'opt-card' + (state.revealAnswer ? (idx === qObj.ans ? ' correct' : (myAns === idx ? ' wrong' : '')) : (myAns === idx ? ' selected' : ''));
+        const icon = state.revealAnswer ? (idx === qObj.ans ? '✅' : (myAns === idx ? '❌' : '')) : '';
+        return `
+          <button class="${cls}" ${state.revealAnswer || isProjHost || state.isPaused ? 'disabled' : ''} onclick="submitPlayerAnswer(${idx})">
+            <div class="opt-right"><span class="opt-num">${idx + 1}</span><span>${opt}</span></div>
+            <span>${icon}</span>
+          </button>
+        `;
+      }).join('');
+
+      const sorted = [...state.players].sort((a, b) => b.score - a.score);
+      const leaderboardCardHtml = sorted.length ? `
+        <div class="card" style="margin-top:12px;">
+          <h3 style="margin-bottom:8px;font-size:0.9rem;">📊 ڕیزبەندی بەردەوام:</h3>
+          ${sorted.map((p, i) => `
+            <div class="leader-row ${i === 0 ? 'first' : ''}">
+              <span>
+                ${i === 0 ? '👑' : `${i + 1}.`} ${p.name}
+                ${!state.revealAnswer ? (p.hasAnswered ? `<span class="ans-pill-done">✅ وەڵامی داوە</span>` : `<span class="ans-pill-wait">⏳ ماوە</span>`) : ''}
+                ${state.revealAnswer && p.lastGain > 0 ? `<span class="gain-badge">+${p.lastGain}</span>` : ''}
+              </span>
+              <span style="color:var(--amber);">${p.score} خاڵ</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : '';
+
+      return `
+        <div class="playing-grid-wrap">
+          <div class="card">
+            <div class="quiz-top-meta">
+              <span>پرسیاری ${state.qIndex + 1} / ${state.questions.length}</span>
+              <span class="source-tag">${vibeObj.icon} ژوور: ${state.roomCode}</span>
+              <span id="liveTimeLabel" style="color:var(--amber);">${state.isPaused ? `⏸️ وەستاوە (${state.timeLeft})` : `⏱️ ${state.timeLeft} چرکە`}</span>
+            </div>
+            <div class="timer-track"><div class="timer-fill" id="liveTimeFill" style="width:${pct}%"></div></div>
+            <div class="q-banner">${qObj.q}</div>
+            <div class="opts-list">${optsHtml}</div>
+            <div class="ans-counter-bar">
+              <span>👥 وەڵامدراوەتەوە: <strong style="color:var(--accent);">${answeredCount} لە ${totalPlayers}</strong> یاریزان</span>
+              ${deliveryBadgeHtml}
+            </div>
+            ${isProjHost && !state.revealAnswer ? `
+              <button class="btn ${state.isPaused ? 'btn-emerald' : 'btn-amber'}" style="margin-top:12px;margin-bottom:0;" onclick="togglePauseTimer()">
+                ${state.isPaused ? '▶️ دەستپێکردنەوەی کات' : '⏸️ ڕاگرتنی کات'}
+              </button>
+            ` : ''}
+            ${state.revealAnswer ? `<div class="next-auto-banner" id="autoNextBanner">${state.qIndex + 1 < state.questions.length ? `⏳ پرسیاری دواتر دوای ${state.revealCountdown} چرکە...` : `🏆 ئەنجامی کۆتایی دوای ${state.revealCountdown} چرکە...`}</div>` : ''}
+          </div>
+          ${leaderboardCardHtml}
+        </div>
+      `;
+    };
+
+    // فەنکشنەکانی بینین، دەستکاریکردن و سڕینەوەی پرسیارە تایبەتەکان
+    function ensureCustomQListContainer() {
+      const modalBox = document.querySelector('#customQModal .modal-box');
+      if (modalBox && !document.getElementById('customQListContainer')) {
+        const listDiv = document.createElement('div');
+        listDiv.id = 'customQListContainer';
+        listDiv.className = 'cq-list-wrap';
+        modalBox.appendChild(listDiv);
+      }
+      const saveBtn = document.querySelector('#customQModal .btn-primary');
+      if (saveBtn) saveBtn.id = 'cqSaveBtn';
+    }
+
+    function renderCustomQuestionsList() {
+      ensureCustomQListContainer();
+      const box = document.getElementById('customQListContainer');
+      const saveBtn = document.getElementById('cqSaveBtn');
+      if (saveBtn) saveBtn.textContent = window.editingCustomIdx !== null ? '💾 پاشەکەوتکردنی گۆڕانکاری' : '➕ زیادکردن';
+      setText('customQStatus', `کۆی پرسیارە تایبەتەکانت: ${customQuestions.length} پرسیار`);
+      if (!box) return;
+
+      if (!customQuestions.length) {
+        box.innerHTML = `<p style="font-size:0.78rem;color:var(--muted-main);text-align:center;">هیچ پرسیارێکی تایبەتت زیاد نەکردووە.</p>`;
+        return;
+      }
+
+      box.innerHTML = customQuestions.map((item, idx) => `
+        <div class="cq-item">
+          <div class="cq-item-q">${idx + 1}. ${item.q}</div>
+          <div class="cq-item-ans">✅ وەڵامی ڕاست: ${item.opts[item.ans ?? 0]}</div>
+          <div class="cq-item-actions">
+            <button class="cq-btn-sm" onclick="editCustomQuestion(${idx})">✏️ دەستکاری</button>
+            <button class="cq-btn-sm cq-btn-del" onclick="deleteCustomQuestion(${idx})">🗑️ سڕینەوە</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.editCustomQuestion = function(idx) {
+      const item = customQuestions[idx];
+      if (!item) return;
+      window.editingCustomIdx = idx;
+      const correctOpt = item.opts[item.ans ?? 0];
+      const wrongOpts = item.opts.filter((_, i) => i !== (item.ans ?? 0));
+      document.getElementById('cqText').value = item.q;
+      document.getElementById('cqOpt0').value = correctOpt || '';
+      document.getElementById('cqOpt1').value = wrongOpts[0] || '';
+      document.getElementById('cqOpt2').value = wrongOpts[1] || '';
+      document.getElementById('cqOpt3').value = wrongOpts[2] || '';
+      renderCustomQuestionsList();
+      document.getElementById('cqText').focus();
+    };
+
+    window.deleteCustomQuestion = function(idx) {
+      customQuestions.splice(idx, 1);
+      localStorage.setItem(KEYS.CUSTOM, JSON.stringify(customQuestions));
+      if (window.editingCustomIdx === idx) {
+        window.editingCustomIdx = null;
+        ['cqText', 'cqOpt0', 'cqOpt1', 'cqOpt2', 'cqOpt3'].forEach(id => document.getElementById(id).value = '');
+      }
+      if (customQuestions.length === 0) {
+        state.selectedTopics = state.selectedTopics.filter(t => t !== 'پرسیارەکانی خۆم (تایبەت)');
+        if (!state.selectedTopics.length) state.selectedTopics = ['هەمەجۆر'];
+      }
+      renderCustomQuestionsList();
+      render();
+      showToast('🗑️ پرسیارەکە سڕایەوە');
+    };
+
+    openCustomQModal = function() {
+      window.editingCustomIdx = null;
+      ['cqText', 'cqOpt0', 'cqOpt1', 'cqOpt2', 'cqOpt3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      toggleModal('settingsModal', false);
+      renderCustomQuestionsList();
+      toggleModal('customQModal', true);
+    };
+
+    saveCustomQuestion = function() {
+      const ids = ['cqText', 'cqOpt0', 'cqOpt1', 'cqOpt2', 'cqOpt3'];
+      const [q, o0, o1, o2, o3] = ids.map(id => document.getElementById(id).value.trim());
+      if (!q || !o0 || !o1 || !o2 || !o3) return showToast('⚠️ تکایە پرسیارەکە و هەر ٤ هەڵبژاردەکە پڕ بکەرەوە!');
+
+      const opts = [o0, o1, o2, o3].sort(() => Math.random() - 0.5);
+      const newObj = { q, opts, ans: opts.indexOf(o0), diff: state.difficulty };
+
+      if (window.editingCustomIdx !== null && customQuestions[window.editingCustomIdx]) {
+        customQuestions[window.editingCustomIdx] = newObj;
+        window.editingCustomIdx = null;
+        showToast('✅ گۆڕانکارییەکە پاشەکەوت کرا!');
+      } else {
+        customQuestions.push(newObj);
+        showToast('✅ پرسیارەکە زیاد کرا!');
+      }
+
+      localStorage.setItem(KEYS.CUSTOM, JSON.stringify(customQuestions));
+      ids.forEach(id => document.getElementById(id).value = '');
+      renderCustomQuestionsList();
+      if (!state.selectedTopics.includes('پرسیارەکانی خۆم (تایبەت)')) {
+        handleTopicChipClick('پرسیارەکانی خۆم (تایبەت)');
+      } else {
+        render();
+      }
+    };
+
+    render();
+  </script>
 </body>
 </html>
